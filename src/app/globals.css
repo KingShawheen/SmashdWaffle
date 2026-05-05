@@ -86,7 +86,9 @@ a {
   .desktop-hero-pane {
     display: block;
     flex: 1;
-    position: relative;
+    position: sticky;
+    top: 0;
+    height: 100dvh;
     overflow: hidden;
     background-color: var(--sw-navy);
   }
