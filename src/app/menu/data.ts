@@ -28,43 +28,41 @@ export const FOOD_ITEMS: FoodItem[] = [
   {
     id: 'f1',
     type: 'food',
-    title: 'Savory Bacon SMASH',
-    emojis: '🧇 🥓 🧀 🧅',
+    title: 'Breakfast SMASH Waffle',
+    emojis: '🧇 🥔 🥓 🍳 🧀',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Bacon baked into the waffle, topped with sour cream and scallions.',
+    description: 'Our most popular item! Tater tots pressed into a waffle, loaded with crispy bacon, egg, and cheese. Served with sour cream or salsa.',
     basePrice: 15.00,
     isChefChoice: true,
-    imageUrl: '/assets/food/savory_bacon.png'
+    imageUrl: '/assets/food/breakfast_smash.png'
   },
   {
     id: 'f2',
     type: 'food',
-    title: 'Strawberry Chocolate',
-    emojis: '🧇 🍓 🍫 🍦',
-    emojiBg: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
-    description: 'Fresh strawberries, chocolate drizzle, and whipped cream.',
-    basePrice: 13.00,
-    dietary: ['V'],
-    imageUrl: '/assets/food/strawberry_chocolate.png'
+    title: 'Savory Bacon SMASH',
+    emojis: '🧇 🥓 🧀 🧈',
+    emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+    description: 'Crispy bacon baked directly into our signature golden waffle batter, topped with melted cheese and a dollop of sour cream.',
+    basePrice: 15.00,
+    imageUrl: '/assets/food/savory_bacon.png'
   },
   {
     id: 'f3',
     type: 'food',
-    title: 'PB & Jelly Waffle',
-    emojis: '🧇 🥜 🍇 🍦',
-    emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Peanut butter drizzle, strawberry jam, and whipped cream.',
-    basePrice: 12.00,
-    dietary: ['V'],
-    imageUrl: '/assets/food/pb_jelly.png'
+    title: 'Waffle BLT',
+    emojis: '🧇 🥓 🥬 🍅 🥑',
+    emojiBg: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
+    description: 'A crispy waffle acting as the bread, filled with sizzling bacon, fresh lettuce, sliced tomato, and creamy guacamole.',
+    basePrice: 15.00,
+    imageUrl: '/assets/food/waffle_blt.png'
   },
   {
     id: 'f4',
     type: 'food',
-    title: 'Apple Cinnamon',
-    emojis: '🧇 🍎 🍯 🍦',
+    title: 'Apple Pie',
+    emojis: '🧇 🍎 🥧 🍦',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Warm spiced apples, vanilla icing, and whipped cream.',
+    description: 'Warm, spiced apple filling over a fresh waffle, drizzled with vanilla icing and topped with whipped cream.',
     basePrice: 14.00,
     dietary: ['V'],
     imageUrl: '/assets/food/apple_cinnamon.png'
@@ -72,22 +70,79 @@ export const FOOD_ITEMS: FoodItem[] = [
   {
     id: 'f5',
     type: 'food',
-    title: 'PB & Banana',
-    emojis: '🧇 🥜 🍌',
+    title: 'Blueberry Lemon',
+    emojis: '🧇 🫐 🍋 🍦',
+    emojiBg: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)',
+    description: 'Fresh plump blueberries, zesty lemon icing, and a dollop of whipped cream.',
+    basePrice: 12.00,
+    dietary: ['V'],
+    imageUrl: '/assets/food/blueberry_lemon.png'
+  },
+  {
+    id: 'f6',
+    type: 'food',
+    title: 'Breezy\'s Berry\'s',
+    emojis: '🧇 🍓 🫐 🍦',
+    emojiBg: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
+    description: 'A mixed berry overload! Strawberries, blueberries, and raspberries topped with whipped cream and berry syrup.',
+    basePrice: 12.00,
+    dietary: ['V'],
+    imageUrl: '/assets/food/breezys_berrys.png'
+  },
+  {
+    id: 'f7',
+    type: 'food',
+    title: 'Banana, Almond Butter & Honey',
+    emojis: '🧇 🍌 🥜 🍯',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Fresh banana slices and creamy peanut butter drizzle.',
+    description: 'Freshly sliced bananas, rich almond butter drizzle, and sweet golden honey.',
     basePrice: 12.00,
     dietary: ['V'],
     imageUrl: '/assets/food/pb_banana.png'
   },
   {
-    id: 'f6',
+    id: 'f8',
     type: 'food',
-    title: 'Waffle BLT',
-    emojis: '🧇 🥓 🥬 🍅 🥑',
-    emojiBg: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
-    description: 'Bacon, Lettuce, Tomato, Guacamole.',
-    basePrice: 15.00,
+    title: 'Churro Waffle',
+    emojis: '🧇 🥮 🍯 🍦',
+    emojiBg: 'linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)',
+    description: 'Coated in cinnamon sugar and drizzled generously with rich caramel sauce and whipped cream.',
+    basePrice: 12.00,
+    dietary: ['V'],
+    imageUrl: '/assets/food/churro_waffle.png'
+  },
+  {
+    id: 'f9',
+    type: 'food',
+    title: 'PB & Jelly',
+    emojis: '🧇 🥜 🍇 🍦',
+    emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+    description: 'The classic combo reimagined. Creamy peanut butter drizzle, sweet strawberry jam, and whipped cream.',
+    basePrice: 12.00,
+    dietary: ['V'],
+    imageUrl: '/assets/food/pb_jelly.png'
+  },
+  {
+    id: 'f10',
+    type: 'food',
+    title: 'Nutella Waffle',
+    emojis: '🧇 🍫 🌰 🍦',
+    emojiBg: 'linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)',
+    description: 'Generously smeared and drizzled with thick chocolate hazelnut spread, finished with powdered sugar.',
+    basePrice: 12.00,
+    dietary: ['V'],
+    imageUrl: '/assets/food/nutella_waffle.png'
+  },
+  {
+    id: 'f11',
+    type: 'food',
+    title: 'Strawberry Chocolate',
+    emojis: '🧇 🍓 🍫 🍦',
+    emojiBg: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
+    description: 'A golden waffle layered with fresh sliced strawberries, rich chocolate drizzle, and whipped cream.',
+    basePrice: 13.00,
+    dietary: ['V'],
+    imageUrl: '/assets/food/strawberry_chocolate.png'
   }
 ];
 
