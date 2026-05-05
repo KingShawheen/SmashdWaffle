@@ -78,7 +78,7 @@ export default function DesktopSlideshow() {
         }}>
           THE BEST <br/>
           <span style={{ color: 'var(--sw-yellow)' }}>BREAKFAST</span><br/>
-          IN SEATTLE.
+          IN DEER PARK.
         </h1>
         <p style={{
           fontSize: '1.5rem',
