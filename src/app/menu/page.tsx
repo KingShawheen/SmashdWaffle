@@ -4,10 +4,46 @@ import { useState } from 'react';
 import { ShoppingCart, ChevronLeft, Plus, X } from 'lucide-react';
 import Link from 'next/link';
 import { FOOD_ITEMS, COFFEE_ITEMS, NON_COFFEE_ITEMS, MenuItem, FoodItem, DrinkItem } from './data';
+import { useCartStore } from '../../store/cartStore';
 
 export default function Menu() {
   const [activeTab, setActiveTab] = useState<'food' | 'drinks'>('food');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  
+  const cartCount = useCartStore((state) => state.getCartCount());
+  const addToCart = useCartStore((state) => state.addToCart);
+
+  const handleAddToCart = () => {
+    if (!selectedItem) return;
+    
+    let price = 0;
+    let size;
+    let imageUrl;
+    let emoji;
+    
+    if (selectedItem.type === 'food') {
+      price = (selectedItem as FoodItem).basePrice;
+      imageUrl = (selectedItem as FoodItem).imageUrl;
+      emoji = (selectedItem as FoodItem).emojis;
+    } else {
+      price = (selectedItem as DrinkItem).prices[0].price; // Default to first size price for now
+      size = (selectedItem as DrinkItem).prices[0].size;
+      emoji = (selectedItem as DrinkItem).emoji;
+    }
+
+    addToCart({
+      menuItemId: selectedItem.id,
+      title: selectedItem.title,
+      type: selectedItem.type,
+      price: price,
+      quantity: 1,
+      size: size,
+      imageUrl: imageUrl,
+      emoji: emoji
+    });
+    
+    setSelectedItem(null); // Close modal
+  };
 
   const closeSheet = () => setSelectedItem(null);
 
@@ -178,7 +214,7 @@ export default function Menu() {
             borderRadius: '50%', width: '18px', height: '18px', 
             display: 'flex', alignItems: 'center', justifyContent: 'center', 
             fontSize: '0.65rem', fontWeight: 'bold' 
-          }}>2</div>
+          }}>{cartCount}</div>
         </Link>
       </div>
 
@@ -352,7 +388,8 @@ export default function Menu() {
       {/* iOS-Style Bottom Sheet Modal for Item Customization */}
       <div 
         style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          position: 'fixed', top: 0, right: 0, bottom: 0,
+          width: '100%', maxWidth: '480px',
           backgroundColor: 'rgba(0,0,0,0.6)', 
           zIndex: 10000, 
           opacity: selectedItem ? 1 : 0, 
@@ -398,13 +435,15 @@ export default function Menu() {
             padding: '1rem', backgroundColor: 'var(--sw-surface)', 
             borderTop: '1px solid var(--sw-border)' 
           }}>
-            <button style={{ 
+            <button 
+              onClick={handleAddToCart}
+              style={{ 
               width: '100%', padding: '1rem', backgroundColor: 'var(--sw-red)', color: 'white', 
               fontSize: '1.1rem', fontWeight: 800, borderRadius: '50px',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
               <span>Add to Cart</span>
-              <span>{selectedItem && selectedItem.type === 'food' ? `$${(selectedItem as FoodItem).basePrice.toFixed(2)}` : '$4.00'}</span>
+              <span>{selectedItem && selectedItem.type === 'food' ? `$${(selectedItem as FoodItem).basePrice.toFixed(2)}` : (selectedItem ? `$${(selectedItem as DrinkItem).prices[0].price.toFixed(2)}` : '')}</span>
             </button>
           </div>
         </div>

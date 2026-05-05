@@ -41,14 +41,20 @@ export default function Home() {
           <span style={{ color: 'var(--sw-red)' }}>SMASH BREAKFAST WAFFLE!</span>
         </h2>
 
-        <div style={{ display: 'flex', gap: '0.75rem', padding: '0 0.5rem', marginBottom: '1rem' }}>
-          <div style={{ flex: 1, borderRadius: '16px', overflow: 'hidden', aspectRatio: '1', backgroundColor: '#fff', position: 'relative', border: '1px solid var(--sw-border)', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '0.5rem', padding: '0 0.5rem', marginBottom: '0.5rem', flex: 1, minHeight: 0 }}>
+          <div style={{ borderRadius: '16px', overflow: 'hidden', backgroundColor: '#fff', position: 'relative', border: '1px solid var(--sw-border)', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', display: 'flex' }}>
              {/* eslint-disable-next-line @next/next/no-img-element */}
-             <img src="/assets/food/hot_latte.png" alt="Hot Latte" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+             <img src="/assets/food/savory_bacon.png" alt="Smash Breakfast Waffle" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
-          <div style={{ flex: 1, borderRadius: '16px', overflow: 'hidden', aspectRatio: '1', backgroundColor: '#fff', position: 'relative', border: '1px solid var(--sw-border)', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}>
-             {/* eslint-disable-next-line @next/next/no-img-element */}
-             <img src="/assets/food/iced_macchiato.png" alt="Iced Macchiato" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', minHeight: 0 }}>
+             <div style={{ flex: 1, borderRadius: '16px', overflow: 'hidden', backgroundColor: '#fff', position: 'relative', border: '1px solid var(--sw-border)', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', display: 'flex' }}>
+               {/* eslint-disable-next-line @next/next/no-img-element */}
+               <img src="/assets/food/iced_macchiato.png" alt="Iced Macchiato" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+             </div>
+             <div style={{ flex: 1, borderRadius: '16px', overflow: 'hidden', backgroundColor: '#fff', position: 'relative', border: '1px solid var(--sw-border)', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', display: 'flex' }}>
+               {/* eslint-disable-next-line @next/next/no-img-element */}
+               <img src="/assets/food/hot_latte.png" alt="Hot Latte" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+             </div>
           </div>
         </div>
       </div>
