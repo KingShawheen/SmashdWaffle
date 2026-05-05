@@ -13,7 +13,8 @@ export default function Checkout() {
     name: '',
     email: '',
     phone: '',
-    pickupTime: 'ASAP'
+    pickupTime: 'ASAP',
+    orderNotes: ''
   });
 
   const subtotal = getCartTotal();
@@ -148,6 +149,16 @@ export default function Checkout() {
                 <option value="15-30 min">In 15-30 minutes</option>
                 <option value="30-45 min">In 30-45 minutes</option>
               </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--sw-text-muted)', marginBottom: '0.5rem' }}>Order Notes / Special Requests</label>
+              <textarea 
+                value={customerDetails.orderNotes}
+                onChange={(e) => setCustomerDetails({...customerDetails, orderNotes: e.target.value})}
+                placeholder="Allergies, extra napkins, or any other details..." 
+                rows={3}
+                style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', border: '1px solid var(--sw-border)', backgroundColor: '#f9fafb', fontSize: '1rem', fontFamily: 'inherit', resize: 'vertical' }}
+              />
             </div>
           </div>
         </div>
