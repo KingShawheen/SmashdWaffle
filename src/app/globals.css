@@ -138,7 +138,8 @@ body {
   position: relative;
   background-color: var(--sw-surface);
   background-image: radial-gradient(circle at top center, #ffffff 0%, #f3f4f6 100%);
-  padding: 6rem 2rem;
+  padding: 4rem 2rem; /* Reduced to allow flexbox to center dynamically */
+  min-height: 100vh; /* Forces the section to be exactly the height of the screen */
   text-align: center;
   display: flex;
   justify-content: center;
