@@ -66,14 +66,18 @@ export default function Menu() {
 
   // Reset modifiers when item changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setModifierTotal(0);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveModifiers([]);
     if (selectedItem?.type === 'coffee' || selectedItem?.type === 'non-coffee') {
       const drink = selectedItem as DrinkItem;
       // Default to the second size if available, otherwise first
       const defaultSize = drink.prices.length > 1 ? drink.prices[1] : drink.prices[0];
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedSize(defaultSize);
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedSize(null);
     }
   }, [selectedItem]);

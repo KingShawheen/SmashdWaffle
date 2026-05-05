@@ -21,7 +21,7 @@ export default function Checkout() {
   const total = subtotal + tax;
 
   // Handle Square Tokenization Success
-  const handlePaymentSuccess = async (token: any) => {
+  const handlePaymentSuccess = async (token: unknown) => {
     console.log("Square Payment Token Received: ", token);
     // In a real app, you would send this token to your backend here to charge the card.
     // fetch('/api/charge', { method: 'POST', body: JSON.stringify({ token: token.token, amount: total }) })

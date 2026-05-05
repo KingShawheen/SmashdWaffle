@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, GraduationCap, MonitorPlay, Users, ListChecks, ArrowRight, Lock, KeyRound, Mail, Loader2, Database } from 'lucide-react';
+import { ChevronLeft, GraduationCap, MonitorPlay, ListChecks, ArrowRight, Lock, KeyRound, Mail, Loader2, Database } from 'lucide-react';
 import { auth, db } from '../../lib/firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
@@ -39,7 +39,7 @@ export default function EmployeePortal() {
     
     try {
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setError('Invalid credentials. Access Denied.');
     } finally {
@@ -67,6 +67,7 @@ export default function EmployeePortal() {
 
   useEffect(() => {
     if (activeTab === 'admin') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadAdminItems();
     }
   }, [activeTab]);
@@ -308,7 +309,8 @@ export default function EmployeePortal() {
                   await seedMenuData();
                   btn.innerText = 'DATABASE SEEDED!';
                   btn.style.backgroundColor = '#10b981';
-                } catch (err) {
+                } catch (err: unknown) {
+                  console.error(err);
                   btn.innerText = 'ERROR (Check Console)';
                   btn.style.backgroundColor = '#ef4444';
                 }
