@@ -28,6 +28,6 @@ export default function TopLocationHeader() {
         Deer Park, WA
       </span>
       <ChevronDown size={14} color="var(--sw-text-muted)" style={{ marginLeft: '4px' }} />
-    </div>
+    </header>
   );
 }
