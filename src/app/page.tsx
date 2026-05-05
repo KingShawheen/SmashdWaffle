@@ -5,8 +5,9 @@ export default function Home() {
     <main style={{ backgroundColor: 'var(--sw-navy)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Top Navy Section */}
       <div style={{ padding: '4rem 1rem 1.5rem', textAlign: 'center' }}>
-        <h1 style={{ color: 'white', fontWeight: 900, fontSize: '2.5rem', fontStyle: 'italic', textShadow: '2px 2px 0 red, -1px -1px 0 #fff' }}>SMASH'D</h1>
-        <p style={{ color: 'var(--sw-yellow)', fontWeight: 800, letterSpacing: '1px', marginTop: '-5px', marginBottom: '1.5rem' }}>WAFFLE HOUSE</p>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+          <img src="/assets/logo.png" alt="Smash'd Waffle House Logo" style={{ width: '220px', height: 'auto', filter: 'drop-shadow(0 4px 15px rgba(0,0,0,0.5))' }} />
+        </div>
         
         <Link href="/menu" style={{
           display: 'block',
