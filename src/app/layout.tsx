@@ -24,10 +24,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <TopLocationHeader />
-        {children}
-        <BottomNav />
+      <body style={{ backgroundColor: '#f3f4f6', margin: 0, padding: 0 }}>
+        <div style={{ 
+          maxWidth: '480px', 
+          margin: '0 auto', 
+          backgroundColor: 'var(--sw-bg)', 
+          minHeight: '100vh', 
+          position: 'relative',
+          boxShadow: '0 0 50px rgba(0,0,0,0.05)',
+          overflowX: 'hidden'
+        }}>
+          <TopLocationHeader />
+          {children}
+          <BottomNav />
+        </div>
       </body>
     </html>
   );
