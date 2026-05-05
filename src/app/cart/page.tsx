@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function Cart() {
   return (
-    <main className="smash-waffle-container" style={{ paddingTop: '3rem', paddingBottom: '6rem' }}>
+    <main className="smash-waffle-container" style={{ paddingTop: '3rem', paddingBottom: '8rem' }}>
       <div className="sw-animate-fade-in">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
           <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: 800 }}>Your Cart</h1>

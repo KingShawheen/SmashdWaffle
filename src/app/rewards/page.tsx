@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export default function Rewards() {
   return (
-    <main className="smash-waffle-container" style={{ paddingTop: '3rem' }}>
+    <main className="smash-waffle-container" style={{ paddingTop: '3rem', paddingBottom: '8rem' }}>
       <div className="sw-animate-fade-in">
         <h1 style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '0.5rem' }}>Smash'd Rewards</h1>
         <p style={{ textAlign: 'center', color: 'var(--sw-text-muted)', marginBottom: '3rem' }}>Earn points with every bite.</p>

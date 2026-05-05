@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export default function Menu() {
   return (
-    <main style={{ paddingBottom: '2rem', paddingTop: '2rem' }}>
+    <main style={{ paddingBottom: '8rem', paddingTop: '2rem' }}>
       <div className="smash-waffle-container" id="menu">
         <div className="sw-location-header">
           <div>

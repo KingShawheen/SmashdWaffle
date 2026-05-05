@@ -136,8 +136,7 @@ body {
 /* Hero Section */
 .sw-hero {
   position: relative;
-  background-color: var(--sw-surface);
-  background-image: radial-gradient(circle at top center, #ffffff 0%, #f3f4f6 100%);
+  background-color: var(--sw-background);
   padding: 4rem 2rem; /* Reduced to allow flexbox to center dynamically */
   min-height: 100vh; /* Forces the section to be exactly the height of the screen */
   text-align: center;
@@ -446,11 +445,6 @@ body {
   .sw-mobile-sticky-bar .sw-btn {
     width: 100%;
   }
-  
-  /* Add bottom padding to body so bottom nav doesn't cover content */
-  body {
-    padding-bottom: 90px !important;
-  }
 }
 
 /* Global Native Bottom Navigation */
@@ -469,7 +463,7 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 16px);
   height: calc(75px + env(safe-area-inset-bottom, 0px));
   z-index: 9999;
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
 }
 
 .sw-nav-item {
