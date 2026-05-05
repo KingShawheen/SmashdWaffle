@@ -9,19 +9,18 @@ export default function TopLocationHeader() {
   // but user wants it embedded into the top of the site/app.
   
   return (
-    <div style={{
+    <header style={{
+      position: 'sticky',
+      top: 0,
+      backgroundColor: 'var(--sw-bg)',
+      padding: '0.75rem 1rem',
+      paddingTop: 'calc(0.75rem + env(safe-area-inset-top, 0px))',
+      borderBottom: '1px solid var(--sw-border)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'var(--sw-surface)',
-      paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)',
-      paddingBottom: '12px',
-      paddingLeft: '1rem',
-      paddingRight: '1rem',
-      borderBottom: '1px solid var(--sw-border)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 50,
+      zIndex: 1000,
+      boxSizing: 'border-box',
       cursor: 'pointer'
     }}>
       <MapPin size={16} color="var(--sw-red)" style={{ marginRight: '6px' }} />

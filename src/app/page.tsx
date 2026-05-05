@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <main style={{ backgroundColor: 'var(--sw-bg)', display: 'flex', flexDirection: 'column' }}>
       {/* Top White Section */}
       <div style={{ padding: '4rem 1rem 1.5rem', textAlign: 'center', backgroundColor: 'var(--sw-surface)', borderBottom: '1px solid var(--sw-border)' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>

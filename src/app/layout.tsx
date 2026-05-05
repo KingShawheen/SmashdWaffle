@@ -29,13 +29,16 @@ export default function RootLayout({
           maxWidth: '480px', 
           margin: '0 auto', 
           backgroundColor: 'var(--sw-bg)', 
-          minHeight: '100vh', 
+          minHeight: '100dvh', 
+          display: 'flex',
+          flexDirection: 'column',
           position: 'relative',
-          boxShadow: '0 0 50px rgba(0,0,0,0.05)',
-          overflowX: 'hidden'
+          boxShadow: '0 0 50px rgba(0,0,0,0.05)'
         }}>
           <TopLocationHeader />
-          {children}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            {children}
+          </div>
           <BottomNav />
         </div>
       </body>
