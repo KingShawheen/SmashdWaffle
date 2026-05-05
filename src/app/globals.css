@@ -144,7 +144,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  border-bottom: 1px solid var(--sw-border);
   overflow: hidden;
 }
 
@@ -426,6 +425,10 @@ body {
   
   .sw-location-select {
     width: 100%;
+  }
+
+  .sw-hero-content {
+    margin-top: 0;
   }
 
   .sw-card-image {

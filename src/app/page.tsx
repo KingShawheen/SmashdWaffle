@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export default function Home() {
   return (
-    <main>
+    <main style={{ paddingBottom: 0, overflow: 'hidden', height: '100vh' }}>
       {/* Hero Section */}
       <div className="sw-hero">
         <div className="sw-hero-overlay"></div>
