@@ -230,23 +230,7 @@ export default function Menu() {
       {/* Dynamic Content Rendering */}
       {activeTab === 'food' ? (
         <div className="sw-animate-fade-in">
-          {/* Red Sticky Categories Bar */}
-          <div style={{ 
-            backgroundColor: 'var(--sw-red)', 
-            padding: '0.75rem 1rem', 
-            display: 'flex', 
-            gap: '0.75rem', 
-            overflowX: 'auto', 
-            WebkitOverflowScrolling: 'touch', 
-            scrollbarWidth: 'none',
-            position: 'sticky',
-            top: 0,
-            zIndex: 50
-          }} className="hide-scrollbar">
-            <button style={{ backgroundColor: 'var(--sw-yellow)', color: 'black', fontWeight: 800, fontSize: '0.9rem', padding: '0.4rem 1rem', borderRadius: '50px', whiteSpace: 'nowrap' }}>Signature Waffles</button>
-            <button style={{ backgroundColor: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.8)', fontWeight: 600, fontSize: '0.9rem', padding: '0.4rem 1rem', borderRadius: '50px', whiteSpace: 'nowrap' }}>Savory Smash&apos;d</button>
-            <button style={{ backgroundColor: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.8)', fontWeight: 600, fontSize: '0.9rem', padding: '0.4rem 1rem', borderRadius: '50px', whiteSpace: 'nowrap' }}>Sides</button>
-          </div>
+
 
           {/* Product Grid */}
           <div style={{ padding: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
