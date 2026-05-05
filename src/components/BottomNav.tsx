@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Utensils, MapPin, Gift } from "lucide-react";
+import { Home, Utensils, Gift, ShoppingCart } from "lucide-react";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -16,8 +16,8 @@ export default function BottomNav() {
   const navItems = [
     { label: "Home", href: "/", icon: Home },
     { label: "Menu", href: "/menu", icon: Utensils },
-    { label: "Locations", href: "/locations", icon: MapPin },
     { label: "Rewards", href: "/rewards", icon: Gift },
+    { label: "Cart", href: "/cart", icon: ShoppingCart },
   ];
 
   return (
