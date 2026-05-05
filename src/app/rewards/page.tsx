@@ -1,107 +1,163 @@
+"use client";
+
+import { useState } from 'react';
+
 export default function Rewards() {
+  const [email, setEmail] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.includes('@')) return;
+    
+    setIsSubmitting(true);
+    // Simulate API call to Firebase/Authentication
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsAuthenticated(true);
+    }, 1000);
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', padding: 'env(safe-area-inset-top, 3rem) 1.5rem 100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div style={{ width: '80px', height: '80px', margin: '0 auto 1.5rem', backgroundColor: 'var(--sw-surface)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '2px solid var(--sw-border)' }}>
+            🎁
+          </div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--sw-navy)', marginBottom: '0.5rem', lineHeight: 1.1 }}>
+            Join Smash'd Rewards
+          </h1>
+          <p style={{ color: 'var(--sw-text-muted)', fontSize: '1rem', lineHeight: 1.4 }}>
+            Enter your email to start earning free waffles, coffee, and exclusive discounts today!
+          </p>
+        </div>
+
+        <form onSubmit={handleLogin} style={{ width: '100%', maxWidth: '400px' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--sw-text)' }}>Email Address</label>
+            <input 
+              type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="wafflelover@gmail.com"
+              required
+              style={{
+                width: '100%',
+                padding: '1rem',
+                borderRadius: '12px',
+                border: '1px solid var(--sw-border)',
+                backgroundColor: 'var(--sw-surface)',
+                fontSize: '1rem',
+                outline: 'none',
+                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+              }}
+            />
+          </div>
+          <button 
+            type="submit" 
+            disabled={isSubmitting || !email}
+            style={{ 
+              width: '100%', 
+              backgroundColor: email ? 'var(--sw-red)' : '#ccc', 
+              color: 'white', 
+              fontSize: '1.1rem', 
+              fontWeight: 800, 
+              padding: '1rem', 
+              borderRadius: '12px', 
+              boxShadow: email ? '0 4px 14px rgba(220, 38, 38, 0.3)' : 'none',
+              border: 'none',
+              cursor: email ? 'pointer' : 'not-allowed',
+              opacity: isSubmitting ? 0.7 : 1
+            }}
+          >
+            {isSubmitting ? 'Verifying...' : 'Continue'}
+          </button>
+        </form>
+      </main>
+    );
+  }
+
+  // Dashboard View (Empty state for new user)
   return (
     <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', paddingBottom: '100px' }}>
       
       {/* Welcome Section */}
       <div style={{ padding: 'env(safe-area-inset-top, 3rem) 1rem 1rem', backgroundColor: 'var(--sw-surface)', borderBottom: '1px solid var(--sw-border)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>Welcome Back, Alex!</h1>
-          <div style={{ width: '32px', height: '32px', backgroundColor: '#f3f4f6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '1.2rem' }}>📱</span>
+          <div>
+            <p style={{ fontSize: '0.8rem', color: 'var(--sw-text-muted)', fontWeight: 600, marginBottom: '0.2rem' }}>Welcome to Rewards,</p>
+            <h1 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: 'var(--sw-navy)' }}>{email}</h1>
           </div>
+          <button onClick={() => setIsAuthenticated(false)} style={{ fontSize: '0.8rem', color: 'var(--sw-red)', fontWeight: 700, background: 'none', border: 'none', textDecoration: 'underline' }}>Sign Out</button>
         </div>
         
-        {/* Progress Bar Container */}
+        {/* Progress Bar Container - Empty State */}
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem', position: 'relative' }}>
-           {/* Waffle Bitten Icon */}
            <div style={{ 
              width: '45px', height: '45px', 
-             backgroundColor: 'var(--sw-yellow)', 
+             backgroundColor: 'var(--sw-surface)', 
              borderRadius: '50%', 
              position: 'absolute', left: 0, zIndex: 2, 
              display: 'flex', alignItems:'center', justifyContent:'center', 
-             border: '2px solid #b45309',
-             boxShadow: '2px 0 5px rgba(0,0,0,0.1)'
+             border: '2px solid var(--sw-border)',
            }}>
-             <span style={{ fontSize: '1.5rem' }}>🧇</span>
+             <span style={{ fontSize: '1.5rem', opacity: 0.5 }}>🧇</span>
            </div>
 
-           {/* Track */}
            <div style={{ 
              flex: 1, height: '36px', 
-             backgroundColor: '#374151', 
+             backgroundColor: '#f3f4f6', 
              borderRadius: '18px', 
              marginLeft: '22px',
              overflow: 'hidden', 
-             display: 'flex' 
+             border: '1px solid var(--sw-border)',
            }}>
-             {/* Fill */}
-             <div style={{ 
-               width: '70%', 
-               backgroundColor: 'var(--sw-yellow)', 
-               borderRight: '2px solid #b45309',
-               display: 'flex',
-               gap: '4px'
-             }}>
-                {/* Simulated waffle grid marks */}
-                <div style={{flex: 1, borderRight: '1px solid #b45309', opacity: 0.3}}></div>
-                <div style={{flex: 1, borderRight: '1px solid #b45309', opacity: 0.3}}></div>
-                <div style={{flex: 1, borderRight: '1px solid #b45309', opacity: 0.3}}></div>
-                <div style={{flex: 1, borderRight: '1px solid #b45309', opacity: 0.3}}></div>
-             </div>
            </div>
         </div>
-        <p style={{ textAlign: 'right', fontSize: '0.85rem', fontWeight: 700, color: 'var(--sw-text)', marginTop: '0.5rem' }}>
-          <span style={{color: '#b45309'}}>350/500</span> Waffle
+        <p style={{ textAlign: 'right', fontSize: '0.85rem', fontWeight: 700, color: 'var(--sw-text-muted)', marginTop: '0.5rem' }}>
+          0/500 Waffle
         </p>
       </div>
 
       {/* Red Points Banner */}
       <div style={{ backgroundColor: 'var(--sw-red)', padding: '1rem', textAlign: 'center' }}>
-        <h2 style={{ color: 'var(--sw-yellow)', fontSize: '2rem', fontWeight: 900, margin: 0, letterSpacing: '0.5px' }}>850 Smash Points</h2>
+        <h2 style={{ color: 'var(--sw-yellow)', fontSize: '2rem', fontWeight: 900, margin: 0, letterSpacing: '0.5px' }}>0 Smash Points</h2>
       </div>
 
-      {/* Available Rewards */}
+      {/* Available Rewards - Locked */}
       <div style={{ padding: '1.5rem 1rem' }}>
         <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>Available Rewards</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
           
-          <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)' }}>
-            <div style={{ width: '48px', height: '48px', margin: '0 auto 0.75rem', backgroundColor: 'var(--sw-surface)', border: '2px solid #fef3c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>☕️</div>
+          <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', opacity: 0.5 }}>
+            <div style={{ width: '48px', height: '48px', margin: '0 auto 0.75rem', backgroundColor: 'var(--sw-surface)', border: '2px solid var(--sw-border)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>☕️</div>
             <p style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.75rem', lineHeight: 1.2 }}>Free<br/>Coffee</p>
-            <button style={{ backgroundColor: 'var(--sw-red)', color: 'white', fontSize: '0.8rem', fontWeight: 700, padding: '6px 16px', borderRadius: '50px', width: '90%' }}>Redeem</button>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--sw-text-muted)' }}>🔒 150 pts</div>
           </div>
 
-          <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)' }}>
-            <div style={{ width: '48px', height: '48px', margin: '0 auto 0.75rem', backgroundColor: 'var(--sw-yellow)', border: '2px solid #b45309', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: '#b45309', fontWeight: 800 }}>$</div>
+          <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', opacity: 0.5 }}>
+            <div style={{ width: '48px', height: '48px', margin: '0 auto 0.75rem', backgroundColor: '#f3f4f6', border: '2px solid var(--sw-border)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: 'var(--sw-text-muted)', fontWeight: 800 }}>$</div>
             <p style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.75rem', lineHeight: 1.2 }}>$5 Off<br/>Order</p>
-            <button style={{ backgroundColor: 'var(--sw-red)', color: 'white', fontSize: '0.8rem', fontWeight: 700, padding: '6px 16px', borderRadius: '50px', width: '90%' }}>Redeem</button>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--sw-text-muted)' }}>🔒 300 pts</div>
           </div>
 
-          <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)' }}>
-            <div style={{ width: '48px', height: '48px', margin: '0 auto 0.75rem', backgroundColor: 'var(--sw-surface)', border: '2px solid #fef3c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>🧇</div>
-            <p style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.75rem', lineHeight: 1.2 }}>Double<br/>Toppings</p>
-            <button style={{ backgroundColor: 'var(--sw-red)', color: 'white', fontSize: '0.8rem', fontWeight: 700, padding: '6px 16px', borderRadius: '50px', width: '90%' }}>Redeem</button>
+          <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', opacity: 0.5 }}>
+            <div style={{ width: '48px', height: '48px', margin: '0 auto 0.75rem', backgroundColor: 'var(--sw-surface)', border: '2px solid var(--sw-border)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>🧇</div>
+            <p style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.75rem', lineHeight: 1.2 }}>Free<br/>Waffle</p>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--sw-text-muted)' }}>🔒 500 pts</div>
           </div>
 
         </div>
       </div>
 
-      {/* Recent Activity */}
+      {/* Empty Activity */}
       <div style={{ padding: '0 1rem' }}>
         <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>Recent Activity</h3>
-        <div style={{ borderBottom: '1px solid var(--sw-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>
-          <p style={{ fontSize: '0.95rem', color: 'var(--sw-text)', fontWeight: 500 }}>Earned 50 Points - Breakfast Order</p>
+        <div style={{ padding: '1rem', backgroundColor: 'var(--sw-surface)', borderRadius: '12px', border: '1px dashed var(--sw-border)', textAlign: 'center' }}>
+          <p style={{ fontSize: '0.9rem', color: 'var(--sw-text-muted)', fontWeight: 500, margin: 0 }}>Place your first order to start earning points!</p>
         </div>
-        <div style={{ borderBottom: '1px solid var(--sw-border)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
-          <p style={{ fontSize: '0.95rem', color: 'var(--sw-text)', fontWeight: 500 }}>Redeemed $5 Off</p>
-        </div>
-      </div>
-
-      <div style={{ padding: '0 1rem' }}>
-        <button style={{ width: '100%', backgroundColor: 'var(--sw-red)', color: 'white', fontSize: '1.1rem', fontWeight: 800, padding: '1rem', borderRadius: '12px', boxShadow: '0 4px 10px rgba(217,30,24,0.3)' }}>
-          Refer a Friend & Get 100 Points!
-        </button>
       </div>
 
     </main>
