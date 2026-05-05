@@ -1,30 +1,59 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, GraduationCap, MonitorPlay, Users, ListChecks, ArrowRight, Lock, KeyRound } from 'lucide-react';
+import { ChevronLeft, GraduationCap, MonitorPlay, Users, ListChecks, ArrowRight, Lock, KeyRound, Mail, Loader2 } from 'lucide-react';
+import { auth } from '../../lib/firebase';
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 
 export default function EmployeePortal() {
   const [activeTab, setActiveTab] = useState<'kds' | 'training'>('training');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [pin, setPin] = useState('');
-  const [error, setError] = useState(false);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [loadingAuth, setLoadingAuth] = useState(true);
+  
+  // Login Form State
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // Mock Authentication
-  const handleLogin = (e: React.FormEvent) => {
+  // Check auth state on mount
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoadingAuth(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In production, this will hit Firebase Auth.
-    // For now, PIN '1234' unlocks it.
-    if (pin === '1234') {
-      setIsAuthenticated(true);
-      setError(false);
-    } else {
-      setError(true);
-      setPin('');
+    setIsLoggingIn(true);
+    setError('');
+    
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err: any) {
+      console.error(err);
+      setError('Invalid credentials. Access Denied.');
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
-  if (!isAuthenticated) {
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
+  if (loadingAuth) {
+    return (
+      <main style={{ backgroundColor: '#0f172a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Loader2 size={40} color="#3b82f6" className="animate-spin" />
+      </main>
+    );
+  }
+
+  if (!user) {
     return (
       <main style={{ backgroundColor: '#0f172a', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white', padding: '2rem' }}>
         <div style={{ position: 'absolute', top: '2rem', left: '1rem' }}>
@@ -40,23 +69,35 @@ export default function EmployeePortal() {
             </div>
           </div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.5rem', letterSpacing: '1px' }}>Enterprise OS</h1>
-          <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '2rem' }}>Restricted access. Please enter your employee PIN to continue.</p>
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '2rem' }}>Restricted access. Authorized personnel only.</p>
           
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ position: 'relative' }}>
+              <Mail size={20} color="#64748b" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Employee Email" 
+                required
+                style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', borderRadius: '12px', border: error ? '2px solid #ef4444' : '1px solid #334155', backgroundColor: '#0f172a', color: 'white', fontSize: '1rem' }}
+              />
+            </div>
             <div style={{ position: 'relative' }}>
               <KeyRound size={20} color="#64748b" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
               <input 
                 type="password" 
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                placeholder="Enter PIN (Try 1234)" 
-                style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', borderRadius: '12px', border: error ? '2px solid #ef4444' : '1px solid #334155', backgroundColor: '#0f172a', color: 'white', fontSize: '1.2rem', letterSpacing: '4px', textAlign: 'center' }}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Secure Password" 
+                required
+                style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', borderRadius: '12px', border: error ? '2px solid #ef4444' : '1px solid #334155', backgroundColor: '#0f172a', color: 'white', fontSize: '1rem' }}
               />
             </div>
-            {error && <span style={{ color: '#ef4444', fontSize: '0.8rem', fontWeight: 700 }}>Invalid PIN. Access Denied.</span>}
+            {error && <span style={{ color: '#ef4444', fontSize: '0.8rem', fontWeight: 700 }}>{error}</span>}
             
-            <button type="submit" style={{ width: '100%', padding: '1rem', backgroundColor: '#3b82f6', color: 'white', fontWeight: 800, fontSize: '1rem', border: 'none', borderRadius: '12px', marginTop: '0.5rem', cursor: 'pointer' }}>
-              AUTHENTICATE
+            <button type="submit" disabled={isLoggingIn} style={{ width: '100%', padding: '1rem', backgroundColor: '#3b82f6', color: 'white', fontWeight: 800, fontSize: '1rem', border: 'none', borderRadius: '12px', marginTop: '0.5rem', cursor: isLoggingIn ? 'not-allowed' : 'pointer', opacity: isLoggingIn ? 0.7 : 1 }}>
+              {isLoggingIn ? 'AUTHENTICATING...' : 'AUTHENTICATE'}
             </button>
           </form>
         </div>
@@ -74,8 +115,9 @@ export default function EmployeePortal() {
         padding: '1rem', paddingTop: 'env(safe-area-inset-top, 3rem)', 
         backgroundColor: '#1e293b', borderBottom: '1px solid #334155'
       }}>
-        <button onClick={() => setIsAuthenticated(false)} style={{ padding: '0.5rem', color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer' }}>
-          <ChevronLeft size={24} />
+        <button onClick={handleLogout} style={{ padding: '0.5rem', color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', fontWeight: 700 }}>
+          <ChevronLeft size={20} />
+          LOGOUT
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <div style={{ width: '8px', height: '8px', backgroundColor: '#10b981', borderRadius: '50%', boxShadow: '0 0 10px #10b981' }}></div>
