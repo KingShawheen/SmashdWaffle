@@ -13,6 +13,8 @@ export type DrinkItem = {
   id: string;
   type: 'coffee' | 'non-coffee';
   title: string;
+  description: string;
+  emoji: string;
   prices: { size: string; price: number }[];
 };
 
