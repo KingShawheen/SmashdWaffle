@@ -17,7 +17,7 @@ export default function Checkout() {
   });
 
   const subtotal = getCartTotal();
-  const tax = subtotal * 0.089;
+  const tax = subtotal * 0.081;
   const total = subtotal + tax;
 
   // Handle Square Tokenization Success
@@ -102,7 +102,7 @@ export default function Checkout() {
               <span>${subtotal.toFixed(2)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', color: 'var(--sw-text-muted)' }}>
-              <span>Tax (8.9%)</span>
+              <span>Tax (8.1%)</span>
               <span>${tax.toFixed(2)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 900, fontSize: '1.3rem' }}>

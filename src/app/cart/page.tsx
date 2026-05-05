@@ -8,7 +8,7 @@ export default function Cart() {
   const { items, removeFromCart, updateQuantity, getCartTotal, getCartCount } = useCartStore();
   
   const subtotal = getCartTotal();
-  const tax = subtotal * 0.089;
+  const tax = subtotal * 0.081;
   const total = subtotal + tax;
 
   return (
@@ -103,7 +103,7 @@ export default function Cart() {
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', color: 'var(--sw-text-muted)' }}>
-                <span>Tax (8.9%)</span>
+                <span>Tax (8.1%)</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid var(--sw-border)', fontWeight: 800, fontSize: '1.25rem' }}>
