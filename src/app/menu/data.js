@@ -11,7 +11,7 @@ exports.FOOD_ITEMS = [
         description: 'Our most popular item! Tater tots pressed into a waffle, loaded with crispy bacon, egg, and cheese. Served with sour cream or salsa.',
         basePrice: 15.00,
         isChefChoice: true,
-        imageUrl: '/assets/food/breakfast_smash.png'
+        imageUrl: '/assets/food/savory_bacon.png'
     },
     {
         id: 'f2',
@@ -21,7 +21,7 @@ exports.FOOD_ITEMS = [
         emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
         description: 'Crispy bacon baked directly into our signature golden waffle batter, topped with melted cheese and a dollop of sour cream.',
         basePrice: 15.00,
-        imageUrl: '/assets/food/savory_bacon.png'
+        imageUrl: '/assets/food/savory_bacon_new.png'
     },
     {
         id: 'f3',
