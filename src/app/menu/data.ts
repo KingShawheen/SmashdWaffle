@@ -8,6 +8,7 @@ export type FoodItem = {
   basePrice: number;
   isChefChoice?: boolean;
   dietary?: ('V' | 'GF')[];
+  imageUrl?: string;
 };
 
 export type DrinkItem = {
@@ -25,61 +26,66 @@ export const FOOD_ITEMS: FoodItem[] = [
   {
     id: 'f1',
     type: 'food',
-    title: 'Breakfast SMASH',
-    emojis: '🧇 🥓 🍳 🧀 🥔',
+    title: 'Savory Bacon SMASH',
+    emojis: '🧇 🥓 🧀 🧅',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Bacon, Egg, Cheese, and Tater Tots.',
+    description: 'Bacon baked into the waffle, topped with sour cream and scallions.',
     basePrice: 15.00,
     isChefChoice: true,
+    imageUrl: '/assets/food/savory_bacon.png'
   },
   {
     id: 'f2',
     type: 'food',
-    title: "SMASH'D Omelette",
-    emojis: '🥩 🥚 🫑 🍄 🧀',
-    emojiBg: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
-    description: '3 Eggs, Ham/Sausage, Bell Peppers, Mushrooms, Cheese.',
+    title: 'Strawberry Chocolate',
+    emojis: '🧇 🍓 🍫 🍦',
+    emojiBg: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
+    description: 'Fresh strawberries, chocolate drizzle, and whipped cream.',
     basePrice: 13.00,
-    dietary: ['GF']
+    dietary: ['V'],
+    imageUrl: '/assets/food/strawberry_chocolate.png'
   },
   {
     id: 'f3',
     type: 'food',
-    title: 'Plain Waffle',
-    emojis: '🧇 🧈 🍁',
+    title: 'PB & Jelly Waffle',
+    emojis: '🧇 🥜 🍇 🍦',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Classic golden waffle.',
-    basePrice: 10.00,
-    dietary: ['V', 'GF']
+    description: 'Peanut butter drizzle, strawberry jam, and whipped cream.',
+    basePrice: 12.00,
+    dietary: ['V'],
+    imageUrl: '/assets/food/pb_jelly.png'
   },
   {
     id: 'f4',
     type: 'food',
-    title: 'Dessert Waffles',
-    emojis: '🧇 🍪 🍫 🍨',
+    title: 'Apple Cinnamon',
+    emojis: '🧇 🍎 🍯 🍦',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Oreo, Reese’s, or Ice Cream topping.',
-    basePrice: 15.00,
-    dietary: ['V']
+    description: 'Warm spiced apples, vanilla icing, and whipped cream.',
+    basePrice: 14.00,
+    dietary: ['V'],
+    imageUrl: '/assets/food/apple_cinnamon.png'
   },
   {
     id: 'f5',
     type: 'food',
-    title: 'Waffle BLT',
-    emojis: '🧇 🥓 🥬 🍅 🥑',
+    title: 'PB & Banana',
+    emojis: '🧇 🥜 🍌',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Bacon, Lettuce, Tomato, Guacamole.',
-    basePrice: 15.00,
+    description: 'Fresh banana slices and creamy peanut butter drizzle.',
+    basePrice: 12.00,
+    dietary: ['V'],
+    imageUrl: '/assets/food/pb_banana.png'
   },
   {
     id: 'f6',
     type: 'food',
-    title: 'Acai Bowl',
-    emojis: '🥣 🍌 🫐 🥜 🍯',
-    emojiBg: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-    description: 'Acai, Granola, Banana, Blueberries, PB & Honey.',
+    title: 'Waffle BLT',
+    emojis: '🧇 🥓 🥬 🍅',
+    emojiBg: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
+    description: 'Bacon, Lettuce, Tomato, Guacamole.',
     basePrice: 15.00,
-    dietary: ['V', 'GF']
   }
 ];
 
