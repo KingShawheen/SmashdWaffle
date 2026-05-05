@@ -22,10 +22,9 @@ export default function BottomNav() {
     <nav style={{
       position: 'fixed',
       bottom: 0, 
-      left: '50%',
-      transform: 'translateX(-50%)',
+      left: 0,
+      right: 0,
       width: '100%',
-      maxWidth: '480px',
       backgroundColor: navBg,
       display: 'flex',
       justifyContent: 'space-around',
