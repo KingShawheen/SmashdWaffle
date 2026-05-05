@@ -275,19 +275,32 @@ export default function Menu() {
       ) : (
         <div className="sw-animate-fade-in" style={{ padding: '0.5rem 1rem 1rem' }}>
           {/* Coffee Menu Section */}
-          <div className="smash-waffle-container" style={{ marginTop: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1rem' }}>
-              <h3 style={{ fontWeight: 800, margin: 0, fontSize: '1.2rem' }}>Hot & Iced Coffee</h3>
-            </div>
+          <div style={{ marginTop: '0.5rem' }}>
+            <h3 style={{ fontWeight: 900, marginBottom: '1rem', fontSize: '1.2rem', paddingLeft: '0.5rem' }}>Hot & Iced Coffee</h3>
             
-            <div className="sw-drink-list">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {COFFEE_ITEMS.map(drink => (
-                <div key={drink.id} className="sw-drink-item" onClick={() => setSelectedItem(drink)} style={{ cursor: 'pointer' }}>
-                  <h4 className="sw-drink-title">{drink.title}</h4>
-                  <div className="sw-drink-prices">
-                    {drink.prices.map(p => (
-                      <div key={p.size} className="sw-price-pill"><span className="sw-size">{p.size}</span><span className="sw-price">${p.price.toFixed(2)}</span></div>
-                    ))}
+                <div 
+                  key={drink.id} 
+                  onClick={() => setSelectedItem(drink)} 
+                  style={{ 
+                    display: 'flex', alignItems: 'center', backgroundColor: 'var(--sw-surface)', 
+                    padding: '1rem', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', 
+                    border: '1px solid var(--sw-border)', cursor: 'pointer' 
+                  }}
+                >
+                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0 }}>
+                    {drink.emoji}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <h4 style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '0.2rem' }}>{drink.title}</h4>
+                    <div style={{ color: 'var(--sw-text-muted)', fontSize: '0.75rem', lineHeight: 1.3 }}>{drink.description}</div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '1rem' }}>
+                    <span style={{ fontWeight: 800, fontSize: '0.95rem' }}>${drink.prices[0].price.toFixed(2)}+</span>
+                    <button style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', marginTop: '0.25rem', pointerEvents: 'none' }}>
+                      <Plus size={16} color="black" strokeWidth={3} />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -295,16 +308,32 @@ export default function Menu() {
           </div>
           
           {/* Non-Coffee Menu Section */}
-          <div className="smash-waffle-container" style={{ marginTop: '3rem' }}>
-            <h3 style={{ marginBottom: '1rem', fontWeight: 800, fontSize: '1.2rem' }}>Non-Coffee & Juice</h3>
-            <div className="sw-drink-list">
+          <div style={{ marginTop: '2.5rem' }}>
+            <h3 style={{ fontWeight: 900, marginBottom: '1rem', fontSize: '1.2rem', paddingLeft: '0.5rem' }}>Non-Coffee & Juice</h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {NON_COFFEE_ITEMS.map(drink => (
-                <div key={drink.id} className="sw-drink-item" onClick={() => setSelectedItem(drink)} style={{ cursor: 'pointer' }}>
-                  <h4 className="sw-drink-title">{drink.title}</h4>
-                  <div className="sw-drink-prices">
-                    {drink.prices.map(p => (
-                      <div key={p.size} className="sw-price-pill"><span className="sw-size">{p.size}</span><span className="sw-price">${p.price.toFixed(2)}</span></div>
-                    ))}
+                <div 
+                  key={drink.id} 
+                  onClick={() => setSelectedItem(drink)} 
+                  style={{ 
+                    display: 'flex', alignItems: 'center', backgroundColor: 'var(--sw-surface)', 
+                    padding: '1rem', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', 
+                    border: '1px solid var(--sw-border)', cursor: 'pointer' 
+                  }}
+                >
+                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0 }}>
+                    {drink.emoji}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <h4 style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '0.2rem' }}>{drink.title}</h4>
+                    <div style={{ color: 'var(--sw-text-muted)', fontSize: '0.75rem', lineHeight: 1.3 }}>{drink.description}</div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '1rem' }}>
+                    <span style={{ fontWeight: 800, fontSize: '0.95rem' }}>${drink.prices[0].price.toFixed(2)}+</span>
+                    <button style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', marginTop: '0.25rem', pointerEvents: 'none' }}>
+                      <Plus size={16} color="black" strokeWidth={3} />
+                    </button>
                   </div>
                 </div>
               ))}

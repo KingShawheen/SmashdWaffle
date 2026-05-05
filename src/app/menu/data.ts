@@ -81,6 +81,8 @@ export const COFFEE_ITEMS: DrinkItem[] = [
     id: 'c1',
     type: 'coffee',
     title: 'Americano',
+    description: 'Rich, full-bodied espresso pulled over hot water.',
+    emoji: '☕️',
     prices: [
       { size: '12oz', price: 3.00 },
       { size: '16oz', price: 3.50 },
@@ -92,6 +94,8 @@ export const COFFEE_ITEMS: DrinkItem[] = [
     id: 'c2',
     type: 'coffee',
     title: 'Longpour',
+    description: 'Our signature house drip, roasted to perfection.',
+    emoji: '🫗',
     prices: [
       { size: '12oz', price: 2.50 },
       { size: '16oz', price: 3.00 },
@@ -103,6 +107,8 @@ export const COFFEE_ITEMS: DrinkItem[] = [
     id: 'c3',
     type: 'coffee',
     title: 'Latte / Mocha / Macchiato',
+    description: 'Espresso balanced with expertly steamed milk.',
+    emoji: '🥛',
     prices: [
       { size: '12oz', price: 4.00 },
       { size: '16oz', price: 4.50 },
@@ -114,6 +120,8 @@ export const COFFEE_ITEMS: DrinkItem[] = [
     id: 'c4',
     type: 'coffee',
     title: 'Big Train Latte (Iced)',
+    description: 'Blended or iced specialty latte with intense flavor.',
+    emoji: '🧊',
     prices: [
       { size: '12oz', price: 4.50 },
       { size: '16oz', price: 5.00 },
@@ -128,6 +136,8 @@ export const NON_COFFEE_ITEMS: DrinkItem[] = [
     id: 'nc1',
     type: 'non-coffee',
     title: 'Italian Soda',
+    description: 'Sparkling soda water customized with your favorite syrup.',
+    emoji: '🥤',
     prices: [
       { size: '12oz', price: 4.50 },
       { size: '16oz', price: 5.25 },
@@ -139,6 +149,8 @@ export const NON_COFFEE_ITEMS: DrinkItem[] = [
     id: 'nc2',
     type: 'non-coffee',
     title: 'Redbull Italian Soda',
+    description: 'High-energy Italian soda infused with Redbull.',
+    emoji: '🔋',
     prices: [
       { size: '12oz', price: 5.50 },
       { size: '16oz', price: 6.50 },
@@ -150,6 +162,8 @@ export const NON_COFFEE_ITEMS: DrinkItem[] = [
     id: 'nc3',
     type: 'non-coffee',
     title: 'Fruit Smoothie',
+    description: 'Blended fresh fruit smoothie. Perfect for a hot day.',
+    emoji: '🥭',
     prices: [
       { size: '12oz', price: 4.00 },
       { size: '16oz', price: 4.50 },
@@ -161,6 +175,8 @@ export const NON_COFFEE_ITEMS: DrinkItem[] = [
     id: 'nc4',
     type: 'non-coffee',
     title: 'Juice (Orange, Apple)',
+    description: 'Classic chilled fruit juices.',
+    emoji: '🧃',
     prices: [
       { size: '12oz', price: 2.50 },
     ]
