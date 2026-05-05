@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Utensils, Settings as SettingsIcon, ShoppingCart } from "lucide-react";
+import { Home, Utensils, Settings as SettingsIcon, ShoppingCart, Gift } from "lucide-react";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -14,8 +14,9 @@ export default function BottomNav() {
   const navItems = [
     { label: "Home", href: "/", icon: Home },
     { label: "Menu", href: "/menu", icon: Utensils },
-    { label: "Settings", href: "/settings", icon: SettingsIcon },
+    { label: "Rewards", href: "/rewards", icon: Gift },
     { label: "Cart", href: "/cart", icon: ShoppingCart },
+    { label: "Settings", href: "/settings", icon: SettingsIcon },
   ];
 
   return (
@@ -42,7 +43,7 @@ export default function BottomNav() {
         return (
           <Link key={item.label} href={item.href} style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            position: 'relative', width: '25%', height: '100%',
+            position: 'relative', width: '20%', height: '100%',
             color: color
           }}>
             <item.icon size={24} strokeWidth={isActive ? 2.5 : 2} style={{ marginBottom: '4px' }} />
