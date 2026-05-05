@@ -21,7 +21,7 @@ export default function Rewards() {
 
   const formatPhone = (val: string) => {
     const cleaned = ('' + val).replace(/\D/g, '');
-    let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
     if (match) {
       return '(' + match[1] + ') ' + match[2] + '-' + match[3];
     }
@@ -41,7 +41,7 @@ export default function Rewards() {
             📱
           </div>
           <h1 style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--sw-navy)', marginBottom: '0.5rem', lineHeight: 1.1 }}>
-            Join Smash'd Rewards
+            Join Smash&apos;d Rewards
           </h1>
           <p style={{ color: 'var(--sw-text-muted)', fontSize: '1rem', lineHeight: 1.4 }}>
             Enter your phone number to track your points and earn free waffles today!

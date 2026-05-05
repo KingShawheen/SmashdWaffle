@@ -16,7 +16,6 @@ export const metadata: Metadata = {
     title: "Smash'd",
   },
 };
-import TopLocationHeader from "@/components/TopLocationHeader";
 
 export default function RootLayout({
   children,

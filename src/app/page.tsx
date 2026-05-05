@@ -6,6 +6,7 @@ export default function Home() {
       {/* Top White Section */}
       <div style={{ padding: '4rem 1rem 1.5rem', textAlign: 'center', backgroundColor: 'var(--sw-surface)', borderBottom: '1px solid var(--sw-border)' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/assets/logo.png" alt="Smash'd Waffle House Logo" style={{ width: '220px', height: 'auto', filter: 'drop-shadow(0 4px 15px rgba(0,0,0,0.15))' }} />
         </div>
         

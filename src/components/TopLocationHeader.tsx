@@ -1,11 +1,10 @@
 "use client";
 
 import { MapPin, ChevronDown } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+// We can use usePathname later if we want to hide it on specific pages
 
 export default function TopLocationHeader() {
-  const pathname = usePathname();
-  
+  // We can use usePathname later if we want to hide it on specific pages  
   // Optional: Don't show on absolute blank paths if needed, 
   // but user wants it embedded into the top of the site/app.
   

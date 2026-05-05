@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Cart() {
@@ -15,6 +14,7 @@ export default function Cart() {
           
           <div style={{ display: 'flex', gap: '1rem', padding: '1rem', background: 'var(--sw-surface)', borderRadius: '16px', border: '1px solid var(--sw-border)' }}>
             <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', background: '#f3f4f6', flexShrink: 0 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="https://images.unsplash.com/photo-1562376552-0d160a2f9fc4?q=80&w=200&auto=format&fit=crop" alt="Waffle" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
@@ -28,6 +28,7 @@ export default function Cart() {
 
           <div style={{ display: 'flex', gap: '1rem', padding: '1rem', background: 'var(--sw-surface)', borderRadius: '16px', border: '1px solid var(--sw-border)' }}>
             <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', background: '#f3f4f6', flexShrink: 0 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="https://images.unsplash.com/photo-1504113888839-1c8eb50233d3?q=80&w=200&auto=format&fit=crop" alt="Coffee" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
