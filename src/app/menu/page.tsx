@@ -62,7 +62,7 @@ export default function Menu() {
               position: 'relative', zIndex: 2, backgroundColor: 'transparent' 
             }}
           >
-            Waffles & Food
+            Signature Breakfast
           </button>
           <button 
             onClick={() => setActiveTab('drinks')}
@@ -72,7 +72,7 @@ export default function Menu() {
               position: 'relative', zIndex: 2, backgroundColor: 'transparent' 
             }}
           >
-            Coffee Menu
+            Coffee & Drinks
           </button>
         </div>
       </div>
