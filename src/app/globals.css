@@ -392,7 +392,8 @@ body {
 /* Mobile Optimizations */
 @media (max-width: 768px) {
   .sw-hero {
-    padding: 4rem 1rem; /* Tighter padding for mobile */
+    padding: 5rem 1rem 3rem 1rem; /* Specific padding to pull logo up */
+    min-height: auto; /* Remove the 100vh void on mobile phones */
   }
 
   .sw-hero-logo {
