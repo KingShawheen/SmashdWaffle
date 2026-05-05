@@ -34,6 +34,18 @@ html {
   scroll-behavior: smooth;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--sw-background);
+}
+
+.smash-waffle-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
 .smash-waffle-container, .sw-hero {
   font-family: var(--sw-font-family);
   color: var(--sw-text-main);
