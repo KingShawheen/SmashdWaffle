@@ -65,6 +65,19 @@ export default function Cart() {
                       </button>
                     </div>
                     {item.size && <p style={{ margin: '2px 0 0 0', fontSize: '0.75rem', color: 'var(--sw-text-muted)' }}>Size: {item.size}</p>}
+                    
+                    {/* Itemized Modifiers */}
+                    {item.modifiers && item.modifiers.length > 0 && (
+                      <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {item.modifiers.map((mod, idx) => (
+                          <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--sw-text-muted)' }}>
+                            <span>+ {mod.name}</span>
+                            <span>${mod.price.toFixed(2)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
                       <span style={{ fontWeight: 800 }}>${(item.price * item.quantity).toFixed(2)}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#f3f4f6', padding: '2px', borderRadius: '8px' }}>

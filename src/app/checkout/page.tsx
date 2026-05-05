@@ -66,10 +66,50 @@ export default function Checkout() {
 
       <div className="sw-animate-fade-in" style={{ padding: '1.5rem 1rem' }}>
         
-        {/* Order Summary Snapshot */}
+        {/* Detailed Itemized Receipt */}
         <div style={{ padding: '1.5rem', background: 'var(--sw-surface)', borderRadius: '20px', border: '1px solid var(--sw-border)', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>Order Total: ${total.toFixed(2)}</h2>
-          <p style={{ color: 'var(--sw-text-muted)', fontSize: '0.9rem', margin: 0 }}>{items.length} items to pickup at Deer Park</p>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem', borderBottom: '2px dashed var(--sw-border)', paddingBottom: '0.5rem' }}>Order Receipt</h2>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginBottom: '1.5rem' }}>
+            {items.map((item) => (
+              <div key={item.id}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <span style={{ fontWeight: 800 }}>{item.quantity}x {item.title}</span>
+                  <span style={{ fontWeight: 800 }}>${(item.basePrice * item.quantity).toFixed(2)}</span>
+                </div>
+                
+                {/* Modifiers List */}
+                {item.modifiers && item.modifiers.length > 0 && (
+                  <div style={{ paddingLeft: '1.5rem', marginTop: '0.25rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {item.modifiers.map((mod, idx) => (
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--sw-text-muted)' }}>
+                        <span>+ {mod.name} (x{item.quantity})</span>
+                        <span>${(mod.price * item.quantity).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--sw-text-muted)', borderTop: '1px solid #f3f4f6', paddingTop: '0.25rem' }}>
+                  Item Total: ${(item.price * item.quantity).toFixed(2)}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ borderTop: '2px dashed var(--sw-border)', paddingTop: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--sw-text-muted)' }}>
+              <span>Subtotal</span>
+              <span>${subtotal.toFixed(2)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', color: 'var(--sw-text-muted)' }}>
+              <span>Tax (8.9%)</span>
+              <span>${tax.toFixed(2)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 900, fontSize: '1.3rem' }}>
+              <span>Total</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
+          </div>
         </div>
 
         {/* Pickup Details */}

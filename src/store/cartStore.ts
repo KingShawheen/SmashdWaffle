@@ -6,7 +6,9 @@ export interface CartItem {
   title: string;
   type: 'food' | 'coffee' | 'non-coffee';
   size?: string;
-  price: number;
+  basePrice: number;
+  price: number; // Total price = basePrice + modifiers
+  modifiers?: { name: string; price: number }[];
   quantity: number;
   imageUrl?: string;
   emoji?: string;
@@ -26,10 +28,20 @@ export const useCartStore = create<CartState>((set, get) => ({
   items: [],
 
   addToCart: (newItem) => set((state) => {
-    // Check if identical item (same ID and same size) already exists
-    const existingIndex = state.items.findIndex(
-      (item) => item.menuItemId === newItem.menuItemId && item.size === newItem.size
-    );
+    // Check if identical item (same ID, size, and modifiers) already exists
+    const existingIndex = state.items.findIndex((item) => {
+      const sameItemAndSize = item.menuItemId === newItem.menuItemId && item.size === newItem.size;
+      if (!sameItemAndSize) return false;
+      
+      const itemMods = item.modifiers || [];
+      const newMods = newItem.modifiers || [];
+      if (itemMods.length !== newMods.length) return false;
+      
+      // Sort and compare modifier names to ensure identical
+      const itemModNames = itemMods.map(m => m.name).sort().join(',');
+      const newModNames = newMods.map(m => m.name).sort().join(',');
+      return itemModNames === newModNames;
+    });
 
     if (existingIndex >= 0) {
       // Increment quantity if it already exists

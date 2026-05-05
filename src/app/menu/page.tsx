@@ -112,15 +112,33 @@ export default function Menu() {
 
     const finalPrice = basePrice + modifierTotal;
 
-    // We pass the title with modifiers appended to it, or we could add a modifiers array to the store.
-    // For simplicity, we just add the modifiers to the title or store it.
-    const modifierString = activeModifiers.length > 0 ? ` (+${activeModifiers.join(', ')})` : '';
+    // Create modifier array with prices
+    const modifierObjects = activeModifiers.map(modName => {
+      // Find the price of this modifier by tracking it or recalculating
+      // Since we didn't store individual prices in a map, let's look them up based on name or simply pass them dynamically.
+      // A quick approach is to estimate it or refactor handleToggleModifier.
+      // Wait, we can get prices directly here based on known constants.
+      let price = 0;
+      if (modName === 'Side Bacon') price = 3.50;
+      else if (modName === 'Side Sausage') price = 3.00;
+      else if (modName === 'Extra Shot') price = 1.00;
+      else if (modName === 'Extra Cheese') price = 1.00;
+      else if (modName === 'Chocolate Sauce') price = 0.75;
+      else if (modName === 'Extra Caramel') price = 0.75;
+      else if (modName === 'Vanilla Syrup') price = 0.50;
+      else if (modName === 'Half n Half') price = 0.50;
+      else if (modName === 'Oat Milk') price = 0.75;
+      else if (modName === 'Almond Milk') price = 0.75;
+      return { name: modName, price };
+    });
 
     addToCart({
       menuItemId: selectedItem.id,
-      title: `${selectedItem.title}${modifierString}`,
+      title: selectedItem.title,
       type: selectedItem.type,
+      basePrice: basePrice,
       price: finalPrice,
+      modifiers: modifierObjects,
       quantity: 1,
       size: sizeLabel,
       imageUrl: imageUrl,
