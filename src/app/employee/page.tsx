@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, GraduationCap, MonitorPlay, Users, ListChecks, ArrowRight, Lock, KeyRound, Mail, Loader2 } from 'lucide-react';
+import { ChevronLeft, GraduationCap, MonitorPlay, Users, ListChecks, ArrowRight, Lock, KeyRound, Mail, Loader2, Database } from 'lucide-react';
 import { auth } from '../../lib/firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 
 export default function EmployeePortal() {
-  const [activeTab, setActiveTab] = useState<'kds' | 'training'>('training');
+  const [activeTab, setActiveTab] = useState<'kds' | 'training' | 'admin'>('training');
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
   
@@ -160,6 +160,17 @@ export default function EmployeePortal() {
           <MonitorPlay size={18} />
           Kitchen Display
         </button>
+        <button 
+          onClick={() => setActiveTab('admin')}
+          style={{ 
+            padding: '0.75rem 1.25rem', borderRadius: '12px', fontWeight: 800, fontSize: '0.9rem',
+            backgroundColor: activeTab === 'admin' ? '#ef4444' : '#1e293b',
+            color: activeTab === 'admin' ? 'white' : '#94a3b8', border: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer'
+          }}
+        >
+          <Database size={18} />
+          Database Admin
+        </button>
       </div>
 
       <div className="sw-animate-fade-in" style={{ padding: '0 1rem' }}>
@@ -235,6 +246,36 @@ export default function EmployeePortal() {
                 MARK READY
               </button>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'admin' && (
+          <div style={{ backgroundColor: '#1e293b', padding: '1.5rem', borderRadius: '16px', border: '1px solid #334155' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+              <Database size={24} color="#ef4444" />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>Firestore Seeding</h3>
+            </div>
+            <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '1rem' }}>
+              Push the static data.ts menu items into the live Firestore Database. This will initialize the NoSQL structure.
+            </p>
+            <button 
+              onClick={async (e) => {
+                const btn = e.currentTarget;
+                btn.innerText = 'SEEDING...';
+                btn.style.opacity = '0.7';
+                try {
+                  const { seedMenuData } = await import('../../lib/seed');
+                  await seedMenuData();
+                  btn.innerText = 'DATABASE SEEDED!';
+                  btn.style.backgroundColor = '#10b981';
+                } catch (err) {
+                  btn.innerText = 'ERROR (Check Console)';
+                  btn.style.backgroundColor = '#ef4444';
+                }
+              }}
+              style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '1rem', borderRadius: '8px', fontWeight: 900, fontSize: '0.95rem', width: '100%', cursor: 'pointer' }}>
+              INITIALIZE DATABASE
+            </button>
           </div>
         )}
 
