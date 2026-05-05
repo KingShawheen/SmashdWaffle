@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, GraduationCap, MonitorPlay, Users, ListChecks, ArrowRight, Lock, KeyRound, Mail, Loader2, Database } from 'lucide-react';
-import { auth } from '../../lib/firebase';
+import { auth, db } from '../../lib/firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { MenuItem } from '../menu/data';
 
 export default function EmployeePortal() {
   const [activeTab, setActiveTab] = useState<'kds' | 'training' | 'admin'>('training');
@@ -16,6 +18,10 @@ export default function EmployeePortal() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Admin State
+  const [adminItems, setAdminItems] = useState<MenuItem[]>([]);
+  const [loadingAdmin, setLoadingAdmin] = useState(false);
 
   // Check auth state on mount
   useEffect(() => {
@@ -38,6 +44,40 @@ export default function EmployeePortal() {
       setError('Invalid credentials. Access Denied.');
     } finally {
       setIsLoggingIn(false);
+    }
+  };
+
+  const loadAdminItems = async () => {
+    setLoadingAdmin(true);
+    try {
+      const snapshot = await getDocs(collection(db, 'menu_items'));
+      const items: MenuItem[] = [];
+      snapshot.forEach(d => {
+        items.push({ id: d.id, ...d.data() } as MenuItem);
+      });
+      // Sort by ID to keep order
+      items.sort((a,b) => a.id.localeCompare(b.id));
+      setAdminItems(items);
+    } catch(err) {
+      console.error("Error loading admin items", err);
+    } finally {
+      setLoadingAdmin(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'admin') {
+      loadAdminItems();
+    }
+  }, [activeTab]);
+
+  const toggleSoldOut = async (id: string, currentStatus: boolean | undefined) => {
+    try {
+      await updateDoc(doc(db, 'menu_items', id), { isSoldOut: !currentStatus });
+      // update local state instantly for snappy UI
+      setAdminItems(prev => prev.map(item => item.id === id ? { ...item, isSoldOut: !currentStatus } : item));
+    } catch(err) {
+      console.error(err);
     }
   };
 
@@ -273,9 +313,37 @@ export default function EmployeePortal() {
                   btn.style.backgroundColor = '#ef4444';
                 }
               }}
-              style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '1rem', borderRadius: '8px', fontWeight: 900, fontSize: '0.95rem', width: '100%', cursor: 'pointer' }}>
+              style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '1rem', borderRadius: '8px', fontWeight: 900, fontSize: '0.95rem', width: '100%', cursor: 'pointer', marginBottom: '2rem' }}>
               INITIALIZE DATABASE
             </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', borderTop: '1px solid #334155', paddingTop: '1.5rem' }}>
+              <span style={{ fontSize: '1.5rem' }}>📦</span>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>Live Inventory Control</h3>
+            </div>
+            
+            {loadingAdmin ? (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}><Loader2 className="animate-spin" /></div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {adminItems.map(item => (
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#0f172a', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #334155' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '1.2rem' }}>{item.type === 'food' ? '🧇' : '☕️'}</span>
+                      <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>{item.title}</span>
+                    </div>
+                    <button 
+                      onClick={() => toggleSoldOut(item.id, item.isSoldOut)}
+                      style={{ 
+                        padding: '0.4rem 0.8rem', borderRadius: '6px', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer', border: 'none',
+                        backgroundColor: item.isSoldOut ? '#ef4444' : '#10b981', color: 'white' 
+                      }}>
+                      {item.isSoldOut ? 'SOLD OUT' : 'IN STOCK'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

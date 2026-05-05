@@ -1,14 +1,22 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { ShoppingCart, ChevronLeft, Plus, X } from 'lucide-react';
+import { ShoppingCart, ChevronLeft, Plus, X, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { FOOD_ITEMS, COFFEE_ITEMS, NON_COFFEE_ITEMS, MenuItem, FoodItem, DrinkItem } from './data';
+import { MenuItem, FoodItem, DrinkItem } from './data';
 import { useCartStore } from '../../store/cartStore';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 
 export default function Menu() {
   const [activeTab, setActiveTab] = useState<'food' | 'drinks'>('food');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  
+  // Firebase Data States
+  const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
+  const [coffeeItems, setCoffeeItems] = useState<DrinkItem[]>([]);
+  const [nonCoffeeItems, setNonCoffeeItems] = useState<DrinkItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Customization States
   const [modifierTotal, setModifierTotal] = useState<number>(0);
@@ -17,6 +25,44 @@ export default function Menu() {
   
   const cartCount = useCartStore((state) => state.getCartCount());
   const addToCart = useCartStore((state) => state.addToCart);
+
+  // Fetch Menu from Firestore
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'menu_items'));
+        const fItems: FoodItem[] = [];
+        const cItems: DrinkItem[] = [];
+        const ncItems: DrinkItem[] = [];
+        
+        snapshot.forEach(doc => {
+          const data = doc.data() as MenuItem & { categoryId: string };
+          if (data.categoryId === 'food') {
+            fItems.push(data as FoodItem);
+          } else if (data.categoryId === 'coffee') {
+            cItems.push(data as DrinkItem);
+          } else if (data.categoryId === 'non-coffee') {
+            ncItems.push(data as DrinkItem);
+          }
+        });
+
+        // Simple sort by ID to match static data order
+        fItems.sort((a,b) => a.id.localeCompare(b.id));
+        cItems.sort((a,b) => a.id.localeCompare(b.id));
+        ncItems.sort((a,b) => a.id.localeCompare(b.id));
+
+        setFoodItems(fItems);
+        setCoffeeItems(cItems);
+        setNonCoffeeItems(ncItems);
+      } catch (err) {
+        console.error("Error fetching menu:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchMenu();
+  }, []);
 
   // Reset modifiers when item changes
   useEffect(() => {
@@ -337,18 +383,23 @@ export default function Menu() {
       </div>
 
       {/* Dynamic Content Rendering */}
-      {activeTab === 'food' ? (
+      {isLoading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
+          <Loader2 size={32} color="var(--sw-red)" className="animate-spin" />
+        </div>
+      ) : activeTab === 'food' ? (
         <div className="sw-animate-fade-in">
           {/* Product Grid */}
           <div style={{ padding: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            {FOOD_ITEMS.map((item) => (
+            {foodItems.map((item) => (
               <div 
                 key={item.id} 
-                onClick={() => setSelectedItem(item)}
+                onClick={() => !item.isSoldOut && setSelectedItem(item)}
                 style={{ 
                   backgroundColor: 'var(--sw-surface)', borderRadius: '16px', overflow: 'hidden', 
                   boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', 
-                  display: 'flex', flexDirection: 'column', cursor: 'pointer' 
+                  display: 'flex', flexDirection: 'column', cursor: item.isSoldOut ? 'not-allowed' : 'pointer',
+                  opacity: item.isSoldOut ? 0.5 : 1
                 }}
               >
                 <div style={{ position: 'relative', height: '140px', background: item.emojiBg, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
@@ -376,9 +427,11 @@ export default function Menu() {
                   </div>
                   <p style={{ fontSize: '0.7rem', color: 'var(--sw-text-muted)', marginBottom: '1rem', lineHeight: 1.3, flex: 1 }}>{item.description}</p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>${item.basePrice.toFixed(2)}</span>
-                    <button style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', pointerEvents: 'none' }}>
-                      <Plus size={18} color="black" strokeWidth={3} />
+                    <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>
+                      {item.isSoldOut ? <span style={{ color: '#ef4444' }}>SOLD OUT</span> : `$${item.basePrice.toFixed(2)}`}
+                    </span>
+                    <button style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: item.isSoldOut ? '#e5e7eb' : 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', pointerEvents: 'none' }}>
+                      <Plus size={18} color={item.isSoldOut ? '#9ca3af' : 'black'} strokeWidth={3} />
                     </button>
                   </div>
                 </div>
@@ -393,14 +446,15 @@ export default function Menu() {
             <h3 style={{ fontWeight: 900, marginBottom: '1rem', fontSize: '1.2rem', paddingLeft: '0.5rem' }}>Hot & Iced Coffee</h3>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {COFFEE_ITEMS.map(drink => (
+              {coffeeItems.map(drink => (
                 <div 
                   key={drink.id} 
-                  onClick={() => setSelectedItem(drink)} 
+                  onClick={() => !drink.isSoldOut && setSelectedItem(drink)} 
                   style={{ 
                     display: 'flex', alignItems: 'center', backgroundColor: 'var(--sw-surface)', 
                     padding: '1rem', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', 
-                    border: '1px solid var(--sw-border)', cursor: 'pointer' 
+                    border: '1px solid var(--sw-border)', cursor: drink.isSoldOut ? 'not-allowed' : 'pointer',
+                    opacity: drink.isSoldOut ? 0.5 : 1
                   }}
                 >
                   <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0 }}>
@@ -411,9 +465,11 @@ export default function Menu() {
                     <div style={{ color: 'var(--sw-text-muted)', fontSize: '0.75rem', lineHeight: 1.3 }}>{drink.description}</div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '1rem' }}>
-                    <span style={{ fontWeight: 800, fontSize: '0.95rem' }}>${drink.prices[0].price.toFixed(2)}+</span>
-                    <button style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', marginTop: '0.25rem', pointerEvents: 'none' }}>
-                      <Plus size={16} color="black" strokeWidth={3} />
+                    <span style={{ fontWeight: 800, fontSize: '0.95rem' }}>
+                      {drink.isSoldOut ? <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>SOLD OUT</span> : `$${drink.prices[0].price.toFixed(2)}+`}
+                    </span>
+                    <button style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: drink.isSoldOut ? '#e5e7eb' : 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', marginTop: '0.25rem', pointerEvents: 'none' }}>
+                      <Plus size={16} color={drink.isSoldOut ? '#9ca3af' : 'black'} strokeWidth={3} />
                     </button>
                   </div>
                 </div>
@@ -426,14 +482,15 @@ export default function Menu() {
             <h3 style={{ fontWeight: 900, marginBottom: '1rem', fontSize: '1.2rem', paddingLeft: '0.5rem' }}>Non-Coffee & Juice</h3>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {NON_COFFEE_ITEMS.map(drink => (
+              {nonCoffeeItems.map(drink => (
                 <div 
                   key={drink.id} 
-                  onClick={() => setSelectedItem(drink)} 
+                  onClick={() => !drink.isSoldOut && setSelectedItem(drink)} 
                   style={{ 
                     display: 'flex', alignItems: 'center', backgroundColor: 'var(--sw-surface)', 
                     padding: '1rem', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', 
-                    border: '1px solid var(--sw-border)', cursor: 'pointer' 
+                    border: '1px solid var(--sw-border)', cursor: drink.isSoldOut ? 'not-allowed' : 'pointer',
+                    opacity: drink.isSoldOut ? 0.5 : 1
                   }}
                 >
                   <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0 }}>
@@ -444,9 +501,11 @@ export default function Menu() {
                     <div style={{ color: 'var(--sw-text-muted)', fontSize: '0.75rem', lineHeight: 1.3 }}>{drink.description}</div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '1rem' }}>
-                    <span style={{ fontWeight: 800, fontSize: '0.95rem' }}>${drink.prices[0].price.toFixed(2)}+</span>
-                    <button style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', marginTop: '0.25rem', pointerEvents: 'none' }}>
-                      <Plus size={16} color="black" strokeWidth={3} />
+                    <span style={{ fontWeight: 800, fontSize: '0.95rem' }}>
+                      {drink.isSoldOut ? <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>SOLD OUT</span> : `$${drink.prices[0].price.toFixed(2)}+`}
+                    </span>
+                    <button style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: drink.isSoldOut ? '#e5e7eb' : 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', marginTop: '0.25rem', pointerEvents: 'none' }}>
+                      <Plus size={16} color={drink.isSoldOut ? '#9ca3af' : 'black'} strokeWidth={3} />
                     </button>
                   </div>
                 </div>

@@ -7,6 +7,7 @@ export type FoodItem = {
   description: string;
   basePrice: number;
   isChefChoice?: boolean;
+  isSoldOut?: boolean;
   dietary?: ('V' | 'GF')[];
   imageUrl?: string;
 };
@@ -17,6 +18,7 @@ export type DrinkItem = {
   title: string;
   description: string;
   emoji: string;
+  isSoldOut?: boolean;
   prices: { size: string; price: number }[];
 };
 
