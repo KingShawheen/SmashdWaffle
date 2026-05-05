@@ -1,254 +1,159 @@
-import Image from 'next/image';
+import { ShoppingCart, ChevronLeft, Plus } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Menu() {
   return (
-    <main style={{ paddingBottom: '8rem', paddingTop: '2rem' }}>
-      <div className="smash-waffle-container" id="menu">
-        <div className="sw-location-header">
-          <div>
-            <h2 style={{ marginBottom: '0.5rem' }}>Our Menu</h2>
-            <p style={{ color: 'var(--sw-text-muted)', margin: 0 }}>📍 847 S. Main St. Deer Park, WA | Mon–Sun: 8 AM – 1 PM</p>
-          </div>
-        </div>
-
-        <h3 style={{ marginTop: '2rem', marginBottom: '1rem', fontWeight: 800 }}>Waffles & Signature Food</h3>
-        <div className="sw-menu-grid">
-          {/* Breakfast SMASH Waffle */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-1">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">Breakfast SMASH Waffle <span style={{ color: 'var(--sw-primary)', fontSize: '0.8rem', marginLeft: '8px' }}>POPULAR</span></h3>
-                <span className="sw-item-price">$15.00</span>
-              </div>
-              <p className="sw-item-desc">Bacon, Egg, Cheese, and Tater Tots. Green Onion Garnish. Sour Cream or Salsa on the side. (No Waffle Batter)</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-
-          {/* SMASH'D Omelette */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-1">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">SMASH’D Omelette</h3>
-                <span className="sw-item-price">$13.00</span>
-              </div>
-              <p className="sw-item-desc">3 Eggs, Ham or Sausage, Bell Peppers, Mushrooms, Cheese. (No Waffle Batter)</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-
-          {/* Plain Waffle */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-2">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">Plain Waffle</h3>
-                <span className="sw-item-price">$10.00 <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>(Jr. $8)</span></span>
-              </div>
-              <p className="sw-item-desc">Gluten Free-Friendly Option Available (No Jr. GF).</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-
-          {/* Signature Waffles */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-2">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">Signature Waffles</h3>
-                <span className="sw-item-price">$12.00 <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>(Jr. $10)</span></span>
-              </div>
-              <p className="sw-item-desc">Choose from: Apple Pie, Blueberry/Lemon, Breezy’s Berry’s, Banana/Almond Butter/Honey, Churro, PB&J, Nutella, Strawberry/Chocolate.</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-
-          {/* Dessert Waffles */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">Dessert Waffles</h3>
-                <span className="sw-item-price">$15.00</span>
-              </div>
-              <p className="sw-item-desc">Choose from: Oreo, Reese’s, Ice Cream.</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-
-          {/* Biscuit Waffle and Gravy */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">Biscuit Waffle and Gravy</h3>
-                <span className="sw-item-price">$12.00</span>
-              </div>
-              <p className="sw-item-desc">Classic biscuits and gravy served Smash'd style.</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-          
-          {/* Waffle Breakfast Special */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">Waffle Breakfast Special</h3>
-                <span className="sw-item-price">$22.00</span>
-              </div>
-              <p className="sw-item-desc">Signature Waffle, 2 Eggs, Bacon or Sausage, Fresh Fruit, Drip Coffee or Juice.</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-
-          {/* Good Morning Breakfast Special */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">Good Morning Breakfast Special</h3>
-                <span className="sw-item-price">$19.00</span>
-              </div>
-              <p className="sw-item-desc">2 Eggs, Bacon, Waffle Bites, Fresh Fruit, Drip Coffee or Juice.</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-          
-          {/* Acai Bowl */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">Acai Bowl</h3>
-                <span className="sw-item-price">$15.00</span>
-              </div>
-              <p className="sw-item-desc">Acai, Granola, Banana, Blueberries, Almond Butter, Peanut Butter, Honey.</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-          
-          {/* Waffle BLT */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">Waffle BLT</h3>
-                <span className="sw-item-price">$15.00</span>
-              </div>
-              <p className="sw-item-desc">Bacon, Lettuce, Tomato, Guacamole on a Waffle.</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-          
-          {/* Kids Menu */}
-          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
-            <div className="sw-card-content">
-              <div className="sw-card-header">
-                <h3 className="sw-item-title">Kids Waffle Bites</h3>
-                <span className="sw-item-price">$5.00</span>
-              </div>
-              <p className="sw-item-desc">Served with Butter and Berry Sauce. (Kids Fruit Cup available for $3)</p>
-              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Coffee Menu Section */}
-      <div className="smash-waffle-container" style={{ marginTop: '3rem' }}>
-        <h3 style={{ marginBottom: '1rem', fontWeight: 800 }}>Coffee Menu <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: 'var(--sw-text-muted)', marginLeft: '8px' }}>Extra Shot: $1.00</span></h3>
-        <div className="sw-drink-list sw-animate-fade-in sw-animate-delay-3">
-          
-          <div className="sw-drink-item">
-            <h4 className="sw-drink-title">Americano</h4>
-            <div className="sw-drink-prices">
-              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$3.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$3.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$4.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$4.50</span></div>
-            </div>
-          </div>
-
-          <div className="sw-drink-item">
-            <h4 className="sw-drink-title">Longpour</h4>
-            <div className="sw-drink-prices">
-              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$2.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$3.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$3.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$4.00</span></div>
-            </div>
-          </div>
-
-          <div className="sw-drink-item">
-            <h4 className="sw-drink-title">Latte / Mocha / Macchiato / Chai</h4>
-            <div className="sw-drink-prices">
-              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$4.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$4.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$5.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$5.50</span></div>
-            </div>
-          </div>
-
-          <div className="sw-drink-item">
-            <h4 className="sw-drink-title">Big Train Latte (Iced)</h4>
-            <div className="sw-drink-prices">
-              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$4.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$5.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$5.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$6.00</span></div>
-            </div>
-          </div>
-
-          <div className="sw-drink-item">
-            <h4 className="sw-drink-title">Tea</h4>
-            <div className="sw-drink-prices">
-              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$2.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$2.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$3.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$3.50</span></div>
-            </div>
-          </div>
-
-        </div>
-      </div>
+    <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', paddingBottom: '100px' }}>
       
-      {/* Non-Coffee Menu Section */}
-      <div className="smash-waffle-container" style={{ marginTop: '3rem' }}>
-        <h3 style={{ marginBottom: '1rem', fontWeight: 800 }}>Non-Coffee & Juice</h3>
-        <div className="sw-drink-list sw-animate-fade-in sw-animate-delay-3">
-          
-          <div className="sw-drink-item">
-            <h4 className="sw-drink-title">Italian Soda</h4>
-            <div className="sw-drink-prices">
-              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$4.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$5.25</span></div>
-              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$6.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$6.75</span></div>
-            </div>
-          </div>
-
-          <div className="sw-drink-item">
-            <h4 className="sw-drink-title">Redbull Italian Soda</h4>
-            <div className="sw-drink-prices">
-              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$5.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$6.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$7.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$8.25</span></div>
-            </div>
-          </div>
-
-          <div className="sw-drink-item">
-            <h4 className="sw-drink-title">Fruit Smoothie</h4>
-            <div className="sw-drink-prices">
-              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$4.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$4.50</span></div>
-              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$5.00</span></div>
-              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$5.50</span></div>
-            </div>
-          </div>
-
-          <div className="sw-drink-item">
-            <h4 className="sw-drink-title">Juice (Orange, Apple)</h4>
-            <div className="sw-drink-prices">
-              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$2.50</span></div>
-            </div>
-          </div>
-
-        </div>
+      {/* Top White Header */}
+      <div style={{ 
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+        padding: '1rem', paddingTop: 'env(safe-area-inset-top, 3rem)', 
+        backgroundColor: 'var(--sw-surface)' 
+      }}>
+        <Link href="/" style={{ padding: '0.5rem' }}>
+          <ChevronLeft size={24} />
+        </Link>
+        <h1 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>Menu Selection</h1>
+        <Link href="/cart" style={{ position: 'relative', padding: '0.5rem' }}>
+          <ShoppingCart size={24} />
+          <div style={{ 
+            position: 'absolute', top: 0, right: 0, 
+            background: '#111', color: 'white', 
+            borderRadius: '50%', width: '18px', height: '18px', 
+            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            fontSize: '0.65rem', fontWeight: 'bold' 
+          }}>2</div>
+        </Link>
       </div>
+
+      {/* Red Sticky Categories Bar */}
+      <div style={{ 
+        backgroundColor: 'var(--sw-red)', 
+        padding: '0.75rem 1rem', 
+        display: 'flex', 
+        gap: '0.75rem', 
+        overflowX: 'auto', 
+        WebkitOverflowScrolling: 'touch', 
+        scrollbarWidth: 'none',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50
+      }} className="hide-scrollbar">
+        <button style={{ backgroundColor: 'var(--sw-yellow)', color: 'black', fontWeight: 800, fontSize: '0.9rem', padding: '0.4rem 1rem', borderRadius: '50px', whiteSpace: 'nowrap' }}>Signature Waffles</button>
+        <button style={{ backgroundColor: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.8)', fontWeight: 600, fontSize: '0.9rem', padding: '0.4rem 1rem', borderRadius: '50px', whiteSpace: 'nowrap' }}>Savory Smash'd</button>
+        <button style={{ backgroundColor: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.8)', fontWeight: 600, fontSize: '0.9rem', padding: '0.4rem 1rem', borderRadius: '50px', whiteSpace: 'nowrap' }}>Drinks</button>
+        <button style={{ backgroundColor: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.8)', fontWeight: 600, fontSize: '0.9rem', padding: '0.4rem 1rem', borderRadius: '50px', whiteSpace: 'nowrap' }}>Sides</button>
+      </div>
+
+      {/* Product Grid */}
+      <div style={{ padding: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        
+        {/* Breakfast SMASH Waffle */}
+        <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ position: 'relative', height: '140px', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '4rem' }}>🥓🍳🧀</span>
+            <div style={{ position: 'absolute', top: '8px', left: '8px', backgroundColor: 'var(--sw-yellow)', padding: '4px 8px', borderRadius: '8px', fontSize: '0.65rem', fontWeight: 800 }}>Chef's Choice</div>
+          </div>
+          <div style={{ padding: '0.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.25rem', lineHeight: 1.2 }}>Breakfast SMASH</h3>
+            <p style={{ fontSize: '0.7rem', color: 'var(--sw-text-muted)', marginBottom: '1rem', lineHeight: 1.3, flex: 1 }}>Bacon, Egg, Cheese, and Tater Tots. No Waffle Batter.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>$15.00</span>
+              <button style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none' }}>
+                <Plus size={18} color="black" strokeWidth={3} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* SMASH'D Omelette */}
+        <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ position: 'relative', height: '140px', background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '4rem' }}>🥚🍄🌶️</span>
+          </div>
+          <div style={{ padding: '0.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.25rem', lineHeight: 1.2 }}>SMASH'D Omelette</h3>
+            <p style={{ fontSize: '0.7rem', color: 'var(--sw-text-muted)', marginBottom: '1rem', lineHeight: 1.3, flex: 1 }}>3 Eggs, Ham/Sausage, Bell Peppers, Mushrooms, Cheese.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>$13.00</span>
+              <button style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none' }}>
+                <Plus size={18} color="black" strokeWidth={3} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Plain Waffle */}
+        <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ position: 'relative', height: '140px', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '4rem' }}>🧇🧈</span>
+          </div>
+          <div style={{ padding: '0.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.25rem', lineHeight: 1.2 }}>Plain Waffle</h3>
+            <p style={{ fontSize: '0.7rem', color: 'var(--sw-text-muted)', marginBottom: '1rem', lineHeight: 1.3, flex: 1 }}>Classic golden waffle. GF option available.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>$10.00</span>
+              <button style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none' }}>
+                <Plus size={18} color="black" strokeWidth={3} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Dessert Waffles */}
+        <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ position: 'relative', height: '140px', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '4rem' }}>🍫🍦🧇</span>
+          </div>
+          <div style={{ padding: '0.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.25rem', lineHeight: 1.2 }}>Dessert Waffles</h3>
+            <p style={{ fontSize: '0.7rem', color: 'var(--sw-text-muted)', marginBottom: '1rem', lineHeight: 1.3, flex: 1 }}>Oreo, Reese’s, or Ice Cream topping.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>$15.00</span>
+              <button style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none' }}>
+                <Plus size={18} color="black" strokeWidth={3} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Waffle BLT */}
+        <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ position: 'relative', height: '140px', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '4rem' }}>🥓🥬🍅</span>
+          </div>
+          <div style={{ padding: '0.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.25rem', lineHeight: 1.2 }}>Waffle BLT</h3>
+            <p style={{ fontSize: '0.7rem', color: 'var(--sw-text-muted)', marginBottom: '1rem', lineHeight: 1.3, flex: 1 }}>Bacon, Lettuce, Tomato, Guacamole on a Waffle.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>$15.00</span>
+              <button style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none' }}>
+                <Plus size={18} color="black" strokeWidth={3} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Acai Bowl */}
+        <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ position: 'relative', height: '140px', background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '4rem' }}>🫐🍓🥣</span>
+          </div>
+          <div style={{ padding: '0.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.25rem', lineHeight: 1.2 }}>Acai Bowl</h3>
+            <p style={{ fontSize: '0.7rem', color: 'var(--sw-text-muted)', marginBottom: '1rem', lineHeight: 1.3, flex: 1 }}>Acai, Granola, Banana, Blueberries, PB & Honey.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>$15.00</span>
+              <button style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none' }}>
+                <Plus size={18} color="black" strokeWidth={3} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </main>
   );
 }

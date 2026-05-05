@@ -1,45 +1,59 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Home, Utensils, MapPin, Gift } from "lucide-react";
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const isHome = pathname === '/';
+
+  // Home has dark navy nav, others have white nav
+  const navBg = isHome ? "var(--sw-navy)" : "var(--sw-surface)";
+  const inactiveColor = isHome ? "#9CA3AF" : "#6B7280";
+  const activeColor = isHome ? "var(--sw-yellow)" : "var(--sw-red)";
+
+  const navItems = [
+    { label: "Home", href: "/", icon: Home },
+    { label: "Menu", href: "/menu", icon: Utensils },
+    { label: "Locations", href: "/locations", icon: MapPin },
+    { label: "Rewards", href: "/rewards", icon: Gift },
+  ];
 
   return (
-    <nav className="sw-bottom-nav">
-      <Link href="/" className={`sw-nav-item ${pathname === '/' ? 'active' : ''}`}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        <span>Home</span>
-      </Link>
-
-      <Link href="/menu" className={`sw-nav-item ${pathname?.startsWith('/menu') ? 'active' : ''}`}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect width="18" height="18" x="3" y="3" rx="2"></rect>
-          <path d="M3 9h18"></path>
-          <path d="M9 21V9"></path>
-        </svg>
-        <span>Menu</span>
-      </Link>
-
-      <Link href="/rewards" className={`sw-nav-item ${pathname?.startsWith('/rewards') ? 'active' : ''}`}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-        </svg>
-        <span>Rewards</span>
-      </Link>
-
-      <Link href="/cart" className={`sw-nav-item ${pathname?.startsWith('/cart') ? 'active' : ''}`}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="9" cy="21" r="1"></circle>
-          <circle cx="20" cy="21" r="1"></circle>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-        </svg>
-        <span>Cart</span>
-      </Link>
+    <nav style={{
+      position: 'fixed',
+      bottom: 0, left: 0, right: 0,
+      backgroundColor: navBg,
+      display: 'flex',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      paddingBottom: 'env(safe-area-inset-bottom, 16px)',
+      height: 'calc(70px + env(safe-area-inset-bottom, 0px))',
+      borderTop: isHome ? 'none' : '1px solid var(--sw-border)',
+      zIndex: 9999,
+      transition: 'background-color 0.2s ease',
+    }}>
+      {navItems.map((item) => {
+        const isActive = pathname === item.href;
+        const color = isActive ? activeColor : inactiveColor;
+        
+        return (
+          <Link key={item.label} href={item.href} style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            position: 'relative', width: '25%', height: '100%',
+            color: color
+          }}>
+            {/* Active Indicator Line for Home only */}
+            {isHome && isActive && (
+              <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '3px', backgroundColor: 'var(--sw-yellow)' }} />
+            )}
+            
+            <item.icon size={24} strokeWidth={isActive ? 2.5 : 2} style={{ marginBottom: '4px', marginTop: isHome ? '8px' : '0' }} />
+            <span style={{ fontSize: '0.7rem', fontWeight: isActive ? 700 : 500 }}>{item.label}</span>
+          </Link>
+        )
+      })}
     </nav>
-  );
+  )
 }

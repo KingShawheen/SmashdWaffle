@@ -1,70 +1,109 @@
-import Image from 'next/image';
-
 export default function Rewards() {
   return (
-    <main className="smash-waffle-container" style={{ paddingTop: '3rem', paddingBottom: '8rem' }}>
-      <div className="sw-animate-fade-in">
-        <h1 style={{ textAlign: 'center', fontSize: '2.5rem', marginBottom: '0.5rem' }}>Smash'd Rewards</h1>
-        <p style={{ textAlign: 'center', color: 'var(--sw-text-muted)', marginBottom: '3rem' }}>Earn points with every bite.</p>
-        
-        <div style={{ 
-          background: 'linear-gradient(135deg, #111827 0%, #374151 100%)', 
-          borderRadius: '24px', 
-          padding: '2rem', 
-          color: 'white',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '150px', height: '150px', background: 'rgba(245, 174, 10, 0.2)', borderRadius: '50%', filter: 'blur(20px)' }}></div>
-          <div style={{ position: 'absolute', bottom: '-20px', left: '-20px', width: '100px', height: '100px', background: 'rgba(245, 174, 10, 0.1)', borderRadius: '50%', filter: 'blur(15px)' }}></div>
-          
-          <h3 style={{ margin: 0, fontWeight: 500, opacity: 0.9, zIndex: 1 }}>Current Balance</h3>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', zIndex: 1 }}>
-            <span style={{ fontSize: '4.5rem', fontWeight: 800, color: 'var(--sw-primary)' }}>450</span>
-            <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>pts</span>
-          </div>
-          
-          <div style={{ width: '100%', marginTop: '2rem', zIndex: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 600 }}>
-              <span>Gold Tier</span>
-              <span>50 pts to Platinum</span>
-            </div>
-            <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '99px', overflow: 'hidden' }}>
-              <div style={{ width: '90%', height: '100%', background: 'var(--sw-primary)', borderRadius: '99px' }}></div>
-            </div>
+    <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', paddingBottom: '100px' }}>
+      
+      {/* Welcome Section */}
+      <div style={{ padding: 'env(safe-area-inset-top, 3rem) 1rem 1rem', backgroundColor: 'var(--sw-surface)', borderBottom: '1px solid var(--sw-border)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>Welcome Back, Alex!</h1>
+          <div style={{ width: '32px', height: '32px', backgroundColor: '#f3f4f6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '1.2rem' }}>📱</span>
           </div>
         </div>
+        
+        {/* Progress Bar Container */}
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem', position: 'relative' }}>
+           {/* Waffle Bitten Icon */}
+           <div style={{ 
+             width: '45px', height: '45px', 
+             backgroundColor: 'var(--sw-yellow)', 
+             borderRadius: '50%', 
+             position: 'absolute', left: 0, zIndex: 2, 
+             display: 'flex', alignItems:'center', justifyContent:'center', 
+             border: '2px solid #b45309',
+             boxShadow: '2px 0 5px rgba(0,0,0,0.1)'
+           }}>
+             <span style={{ fontSize: '1.5rem' }}>🧇</span>
+           </div>
 
-        <div style={{ marginTop: '3rem' }}>
-          <h3 style={{ marginBottom: '1.5rem', fontWeight: 800 }}>Available Rewards</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {[
-              { pts: 100, reward: "Free Extra Shot or Flavor Pump" },
-              { pts: 250, reward: "Free Coffee (Any Size)" },
-              { pts: 500, reward: "Free Signature Waffle" }
-            ].map((r, i) => (
-              <div key={i} style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                padding: '1.5rem', 
-                background: 'var(--sw-surface)', 
-                border: '1px solid var(--sw-border)', 
-                borderRadius: '16px' 
-              }}>
-                <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>{r.reward}</div>
-                <div style={{ background: 'var(--sw-primary)', color: '#000', fontWeight: 800, padding: '6px 14px', borderRadius: '99px', fontSize: '0.9rem' }}>
-                  {r.pts} pts
-                </div>
-              </div>
-            ))}
+           {/* Track */}
+           <div style={{ 
+             flex: 1, height: '36px', 
+             backgroundColor: '#374151', 
+             borderRadius: '18px', 
+             marginLeft: '22px',
+             overflow: 'hidden', 
+             display: 'flex' 
+           }}>
+             {/* Fill */}
+             <div style={{ 
+               width: '70%', 
+               backgroundColor: 'var(--sw-yellow)', 
+               borderRight: '2px solid #b45309',
+               display: 'flex',
+               gap: '4px'
+             }}>
+                {/* Simulated waffle grid marks */}
+                <div style={{flex: 1, borderRight: '1px solid #b45309', opacity: 0.3}}></div>
+                <div style={{flex: 1, borderRight: '1px solid #b45309', opacity: 0.3}}></div>
+                <div style={{flex: 1, borderRight: '1px solid #b45309', opacity: 0.3}}></div>
+                <div style={{flex: 1, borderRight: '1px solid #b45309', opacity: 0.3}}></div>
+             </div>
+           </div>
+        </div>
+        <p style={{ textAlign: 'right', fontSize: '0.85rem', fontWeight: 700, color: 'var(--sw-text)', marginTop: '0.5rem' }}>
+          <span style={{color: '#b45309'}}>350/500</span> Waffle
+        </p>
+      </div>
+
+      {/* Red Points Banner */}
+      <div style={{ backgroundColor: 'var(--sw-red)', padding: '1rem', textAlign: 'center' }}>
+        <h2 style={{ color: 'var(--sw-yellow)', fontSize: '2rem', fontWeight: 900, margin: 0, letterSpacing: '0.5px' }}>850 Smash Points</h2>
+      </div>
+
+      {/* Available Rewards */}
+      <div style={{ padding: '1.5rem 1rem' }}>
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>Available Rewards</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+          
+          <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)' }}>
+            <div style={{ width: '48px', height: '48px', margin: '0 auto 0.75rem', backgroundColor: 'var(--sw-surface)', border: '2px solid #fef3c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>☕️</div>
+            <p style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.75rem', lineHeight: 1.2 }}>Free<br/>Coffee</p>
+            <button style={{ backgroundColor: 'var(--sw-red)', color: 'white', fontSize: '0.8rem', fontWeight: 700, padding: '6px 16px', borderRadius: '50px', width: '90%' }}>Redeem</button>
           </div>
+
+          <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)' }}>
+            <div style={{ width: '48px', height: '48px', margin: '0 auto 0.75rem', backgroundColor: 'var(--sw-yellow)', border: '2px solid #b45309', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: '#b45309', fontWeight: 800 }}>$</div>
+            <p style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.75rem', lineHeight: 1.2 }}>$5 Off<br/>Order</p>
+            <button style={{ backgroundColor: 'var(--sw-red)', color: 'white', fontSize: '0.8rem', fontWeight: 700, padding: '6px 16px', borderRadius: '50px', width: '90%' }}>Redeem</button>
+          </div>
+
+          <div style={{ backgroundColor: 'var(--sw-surface)', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)' }}>
+            <div style={{ width: '48px', height: '48px', margin: '0 auto 0.75rem', backgroundColor: 'var(--sw-surface)', border: '2px solid #fef3c7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>🧇</div>
+            <p style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.75rem', lineHeight: 1.2 }}>Double<br/>Toppings</p>
+            <button style={{ backgroundColor: 'var(--sw-red)', color: 'white', fontSize: '0.8rem', fontWeight: 700, padding: '6px 16px', borderRadius: '50px', width: '90%' }}>Redeem</button>
+          </div>
+
         </div>
       </div>
+
+      {/* Recent Activity */}
+      <div style={{ padding: '0 1rem' }}>
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>Recent Activity</h3>
+        <div style={{ borderBottom: '1px solid var(--sw-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>
+          <p style={{ fontSize: '0.95rem', color: 'var(--sw-text)', fontWeight: 500 }}>Earned 50 Points - Breakfast Order</p>
+        </div>
+        <div style={{ borderBottom: '1px solid var(--sw-border)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+          <p style={{ fontSize: '0.95rem', color: 'var(--sw-text)', fontWeight: 500 }}>Redeemed $5 Off</p>
+        </div>
+      </div>
+
+      <div style={{ padding: '0 1rem' }}>
+        <button style={{ width: '100%', backgroundColor: 'var(--sw-red)', color: 'white', fontSize: '1.1rem', fontWeight: 800, padding: '1rem', borderRadius: '12px', boxShadow: '0 4px 10px rgba(217,30,24,0.3)' }}>
+          Refer a Friend & Get 100 Points!
+        </button>
+      </div>
+
     </main>
   );
 }
