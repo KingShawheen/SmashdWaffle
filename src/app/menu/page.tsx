@@ -150,103 +150,103 @@ export default function Menu() {
       {/* Coffee Menu Section */}
       <div className="smash-waffle-container" style={{ marginTop: '3rem' }}>
         <h3 style={{ marginBottom: '1rem', fontWeight: 800 }}>Coffee Menu <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: 'var(--sw-text-muted)', marginLeft: '8px' }}>Extra Shot: $1.00</span></h3>
-        <div className="sw-table-container sw-animate-fade-in sw-animate-delay-3">
-          <table className="sw-pricing-table">
-            <thead>
-              <tr>
-                <th>Drink</th>
-                <th>12oz</th>
-                <th>16oz</th>
-                <th>20oz</th>
-                <th>24oz</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Americano</strong></td>
-                <td>$3.00</td>
-                <td>$3.50</td>
-                <td>$4.00</td>
-                <td>$4.50</td>
-              </tr>
-              <tr>
-                <td><strong>Longpour</strong></td>
-                <td>$2.50</td>
-                <td>$3.00</td>
-                <td>$3.50</td>
-                <td>$4.00</td>
-              </tr>
-              <tr>
-                <td><strong>Latte / Mocha / Macchiato / Chai</strong></td>
-                <td>$4.00</td>
-                <td>$4.50</td>
-                <td>$5.00</td>
-                <td>$5.50</td>
-              </tr>
-              <tr>
-                <td><strong>Big Train Latte (Iced)</strong></td>
-                <td>$4.50</td>
-                <td>$5.00</td>
-                <td>$5.50</td>
-                <td>$6.00</td>
-              </tr>
-              <tr>
-                <td><strong>Tea</strong></td>
-                <td>$2.00</td>
-                <td>$2.50</td>
-                <td>$3.00</td>
-                <td>$3.50</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="sw-drink-list sw-animate-fade-in sw-animate-delay-3">
+          
+          <div className="sw-drink-item">
+            <h4 className="sw-drink-title">Americano</h4>
+            <div className="sw-drink-prices">
+              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$3.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$3.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$4.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$4.50</span></div>
+            </div>
+          </div>
+
+          <div className="sw-drink-item">
+            <h4 className="sw-drink-title">Longpour</h4>
+            <div className="sw-drink-prices">
+              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$2.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$3.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$3.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$4.00</span></div>
+            </div>
+          </div>
+
+          <div className="sw-drink-item">
+            <h4 className="sw-drink-title">Latte / Mocha / Macchiato / Chai</h4>
+            <div className="sw-drink-prices">
+              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$4.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$4.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$5.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$5.50</span></div>
+            </div>
+          </div>
+
+          <div className="sw-drink-item">
+            <h4 className="sw-drink-title">Big Train Latte (Iced)</h4>
+            <div className="sw-drink-prices">
+              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$4.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$5.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$5.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$6.00</span></div>
+            </div>
+          </div>
+
+          <div className="sw-drink-item">
+            <h4 className="sw-drink-title">Tea</h4>
+            <div className="sw-drink-prices">
+              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$2.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$2.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$3.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$3.50</span></div>
+            </div>
+          </div>
+
         </div>
       </div>
       
       {/* Non-Coffee Menu Section */}
       <div className="smash-waffle-container" style={{ marginTop: '3rem' }}>
         <h3 style={{ marginBottom: '1rem', fontWeight: 800 }}>Non-Coffee & Juice</h3>
-        <div className="sw-table-container sw-animate-fade-in sw-animate-delay-3">
-          <table className="sw-pricing-table">
-            <thead>
-              <tr>
-                <th>Drink</th>
-                <th>12oz</th>
-                <th>16oz</th>
-                <th>20oz</th>
-                <th>24oz</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Italian Soda</strong></td>
-                <td>$4.50</td>
-                <td>$5.25</td>
-                <td>$6.00</td>
-                <td>$6.75</td>
-              </tr>
-              <tr>
-                <td><strong>Redbull Italian Soda</strong></td>
-                <td>$5.50</td>
-                <td>$6.50</td>
-                <td>$7.50</td>
-                <td>$8.25</td>
-              </tr>
-              <tr>
-                <td><strong>Fruit Smoothie</strong></td>
-                <td>$4.00</td>
-                <td>$4.50</td>
-                <td>$5.00</td>
-                <td>$5.50</td>
-              </tr>
-              <tr>
-                <td><strong>Juice (Orange, Apple)</strong></td>
-                <td>$2.50</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="sw-drink-list sw-animate-fade-in sw-animate-delay-3">
+          
+          <div className="sw-drink-item">
+            <h4 className="sw-drink-title">Italian Soda</h4>
+            <div className="sw-drink-prices">
+              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$4.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$5.25</span></div>
+              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$6.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$6.75</span></div>
+            </div>
+          </div>
+
+          <div className="sw-drink-item">
+            <h4 className="sw-drink-title">Redbull Italian Soda</h4>
+            <div className="sw-drink-prices">
+              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$5.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$6.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$7.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$8.25</span></div>
+            </div>
+          </div>
+
+          <div className="sw-drink-item">
+            <h4 className="sw-drink-title">Fruit Smoothie</h4>
+            <div className="sw-drink-prices">
+              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$4.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">16oz</span><span className="sw-price">$4.50</span></div>
+              <div className="sw-price-pill"><span className="sw-size">20oz</span><span className="sw-price">$5.00</span></div>
+              <div className="sw-price-pill"><span className="sw-size">24oz</span><span className="sw-price">$5.50</span></div>
+            </div>
+          </div>
+
+          <div className="sw-drink-item">
+            <h4 className="sw-drink-title">Juice (Orange, Apple)</h4>
+            <div className="sw-drink-prices">
+              <div className="sw-price-pill"><span className="sw-size">12oz</span><span className="sw-price">$2.50</span></div>
+            </div>
+          </div>
+
         </div>
       </div>
     </main>

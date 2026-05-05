@@ -387,6 +387,57 @@ body {
   box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
 }
 
+/* Drink List & Price Pills */
+.sw-drink-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sw-drink-item {
+  background: var(--sw-surface);
+  border: 1px solid var(--sw-border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.sw-drink-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: var(--sw-text);
+}
+
+.sw-drink-prices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sw-price-pill {
+  background: #f3f4f6; /* Light grey */
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sw-price-pill .sw-size {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sw-price-pill .sw-price {
+  color: #111827;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 /* Mobile Optimizations */
 @media (max-width: 768px) {
   .sw-hero {
