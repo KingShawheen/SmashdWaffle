@@ -7,65 +7,149 @@ export default function Menu() {
         <div className="sw-location-header">
           <div>
             <h2 style={{ marginBottom: '0.5rem' }}>Our Menu</h2>
-            <p style={{ color: 'var(--sw-text-muted)', margin: 0 }}>Currently serving the Deer Park area.</p>
-          </div>
-          <div>
-            <select className="sw-location-select" id="location-selector" defaultValue="deer-park">
-              <option value="deer-park">📍 Deer Park, WA (Main)</option>
-              <option value="mobile-1" disabled>🚚 Mobile Unit 1 (Coming Soon)</option>
-            </select>
+            <p style={{ color: 'var(--sw-text-muted)', margin: 0 }}>📍 847 S. Main St. Deer Park, WA | Mon–Sun: 8 AM – 1 PM</p>
           </div>
         </div>
 
+        <h3 style={{ marginTop: '2rem', marginBottom: '1rem', fontWeight: 800 }}>Waffles & Signature Food</h3>
         <div className="sw-menu-grid">
-          {/* Item 1 */}
+          {/* Breakfast SMASH Waffle */}
           <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-1">
-            <img className="sw-card-image" src="https://images.unsplash.com/photo-1562376552-0d160a2f9fc4?q=80&w=600&auto=format&fit=crop" alt="Breakfast SMASH Waffle" />
             <div className="sw-card-content">
               <div className="sw-card-header">
-                <h3 className="sw-item-title">Breakfast SMASH Waffle</h3>
+                <h3 className="sw-item-title">Breakfast SMASH Waffle <span style={{ color: 'var(--sw-primary)', fontSize: '0.8rem', marginLeft: '8px' }}>POPULAR</span></h3>
                 <span className="sw-item-price">$15.00</span>
               </div>
-              <p className="sw-item-desc">Our most popular item! Bacon, Egg, Cheese, and Tater Tots. Green Onion Garnish. Sour Cream or Salsa on the side. (No Waffle Batter)</p>
-              <button className="sw-btn sw-btn-primary">Customize & Add</button>
+              <p className="sw-item-desc">Bacon, Egg, Cheese, and Tater Tots. Green Onion Garnish. Sour Cream or Salsa on the side. (No Waffle Batter)</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
             </div>
           </div>
 
-          {/* Item 2 */}
+          {/* SMASH'D Omelette */}
+          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-1">
+            <div className="sw-card-content">
+              <div className="sw-card-header">
+                <h3 className="sw-item-title">SMASH’D Omelette</h3>
+                <span className="sw-item-price">$13.00</span>
+              </div>
+              <p className="sw-item-desc">3 Eggs, Ham or Sausage, Bell Peppers, Mushrooms, Cheese. (No Waffle Batter)</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
+            </div>
+          </div>
+
+          {/* Plain Waffle */}
           <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-2">
-            <img className="sw-card-image" src="https://images.unsplash.com/photo-1512151624467-f4e9121a50a1?q=80&w=600&auto=format&fit=crop" alt="Signature Waffles" />
+            <div className="sw-card-content">
+              <div className="sw-card-header">
+                <h3 className="sw-item-title">Plain Waffle</h3>
+                <span className="sw-item-price">$10.00 <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>(Jr. $8)</span></span>
+              </div>
+              <p className="sw-item-desc">Gluten Free-Friendly Option Available (No Jr. GF).</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
+            </div>
+          </div>
+
+          {/* Signature Waffles */}
+          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-2">
             <div className="sw-card-content">
               <div className="sw-card-header">
                 <h3 className="sw-item-title">Signature Waffles</h3>
-                <span className="sw-item-price">$12.00</span>
+                <span className="sw-item-price">$12.00 <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>(Jr. $10)</span></span>
               </div>
-              <p className="sw-item-desc">Choose from: Apple Pie, Blueberry/Lemon, Breezy’s Berry’s, Banana/Almond Butter/Honey, Churro, PB&J, Nutella, or Strawberry/Chocolate.</p>
-              <button className="sw-btn sw-btn-primary">Customize & Add</button>
+              <p className="sw-item-desc">Choose from: Apple Pie, Blueberry/Lemon, Breezy’s Berry’s, Banana/Almond Butter/Honey, Churro, PB&J, Nutella, Strawberry/Chocolate.</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
             </div>
           </div>
 
-          {/* Item 3 */}
+          {/* Dessert Waffles */}
           <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
-            <img className="sw-card-image" src="https://images.unsplash.com/photo-1504113888839-1c8eb50233d3?q=80&w=600&auto=format&fit=crop" alt="Coffee" />
             <div className="sw-card-content">
               <div className="sw-card-header">
-                <h3 className="sw-item-title">Coffee & Drinks</h3>
-                <span className="sw-item-price">$3.00+</span>
+                <h3 className="sw-item-title">Dessert Waffles</h3>
+                <span className="sw-item-price">$15.00</span>
               </div>
-              <p className="sw-item-desc">Enjoy the best coffee while meeting with a friend or family! Available hot or iced with an optional extra shot.</p>
-              <button className="sw-btn sw-btn-primary">Customize & Add</button>
+              <p className="sw-item-desc">Choose from: Oreo, Reese’s, Ice Cream.</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
+            </div>
+          </div>
+
+          {/* Biscuit Waffle and Gravy */}
+          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
+            <div className="sw-card-content">
+              <div className="sw-card-header">
+                <h3 className="sw-item-title">Biscuit Waffle and Gravy</h3>
+                <span className="sw-item-price">$12.00</span>
+              </div>
+              <p className="sw-item-desc">Classic biscuits and gravy served Smash'd style.</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
+            </div>
+          </div>
+          
+          {/* Waffle Breakfast Special */}
+          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
+            <div className="sw-card-content">
+              <div className="sw-card-header">
+                <h3 className="sw-item-title">Waffle Breakfast Special</h3>
+                <span className="sw-item-price">$22.00</span>
+              </div>
+              <p className="sw-item-desc">Signature Waffle, 2 Eggs, Bacon or Sausage, Fresh Fruit, Drip Coffee or Juice.</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
+            </div>
+          </div>
+
+          {/* Good Morning Breakfast Special */}
+          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
+            <div className="sw-card-content">
+              <div className="sw-card-header">
+                <h3 className="sw-item-title">Good Morning Breakfast Special</h3>
+                <span className="sw-item-price">$19.00</span>
+              </div>
+              <p className="sw-item-desc">2 Eggs, Bacon, Waffle Bites, Fresh Fruit, Drip Coffee or Juice.</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
+            </div>
+          </div>
+          
+          {/* Acai Bowl */}
+          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
+            <div className="sw-card-content">
+              <div className="sw-card-header">
+                <h3 className="sw-item-title">Acai Bowl</h3>
+                <span className="sw-item-price">$15.00</span>
+              </div>
+              <p className="sw-item-desc">Acai, Granola, Banana, Blueberries, Almond Butter, Peanut Butter, Honey.</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
+            </div>
+          </div>
+          
+          {/* Waffle BLT */}
+          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
+            <div className="sw-card-content">
+              <div className="sw-card-header">
+                <h3 className="sw-item-title">Waffle BLT</h3>
+                <span className="sw-item-price">$15.00</span>
+              </div>
+              <p className="sw-item-desc">Bacon, Lettuce, Tomato, Guacamole on a Waffle.</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
+            </div>
+          </div>
+          
+          {/* Kids Menu */}
+          <div className="sw-menu-card sw-animate-fade-in sw-animate-delay-3">
+            <div className="sw-card-content">
+              <div className="sw-card-header">
+                <h3 className="sw-item-title">Kids Waffle Bites</h3>
+                <span className="sw-item-price">$5.00</span>
+              </div>
+              <p className="sw-item-desc">Served with Butter and Berry Sauce. (Kids Fruit Cup available for $3)</p>
+              <button className="sw-btn sw-btn-primary" style={{ width: '100%' }}>Customize & Add</button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Coffee Menu Section */}
-      <div className="smash-waffle-container" style={{ marginTop: '2rem' }}>
-        <div className="sw-location-header">
-          <h2 style={{ marginBottom: '0.5rem' }}>Refreshments Pricing</h2>
-          <p style={{ color: 'var(--sw-text-muted)', margin: 0 }}>Locally roasted beans. Available hot or iced. (Extra Shot: $1.00)</p>
-        </div>
-
+      <div className="smash-waffle-container" style={{ marginTop: '3rem' }}>
+        <h3 style={{ marginBottom: '1rem', fontWeight: 800 }}>Coffee Menu <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: 'var(--sw-text-muted)', marginLeft: '8px' }}>Extra Shot: $1.00</span></h3>
         <div className="sw-table-container sw-animate-fade-in sw-animate-delay-3">
           <table className="sw-pricing-table">
             <thead>
@@ -86,7 +170,14 @@ export default function Menu() {
                 <td>$4.50</td>
               </tr>
               <tr>
-                <td><strong>Latte / Mocha / Macchiato</strong></td>
+                <td><strong>Longpour</strong></td>
+                <td>$2.50</td>
+                <td>$3.00</td>
+                <td>$3.50</td>
+                <td>$4.00</td>
+              </tr>
+              <tr>
+                <td><strong>Latte / Mocha / Macchiato / Chai</strong></td>
                 <td>$4.00</td>
                 <td>$4.50</td>
                 <td>$5.00</td>
@@ -99,6 +190,33 @@ export default function Menu() {
                 <td>$5.50</td>
                 <td>$6.00</td>
               </tr>
+              <tr>
+                <td><strong>Tea</strong></td>
+                <td>$2.00</td>
+                <td>$2.50</td>
+                <td>$3.00</td>
+                <td>$3.50</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      {/* Non-Coffee Menu Section */}
+      <div className="smash-waffle-container" style={{ marginTop: '3rem' }}>
+        <h3 style={{ marginBottom: '1rem', fontWeight: 800 }}>Non-Coffee & Juice</h3>
+        <div className="sw-table-container sw-animate-fade-in sw-animate-delay-3">
+          <table className="sw-pricing-table">
+            <thead>
+              <tr>
+                <th>Drink</th>
+                <th>12oz</th>
+                <th>16oz</th>
+                <th>20oz</th>
+                <th>24oz</th>
+              </tr>
+            </thead>
+            <tbody>
               <tr>
                 <td><strong>Italian Soda</strong></td>
                 <td>$4.50</td>
@@ -119,6 +237,13 @@ export default function Menu() {
                 <td>$4.50</td>
                 <td>$5.00</td>
                 <td>$5.50</td>
+              </tr>
+              <tr>
+                <td><strong>Juice (Orange, Apple)</strong></td>
+                <td>$2.50</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
               </tr>
             </tbody>
           </table>
