@@ -82,7 +82,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     id: 'f6',
     type: 'food',
     title: 'Waffle BLT',
-    emojis: '🧇 🥓 🥬 🍅',
+    emojis: '🧇 🥓 🥬 🍅 🥑',
     emojiBg: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
     description: 'Bacon, Lettuce, Tomato, Guacamole.',
     basePrice: 15.00,

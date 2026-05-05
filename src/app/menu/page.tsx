@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShoppingCart, ChevronLeft, Plus, X } from 'lucide-react';
 import Link from 'next/link';
 import { FOOD_ITEMS, COFFEE_ITEMS, NON_COFFEE_ITEMS, MenuItem, FoodItem, DrinkItem } from './data';
@@ -10,34 +10,69 @@ export default function Menu() {
   const [activeTab, setActiveTab] = useState<'food' | 'drinks'>('food');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   
+  // Customization States
+  const [modifierTotal, setModifierTotal] = useState<number>(0);
+  const [selectedSize, setSelectedSize] = useState<{size: string, price: number} | null>(null);
+  const [activeModifiers, setActiveModifiers] = useState<string[]>([]);
+  
   const cartCount = useCartStore((state) => state.getCartCount());
   const addToCart = useCartStore((state) => state.addToCart);
+
+  // Reset modifiers when item changes
+  useEffect(() => {
+    setModifierTotal(0);
+    setActiveModifiers([]);
+    if (selectedItem?.type === 'coffee' || selectedItem?.type === 'non-coffee') {
+      const drink = selectedItem as DrinkItem;
+      // Default to the second size if available, otherwise first
+      const defaultSize = drink.prices.length > 1 ? drink.prices[1] : drink.prices[0];
+      setSelectedSize(defaultSize);
+    } else {
+      setSelectedSize(null);
+    }
+  }, [selectedItem]);
+
+  const handleToggleModifier = (name: string, price: number) => {
+    if (activeModifiers.includes(name)) {
+      setActiveModifiers(activeModifiers.filter(m => m !== name));
+      setModifierTotal(prev => prev - price);
+    } else {
+      setActiveModifiers([...activeModifiers, name]);
+      setModifierTotal(prev => prev + price);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!selectedItem) return;
     
-    let price = 0;
-    let size;
+    let basePrice = 0;
+    let sizeLabel = undefined;
     let imageUrl;
     let emoji;
     
     if (selectedItem.type === 'food') {
-      price = (selectedItem as FoodItem).basePrice;
+      basePrice = (selectedItem as FoodItem).basePrice;
       imageUrl = (selectedItem as FoodItem).imageUrl;
       emoji = (selectedItem as FoodItem).emojis;
     } else {
-      price = (selectedItem as DrinkItem).prices[0].price; // Default to first size price for now
-      size = (selectedItem as DrinkItem).prices[0].size;
+      basePrice = selectedSize ? selectedSize.price : (selectedItem as DrinkItem).prices[0].price;
+      sizeLabel = selectedSize ? selectedSize.size : (selectedItem as DrinkItem).prices[0].size;
       emoji = (selectedItem as DrinkItem).emoji;
     }
 
+    const finalPrice = basePrice + modifierTotal;
+
+    // We pass the title with modifiers appended to it, or we could add a modifiers array to the store.
+    // For simplicity, we just add the modifiers to the title or store it.
+    const modifierString = activeModifiers.length > 0 ? ` (+${activeModifiers.join(', ')})` : '';
+
     addToCart({
       menuItemId: selectedItem.id,
-      title: selectedItem.title,
+      title: `${selectedItem.title}${modifierString}`,
       type: selectedItem.type,
-      price: price,
+      price: finalPrice,
       quantity: 1,
-      size: size,
+      size: sizeLabel,
       imageUrl: imageUrl,
       emoji: emoji
     });
@@ -46,6 +81,16 @@ export default function Menu() {
   };
 
   const closeSheet = () => setSelectedItem(null);
+
+  const calculateCurrentPrice = () => {
+    if (!selectedItem) return 0;
+    let base = 0;
+    if (selectedItem.type === 'food') base = (selectedItem as FoodItem).basePrice;
+    if (selectedItem.type === 'coffee' || selectedItem.type === 'non-coffee') {
+      base = selectedSize ? selectedSize.price : 0;
+    }
+    return base + modifierTotal;
+  };
 
   // Helper to render the modifier sheet content
   const renderSheetContent = () => {
@@ -77,16 +122,16 @@ export default function Menu() {
 
           <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Popular Sides</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
+                <input type="checkbox" onChange={() => handleToggleModifier('Side Bacon', 3.50)} checked={activeModifiers.includes('Side Bacon')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
                 <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Side of Bacon (3 Slices)</span>
               </div>
               <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$3.50</span>
             </label>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
+                <input type="checkbox" onChange={() => handleToggleModifier('Side Sausage', 3.00)} checked={activeModifiers.includes('Side Sausage')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
                 <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Side of Sausage</span>
               </div>
               <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$3.00</span>
@@ -95,23 +140,23 @@ export default function Menu() {
 
           <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Upgrades & Extras</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
+                <input type="checkbox" onChange={() => handleToggleModifier('Extra Cheese', 1.00)} checked={activeModifiers.includes('Extra Cheese')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
                 <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Extra Cheese</span>
               </div>
               <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$1.00</span>
             </label>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
+                <input type="checkbox" onChange={() => handleToggleModifier('Chocolate Sauce', 0.75)} checked={activeModifiers.includes('Chocolate Sauce')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
                 <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Chocolate Sauce</span>
               </div>
               <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$0.75</span>
             </label>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
+                <input type="checkbox" onChange={() => handleToggleModifier('Extra Caramel', 0.75)} checked={activeModifiers.includes('Extra Caramel')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
                 <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Extra Caramel</span>
               </div>
               <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$0.75</span>
@@ -129,32 +174,41 @@ export default function Menu() {
           
           <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Select Size</h3>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-            {drink.prices.map((p, i) => (
-              <label key={p.size} style={{ 
-                flex: 1, minWidth: '70px',
-                border: i === 1 ? '2px solid var(--sw-red)' : '1px solid var(--sw-border)', 
-                backgroundColor: i === 1 ? '#fef2f2' : 'var(--sw-surface)',
-                borderRadius: '8px', padding: '0.5rem', textAlign: 'center', cursor: 'pointer' 
-              }}>
-                <input type="radio" name="size" defaultChecked={i === 1} style={{ display: 'none' }} />
-                <div style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.25rem' }}>{p.size}</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--sw-text-muted)' }}>${p.price.toFixed(2)}</div>
-              </label>
-            ))}
+            {drink.prices.map((p) => {
+              const isSelected = selectedSize?.size === p.size;
+              return (
+                <label key={p.size} style={{ 
+                  flex: 1, minWidth: '70px',
+                  border: isSelected ? '2px solid var(--sw-red)' : '1px solid var(--sw-border)', 
+                  backgroundColor: isSelected ? '#fef2f2' : 'var(--sw-surface)',
+                  borderRadius: '8px', padding: '0.5rem', textAlign: 'center', cursor: 'pointer' 
+                }}>
+                  <input type="radio" name="size" onChange={() => setSelectedSize(p)} checked={isSelected} style={{ display: 'none' }} />
+                  <div style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.25rem' }}>{p.size}</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--sw-text-muted)' }}>${p.price.toFixed(2)}</div>
+                </label>
+              );
+            })}
           </div>
 
           <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Espresso Options</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
+                <input type="checkbox" onChange={() => handleToggleModifier('Extra Shot', 1.00)} checked={activeModifiers.includes('Extra Shot')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
                 <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Extra Shot of Espresso</span>
               </div>
               <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$1.00</span>
             </label>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
+                <input type="checkbox" onChange={() => {
+                  if (activeModifiers.includes('Decaf')) {
+                    setActiveModifiers(activeModifiers.filter(m => m !== 'Decaf'));
+                  } else {
+                    setActiveModifiers([...activeModifiers, 'Decaf']);
+                  }
+                }} checked={activeModifiers.includes('Decaf')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
                 <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Decaf</span>
               </div>
               <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>Free</span>
@@ -163,26 +217,43 @@ export default function Menu() {
 
           <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Dairy & Alternatives</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            {['Whole Milk (Free)', 'Half n Half (+$0.50)', 'Oat Milk (+$0.75)', 'Almond Milk (+$0.75)'].map((milk, idx) => (
-              <label key={milk} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="radio" name="milk" defaultChecked={idx === 0} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{milk}</span>
-              </label>
-            ))}
+            {[
+              { name: 'Whole Milk', price: 0 }, 
+              { name: 'Half n Half', price: 0.50 }, 
+              { name: 'Oat Milk', price: 0.75 }, 
+              { name: 'Almond Milk', price: 0.75 }
+            ].map((milk, idx) => {
+              const isSelected = activeModifiers.includes(milk.name) || (idx === 0 && !activeModifiers.some(m => ['Whole Milk', 'Half n Half', 'Oat Milk', 'Almond Milk'].includes(m)));
+              return (
+                <label key={milk.name} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                  <input type="radio" name="milk" onChange={() => {
+                    // Remove other milks, add this one
+                    const newMods = activeModifiers.filter(m => !['Whole Milk', 'Half n Half', 'Oat Milk', 'Almond Milk'].includes(m));
+                    const currentMilkPrice = activeModifiers.find(m => m === 'Half n Half') ? 0.50 : 
+                                            activeModifiers.find(m => m === 'Oat Milk') ? 0.75 : 
+                                            activeModifiers.find(m => m === 'Almond Milk') ? 0.75 : 0;
+                    
+                    setActiveModifiers([...newMods, milk.name]);
+                    setModifierTotal(prev => prev - currentMilkPrice + milk.price);
+                  }} checked={isSelected} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
+                  <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{milk.name} {milk.price > 0 ? `(+$${milk.price.toFixed(2)})` : '(Free)'}</span>
+                </label>
+              );
+            })}
           </div>
 
           <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Flavors & Sauces</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
+                <input type="checkbox" onChange={() => handleToggleModifier('Extra Caramel', 0.75)} checked={activeModifiers.includes('Extra Caramel')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
                 <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Extra Caramel</span>
               </div>
               <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$0.75</span>
             </label>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
+                <input type="checkbox" onChange={() => handleToggleModifier('Vanilla Syrup', 0.50)} checked={activeModifiers.includes('Vanilla Syrup')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
                 <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Vanilla Syrup</span>
               </div>
               <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$0.50</span>
@@ -208,13 +279,15 @@ export default function Menu() {
         <h1 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>Menu Selection</h1>
         <Link href="/cart" style={{ position: 'relative', padding: '0.5rem' }}>
           <ShoppingCart size={24} />
-          <div style={{ 
-            position: 'absolute', top: 0, right: 0, 
-            background: '#111', color: 'white', 
-            borderRadius: '50%', width: '18px', height: '18px', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center', 
-            fontSize: '0.65rem', fontWeight: 'bold' 
-          }}>{cartCount}</div>
+          {cartCount > 0 && (
+            <div style={{ 
+              position: 'absolute', top: 0, right: 0, 
+              background: '#111', color: 'white', 
+              borderRadius: '50%', width: '18px', height: '18px', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+              fontSize: '0.65rem', fontWeight: 'bold' 
+            }}>{cartCount}</div>
+          )}
         </Link>
       </div>
 
@@ -245,7 +318,7 @@ export default function Menu() {
             style={{ 
               flex: 1, padding: '0.6rem 0', fontWeight: 800, fontSize: '0.95rem', 
               color: activeTab === 'food' ? 'var(--sw-text)' : 'var(--sw-text-muted)', 
-              position: 'relative', zIndex: 2, backgroundColor: 'transparent' 
+              position: 'relative', zIndex: 2, backgroundColor: 'transparent', border: 'none' 
             }}
           >
             Signature Breakfast
@@ -255,7 +328,7 @@ export default function Menu() {
             style={{ 
               flex: 1, padding: '0.6rem 0', fontWeight: 800, fontSize: '0.95rem', 
               color: activeTab === 'drinks' ? 'var(--sw-text)' : 'var(--sw-text-muted)', 
-              position: 'relative', zIndex: 2, backgroundColor: 'transparent' 
+              position: 'relative', zIndex: 2, backgroundColor: 'transparent', border: 'none' 
             }}
           >
             Coffee & Drinks
@@ -266,8 +339,6 @@ export default function Menu() {
       {/* Dynamic Content Rendering */}
       {activeTab === 'food' ? (
         <div className="sw-animate-fade-in">
-
-
           {/* Product Grid */}
           <div style={{ padding: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             {FOOD_ITEMS.map((item) => (
@@ -389,13 +460,14 @@ export default function Menu() {
       <div 
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0,
-          width: '100%', maxWidth: '480px',
+          width: '100%',
           backgroundColor: 'rgba(0,0,0,0.6)', 
           zIndex: 10000, 
           opacity: selectedItem ? 1 : 0, 
           pointerEvents: selectedItem ? 'auto' : 'none',
           transition: 'opacity 0.3s ease',
-          display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
+          display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+          alignItems: 'center'
         }}
         onClick={closeSheet}
       >
@@ -406,10 +478,11 @@ export default function Menu() {
             borderTopLeftRadius: '24px', borderTopRightRadius: '24px',
             padding: '1.5rem', 
             maxHeight: '90vh', 
+            width: '100%', maxWidth: '480px',
             overflowY: 'auto',
             transform: selectedItem ? 'translateY(0)' : 'translateY(100%)',
             transition: 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-            display: 'flex', flexDirection: 'column'
+            display: 'flex', flexDirection: 'column', position: 'relative'
           }}
         >
           {/* Header Close Button */}
@@ -419,7 +492,7 @@ export default function Menu() {
           
           <button 
             onClick={closeSheet}
-            style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', backgroundColor: '#f3f4f6', borderRadius: '50%', padding: '0.4rem', border: 'none', display: 'flex' }}
+            style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', backgroundColor: '#f3f4f6', borderRadius: '50%', padding: '0.4rem', border: 'none', display: 'flex', zIndex: 10 }}
           >
             <X size={20} color="#4b5563" />
           </button>
@@ -440,10 +513,11 @@ export default function Menu() {
               style={{ 
               width: '100%', padding: '1rem', backgroundColor: 'var(--sw-red)', color: 'white', 
               fontSize: '1.1rem', fontWeight: 800, borderRadius: '50px',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              border: 'none', cursor: 'pointer'
             }}>
               <span>Add to Cart</span>
-              <span>{selectedItem && selectedItem.type === 'food' ? `$${(selectedItem as FoodItem).basePrice.toFixed(2)}` : (selectedItem ? `$${(selectedItem as DrinkItem).prices[0].price.toFixed(2)}` : '')}</span>
+              <span>${calculateCurrentPrice().toFixed(2)}</span>
             </button>
           </div>
         </div>
