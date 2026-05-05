@@ -7,6 +7,7 @@ export type FoodItem = {
   description: string;
   basePrice: number;
   isChefChoice?: boolean;
+  dietary?: ('V' | 'GF')[];
 };
 
 export type DrinkItem = {
@@ -37,8 +38,9 @@ export const FOOD_ITEMS: FoodItem[] = [
     title: "SMASH'D Omelette",
     emojis: '🥩 🥚 🫑 🍄 🧀',
     emojiBg: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
-    description: '3 Eggs, Ham/Sausage, Bell Peppers, Mushrooms, Cheese. [GF]',
+    description: '3 Eggs, Ham/Sausage, Bell Peppers, Mushrooms, Cheese.',
     basePrice: 13.00,
+    dietary: ['GF']
   },
   {
     id: 'f3',
@@ -46,8 +48,9 @@ export const FOOD_ITEMS: FoodItem[] = [
     title: 'Plain Waffle',
     emojis: '🧇 🧈 🍁',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Classic golden waffle. [V] [Gluten-Friendly Option]',
+    description: 'Classic golden waffle.',
     basePrice: 10.00,
+    dietary: ['V', 'GF']
   },
   {
     id: 'f4',
@@ -55,8 +58,9 @@ export const FOOD_ITEMS: FoodItem[] = [
     title: 'Dessert Waffles',
     emojis: '🧇 🍪 🍫 🍨',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Oreo, Reese’s, or Ice Cream topping. [V]',
+    description: 'Oreo, Reese’s, or Ice Cream topping.',
     basePrice: 15.00,
+    dietary: ['V']
   },
   {
     id: 'f5',
@@ -73,8 +77,9 @@ export const FOOD_ITEMS: FoodItem[] = [
     title: 'Acai Bowl',
     emojis: '🥣 🍌 🫐 🥜 🍯',
     emojiBg: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-    description: 'Acai, Granola, Banana, Blueberries, PB & Honey. [V] [GF]',
+    description: 'Acai, Granola, Banana, Blueberries, PB & Honey.',
     basePrice: 15.00,
+    dietary: ['V', 'GF']
   }
 ];
 

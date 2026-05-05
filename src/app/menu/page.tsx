@@ -22,7 +22,16 @@ export default function Menu() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
             <div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: 900, marginBottom: '0.2rem' }}>{food.title}</h2>
-              <div style={{ fontSize: '1.2rem', letterSpacing: '4px', marginBottom: '0.25rem' }}>{food.emojis}</div>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                <div style={{ fontSize: '1.2rem', letterSpacing: '4px' }}>{food.emojis}</div>
+                {food.dietary && food.dietary.map(tag => (
+                  <span key={tag} style={{ 
+                    backgroundColor: tag === 'V' ? '#dcfce7' : '#fef3c7', 
+                    color: tag === 'V' ? '#166534' : '#92400e', 
+                    fontSize: '0.75rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px' 
+                  }}>{tag}</span>
+                ))}
+              </div>
             </div>
             <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>${food.basePrice.toFixed(2)}</span>
           </div>
@@ -259,7 +268,16 @@ export default function Menu() {
                 </div>
                 <div style={{ padding: '0.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <h3 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.2rem', lineHeight: 1.2 }}>{item.title}</h3>
-                  <div style={{ fontSize: '0.9rem', letterSpacing: '2px', marginBottom: '0.25rem' }}>{item.emojis}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                    <div style={{ fontSize: '0.9rem', letterSpacing: '2px' }}>{item.emojis}</div>
+                    {item.dietary && item.dietary.map(tag => (
+                      <span key={tag} style={{ 
+                        backgroundColor: tag === 'V' ? '#dcfce7' : '#fef3c7', 
+                        color: tag === 'V' ? '#166534' : '#92400e', 
+                        fontSize: '0.6rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px' 
+                      }}>{tag}</span>
+                    ))}
+                  </div>
                   <p style={{ fontSize: '0.7rem', color: 'var(--sw-text-muted)', marginBottom: '1rem', lineHeight: 1.3, flex: 1 }}>{item.description}</p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>${item.basePrice.toFixed(2)}</span>
