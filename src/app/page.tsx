@@ -143,10 +143,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Mobile Sticky Order Bar */}
-      <div className="sw-mobile-sticky-bar">
-        <a href="#order" className="sw-btn sw-btn-primary">Order Online Now</a>
-      </div>
     </main>
   );
 }

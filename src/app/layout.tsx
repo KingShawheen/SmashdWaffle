@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--sw-font-family",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
+import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
-  title: "Smash'd Waffle House | Order Online",
-  description: "Order our signature Smash'd Breakfast Waffles online! Currently serving Deer Park.",
+  title: "Smash'd Waffle House",
+  description: "Home of our Original SMASH BREAKFAST WAFFLE!",
+  themeColor: "#ffffff",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Smash'd",
+  },
 };
 
 export default function RootLayout({
@@ -19,8 +19,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={plusJakartaSans.variable}>
-      <body>{children}</body>
+    <html lang="en">
+      <body>
+        {children}
+        <BottomNav />
+      </body>
     </html>
   );
 }

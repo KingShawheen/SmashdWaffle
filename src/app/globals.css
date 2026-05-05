@@ -444,8 +444,66 @@ body {
     width: 100%;
   }
   
-  /* Add bottom padding to body so sticky bar doesn't cover content */
+  /* Add bottom padding to body so bottom nav doesn't cover content */
   body {
     padding-bottom: 90px !important;
+  }
+}
+
+/* Global Native Bottom Navigation */
+.sw-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--sw-border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+  height: calc(70px + env(safe-area-inset-bottom, 0px));
+  z-index: 9999;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+}
+
+.sw-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--sw-text-muted);
+  text-decoration: none;
+  font-family: var(--sw-font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  gap: 4px;
+  flex: 1;
+  height: 100%;
+  transition: color 0.2s ease;
+}
+
+.sw-nav-item svg {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.sw-nav-item.active {
+  color: var(--sw-primary);
+}
+
+.sw-nav-item.active svg {
+  stroke: var(--sw-primary);
+  transform: translateY(-2px);
+}
+
+/* Hide bottom nav on large desktop screens where a top header is expected */
+@media (min-width: 1024px) {
+  .sw-bottom-nav {
+    display: none;
+  }
+  body {
+    padding-bottom: 0 !important;
   }
 }
