@@ -7,7 +7,7 @@ export default function Home() {
       <div style={{ padding: '1.5rem 1rem 1rem', textAlign: 'center', backgroundColor: 'var(--sw-surface)', borderBottom: '1px solid var(--sw-border)' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/logo.png" alt="Smash'd Waffle House Logo" style={{ width: '180px', height: 'auto', filter: 'drop-shadow(0 4px 15px rgba(0,0,0,0.1))' }} />
+          <img className="sw-animate-float" src="/assets/logo.png" alt="Smash'd Waffle House Logo" style={{ width: '180px', height: 'auto', filter: 'drop-shadow(0 4px 15px rgba(0,0,0,0.1))' }} />
         </div>
         
         <Link href="/menu" style={{
