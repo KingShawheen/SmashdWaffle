@@ -199,7 +199,7 @@ export default function EmployeePortal() {
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem', flex: 1, overflowY: 'auto' }}>
           {orders.length === 0 ? (
-            <div style={{ colSpan: '100%', textAlign: 'center', color: '#64748b', fontSize: '1.5rem', fontWeight: 800, padding: '4rem' }}>No pending orders</div>
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#64748b', fontSize: '1.5rem', fontWeight: 800, padding: '4rem' }}>No pending orders</div>
           ) : (
             orders.map(order => (
               <div key={order.id} style={{ backgroundColor: '#fef3c7', padding: '1.5rem', borderRadius: '12px', borderLeft: '8px solid #f59e0b', color: 'black', display: 'flex', flexDirection: 'column' }}>
