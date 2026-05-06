@@ -7,11 +7,13 @@ import { auth, db } from '../../lib/firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { MenuItem } from '../menu/data';
+import { TRAINING_MODULES } from './trainingData';
 
 export default function EmployeePortal() {
   const [activeTab, setActiveTab] = useState<'kds' | 'training' | 'admin'>('training');
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
+  const [selectedModule, setSelectedModule] = useState<string | null>(null);
   
   // Login Form State
   const [email, setEmail] = useState('');
@@ -180,7 +182,7 @@ export default function EmployeePortal() {
       {/* Navigation */}
       <div style={{ display: 'flex', padding: '1rem', gap: '1rem', overflowX: 'auto', scrollbarWidth: 'none' }}>
         <button 
-          onClick={() => setActiveTab('training')}
+          onClick={() => { setActiveTab('training'); setSelectedModule(null); }}
           style={{ 
             padding: '0.75rem 1.25rem', borderRadius: '12px', fontWeight: 800, fontSize: '0.9rem',
             backgroundColor: activeTab === 'training' ? '#3b82f6' : '#1e293b',
@@ -218,47 +220,45 @@ export default function EmployeePortal() {
         
         {activeTab === 'training' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ backgroundColor: '#1e293b', padding: '1.5rem', borderRadius: '16px', border: '1px solid #334155' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                <span style={{ fontSize: '1.5rem' }}>☕️</span>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>Coffee Science & Extraction</h3>
+            {selectedModule ? (
+              <div style={{ backgroundColor: '#1e293b', padding: '1.5rem', borderRadius: '16px', border: '1px solid #334155' }}>
+                <button onClick={() => setSelectedModule(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '1rem', fontWeight: 700 }}>
+                  <ChevronLeft size={18} />
+                  Back to Modules
+                </button>
+                {(() => {
+                  const mod = TRAINING_MODULES.find(m => m.id === selectedModule);
+                  if (!mod) return null;
+                  return (
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                        <span style={{ fontSize: '2rem' }}>{mod.icon}</span>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 900, margin: 0 }}>{mod.title}</h2>
+                      </div>
+                      <div className="markdown-content" style={{ color: '#cbd5e1', lineHeight: 1.6, fontSize: '0.95rem', whiteSpace: 'pre-wrap' }}>
+                        {mod.content}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
-              <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '1rem' }}>
-                Mastering the perfect pull. Learn timing, temperature controls, and milk micro-foam techniques for our signature Longpour and Lattes.
-              </p>
-              <button style={{ backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '0.75rem 1rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', cursor: 'pointer' }}>
-                <span>Start Module</span>
-                <ArrowRight size={16} />
-              </button>
-            </div>
-
-            <div style={{ backgroundColor: '#1e293b', padding: '1.5rem', borderRadius: '16px', border: '1px solid #334155' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                <span style={{ fontSize: '1.5rem' }}>🥓</span>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>The Perfect SMASH</h3>
-              </div>
-              <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '1rem' }}>
-                Styles of bacon, batter temperature, and grid timing. Flawless execution of our signature savory waffles.
-              </p>
-              <button style={{ backgroundColor: '#334155', color: 'white', border: 'none', padding: '0.75rem 1rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', cursor: 'pointer' }}>
-                <span>Resume Module (40%)</span>
-                <ArrowRight size={16} />
-              </button>
-            </div>
-
-            <div style={{ backgroundColor: '#1e293b', padding: '1.5rem', borderRadius: '16px', border: '1px solid #334155' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                <span style={{ fontSize: '1.5rem' }}>🧼</span>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>WA State Health & Safety</h3>
-              </div>
-              <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '1rem' }}>
-                Cleanliness, cross-contamination, and strict adherence to Washington state food laws to a T.
-              </p>
-              <button style={{ backgroundColor: '#10b981', color: 'white', border: 'none', padding: '0.75rem 1rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', gap: '0.5rem', cursor: 'pointer' }}>
-                <ListChecks size={16} />
-                <span>Passed (Valid until 2027)</span>
-              </button>
-            </div>
+            ) : (
+              TRAINING_MODULES.map(mod => (
+                <div key={mod.id} style={{ backgroundColor: '#1e293b', padding: '1.5rem', borderRadius: '16px', border: '1px solid #334155' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <span style={{ fontSize: '1.5rem' }}>{mod.icon}</span>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>{mod.title}</h3>
+                  </div>
+                  <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '1rem' }}>
+                    {mod.description}
+                  </p>
+                  <button onClick={() => setSelectedModule(mod.id)} style={{ backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '0.75rem 1rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', cursor: 'pointer' }}>
+                    <span>Open SOP Document</span>
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         )}
 
