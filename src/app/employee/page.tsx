@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ChevronLeft, GraduationCap, MonitorPlay, ListChecks, ArrowRight, Lock, KeyRound, Mail, Loader2, Database } from 'lucide-react';
 import { auth, db } from '../../lib/firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, onSnapshot, query, where, orderBy } from 'firebase/firestore';
 import { MenuItem } from '../menu/data';
 import { TRAINING_MODULES } from './trainingData';
 
@@ -25,6 +25,12 @@ export default function EmployeePortal() {
   const [adminItems, setAdminItems] = useState<MenuItem[]>([]);
   const [loadingAdmin, setLoadingAdmin] = useState(false);
 
+  // KDS State
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isFullScreenKDS, setIsFullScreenKDS] = useState(false);
+
+  const isAdmin = user?.email === 'admin@smashdwaffle.com';
+
   // Check auth state on mount
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -33,6 +39,25 @@ export default function EmployeePortal() {
     });
     return () => unsubscribe();
   }, []);
+
+  // Subscribe to live orders
+  useEffect(() => {
+    if (!user) return;
+    const q = query(
+      collection(db, 'orders'), 
+      where('status', '==', 'pending')
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const liveOrders: any[] = [];
+      snapshot.forEach((doc) => {
+        liveOrders.push({ id: doc.id, ...doc.data() });
+      });
+      // Sort by creation time locally to avoid needing a composite index immediately
+      liveOrders.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      setOrders(liveOrders);
+    });
+    return () => unsubscribe();
+  }, [user]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,10 +100,19 @@ export default function EmployeePortal() {
   }, [activeTab]);
 
   const toggleSoldOut = async (id: string, currentStatus: boolean | undefined) => {
+    if (!isAdmin) return;
     try {
       await updateDoc(doc(db, 'menu_items', id), { isSoldOut: !currentStatus });
       // update local state instantly for snappy UI
       setAdminItems(prev => prev.map(item => item.id === id ? { ...item, isSoldOut: !currentStatus } : item));
+    } catch(err) {
+      console.error(err);
+    }
+  };
+
+  const markOrderReady = async (orderId: string) => {
+    try {
+      await updateDoc(doc(db, 'orders', orderId), { status: 'completed' });
     } catch(err) {
       console.error(err);
     }
@@ -149,6 +183,57 @@ export default function EmployeePortal() {
     );
   }
 
+  // Full Screen KDS Rendering
+  if (isFullScreenKDS) {
+    return (
+      <main style={{ backgroundColor: '#0f172a', minHeight: '100vh', color: 'white', padding: '1rem', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ width: '16px', height: '16px', backgroundColor: '#10b981', borderRadius: '50%', animation: 'pulse 2s infinite' }}></div>
+            <h1 style={{ fontSize: '2rem', fontWeight: 900, margin: 0 }}>LIVE KITCHEN DISPLAY</h1>
+          </div>
+          <button onClick={() => setIsFullScreenKDS(false)} style={{ backgroundColor: '#334155', color: 'white', border: 'none', padding: '1rem 2rem', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', fontSize: '1.2rem' }}>
+            Exit Full Screen
+          </button>
+        </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem', flex: 1, overflowY: 'auto' }}>
+          {orders.length === 0 ? (
+            <div style={{ colSpan: '100%', textAlign: 'center', color: '#64748b', fontSize: '1.5rem', fontWeight: 800, padding: '4rem' }}>No pending orders</div>
+          ) : (
+            orders.map(order => (
+              <div key={order.id} style={{ backgroundColor: '#fef3c7', padding: '1.5rem', borderRadius: '12px', borderLeft: '8px solid #f59e0b', color: 'black', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px dashed #d97706', paddingBottom: '0.5rem' }}>
+                  <div>
+                    <span style={{ fontWeight: 900, fontSize: '1.4rem', display: 'block' }}>{order.customerName}</span>
+                    <span style={{ fontSize: '0.9rem', color: '#b45309', fontWeight: 700 }}>ID: {order.id.slice(-4).toUpperCase()}</span>
+                  </div>
+                  <span style={{ fontWeight: 900, color: '#b45309', fontSize: '1.2rem' }}>{order.pickupTime}</span>
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontWeight: 700, flex: 1 }}>
+                  {order.items.map((item: any, idx: number) => (
+                    <div key={idx} style={{ marginBottom: '1rem' }}>
+                      <li style={{ fontSize: '1.1rem' }}>{item.quantity}x {item.title} {item.size ? `(${item.size})` : ''}</li>
+                      {item.modifiers && item.modifiers.map((mod: any, mIdx: number) => (
+                        <li key={mIdx} style={{ marginLeft: '1rem', color: '#b45309', fontSize: '0.95rem' }}>- {mod.name}</li>
+                      ))}
+                    </div>
+                  ))}
+                </ul>
+                <div style={{ marginTop: '1rem', color: '#b45309', fontSize: '0.9rem', fontWeight: 800, fontStyle: 'italic' }}>
+                  {order.orderNotes ? `Notes: ${order.orderNotes}` : ''}
+                </div>
+                <button onClick={() => markOrderReady(order.id)} style={{ width: '100%', backgroundColor: '#f59e0b', color: 'black', fontWeight: 900, padding: '1rem', border: 'none', borderRadius: '8px', marginTop: '1.5rem', fontSize: '1.2rem', cursor: 'pointer' }}>
+                  MARK READY
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main style={{ backgroundColor: '#0f172a', minHeight: '100vh', color: 'white', paddingBottom: '100px' }}>
       
@@ -203,17 +288,19 @@ export default function EmployeePortal() {
           <MonitorPlay size={18} />
           Kitchen Display
         </button>
-        <button 
-          onClick={() => setActiveTab('admin')}
-          style={{ 
-            padding: '0.75rem 1.25rem', borderRadius: '12px', fontWeight: 800, fontSize: '0.9rem',
-            backgroundColor: activeTab === 'admin' ? '#ef4444' : '#1e293b',
-            color: activeTab === 'admin' ? 'white' : '#94a3b8', border: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer'
-          }}
-        >
-          <Database size={18} />
-          Database Admin
-        </button>
+        {isAdmin && (
+          <button 
+            onClick={() => setActiveTab('admin')}
+            style={{ 
+              padding: '0.75rem 1.25rem', borderRadius: '12px', fontWeight: 800, fontSize: '0.9rem',
+              backgroundColor: activeTab === 'admin' ? '#ef4444' : '#1e293b',
+              color: activeTab === 'admin' ? 'white' : '#94a3b8', border: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer'
+            }}
+          >
+            <Database size={18} />
+            Database Admin
+          </button>
+        )}
       </div>
 
       <div className="sw-animate-fade-in" style={{ padding: '0 1rem' }}>
@@ -264,28 +351,45 @@ export default function EmployeePortal() {
 
         {activeTab === 'kds' && (
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', backgroundColor: '#334155', padding: '1rem', borderRadius: '12px' }}>
-              <div style={{ width: '10px', height: '10px', backgroundColor: '#10b981', borderRadius: '50%', animation: 'pulse 2s infinite' }}></div>
-              <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Live Orders (Waiting)</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', backgroundColor: '#334155', padding: '1rem', borderRadius: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ width: '10px', height: '10px', backgroundColor: '#10b981', borderRadius: '50%', animation: 'pulse 2s infinite' }}></div>
+                <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Live Orders ({orders.length})</span>
+              </div>
+              <button onClick={() => setIsFullScreenKDS(true)} style={{ backgroundColor: '#1e293b', border: '1px solid #475569', color: 'white', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}>
+                FULL SCREEN MODE
+              </button>
             </div>
 
-            {/* Fake Order Ticket */}
-            <div style={{ backgroundColor: '#fef3c7', padding: '1.5rem', borderRadius: '8px', borderLeft: '8px solid #f59e0b', color: 'black', marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px dashed #d97706', paddingBottom: '0.5rem' }}>
-                <span style={{ fontWeight: 900, fontSize: '1.2rem' }}>Order #1042</span>
-                <span style={{ fontWeight: 800, color: '#b45309' }}>ASAP</span>
-              </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontWeight: 700 }}>
-                <li style={{ marginBottom: '0.5rem' }}>1x Savory Bacon SMASH</li>
-                <li style={{ marginLeft: '1rem', color: '#b45309', fontSize: '0.85rem', marginBottom: '1rem' }}>- Add Extra Cheese</li>
-                
-                <li style={{ marginBottom: '0.5rem' }}>1x 16oz Latte</li>
-                <li style={{ marginLeft: '1rem', color: '#b45309', fontSize: '0.85rem' }}>- Oat Milk</li>
-                <li style={{ marginLeft: '1rem', color: '#b45309', fontSize: '0.85rem' }}>- Extra Shot</li>
-              </ul>
-              <button style={{ width: '100%', backgroundColor: '#f59e0b', color: 'black', fontWeight: 900, padding: '1rem', border: 'none', borderRadius: '4px', marginTop: '1.5rem', fontSize: '1.1rem', cursor: 'pointer' }}>
-                MARK READY
-              </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {orders.length === 0 ? (
+                <div style={{ textAlign: 'center', color: '#64748b', fontSize: '1rem', fontWeight: 700, padding: '2rem' }}>No pending orders right now.</div>
+              ) : (
+                orders.map(order => (
+                  <div key={order.id} style={{ backgroundColor: '#fef3c7', padding: '1.5rem', borderRadius: '8px', borderLeft: '8px solid #f59e0b', color: 'black', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px dashed #d97706', paddingBottom: '0.5rem' }}>
+                      <span style={{ fontWeight: 900, fontSize: '1.2rem' }}>{order.customerName}</span>
+                      <span style={{ fontWeight: 800, color: '#b45309' }}>{order.pickupTime}</span>
+                    </div>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontWeight: 700 }}>
+                      {order.items.map((item: any, idx: number) => (
+                        <div key={idx} style={{ marginBottom: '0.5rem' }}>
+                          <li style={{ marginBottom: '0.25rem' }}>{item.quantity}x {item.title} {item.size ? `(${item.size})` : ''}</li>
+                          {item.modifiers && item.modifiers.map((mod: any, mIdx: number) => (
+                            <li key={mIdx} style={{ marginLeft: '1rem', color: '#b45309', fontSize: '0.85rem' }}>- {mod.name}</li>
+                          ))}
+                        </div>
+                      ))}
+                    </ul>
+                    <div style={{ marginTop: '0.5rem', color: '#b45309', fontSize: '0.85rem', fontWeight: 800, fontStyle: 'italic' }}>
+                      {order.orderNotes ? `Notes: ${order.orderNotes}` : ''}
+                    </div>
+                    <button onClick={() => markOrderReady(order.id)} style={{ width: '100%', backgroundColor: '#f59e0b', color: 'black', fontWeight: 900, padding: '1rem', border: 'none', borderRadius: '4px', marginTop: '1.5rem', fontSize: '1.1rem', cursor: 'pointer' }}>
+                      MARK READY
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}

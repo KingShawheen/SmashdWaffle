@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useUiStore } from '../store/uiStore';
 
-const IMAGES = [
+const FOOD_IMAGES = [
   '/assets/food/strawberry_chocolate.png',
   '/assets/food/savory_bacon.png',
   '/assets/food/pb_jelly.png',
@@ -10,20 +11,32 @@ const IMAGES = [
   '/assets/food/pb_banana.png'
 ];
 
+const DRINK_IMAGES = [
+  '/assets/drinks/latte.png',
+  '/assets/drinks/iced_latte.png',
+  '/assets/drinks/redbull_soda.png',
+  '/assets/drinks/smoothie.png',
+  '/assets/drinks/americano.png'
+];
+
 export default function DesktopSlideshow() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const activeMenuTab = useUiStore((state) => state.activeMenuTab);
+
+  const currentImages = activeMenuTab === 'drinks' ? DRINK_IMAGES : FOOD_IMAGES;
 
   useEffect(() => {
+    setCurrentIndex(0);
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % IMAGES.length);
+      setCurrentIndex((prev) => (prev + 1) % currentImages.length);
     }, 4000); // 4 seconds per slide
     return () => clearInterval(timer);
-  }, []);
+  }, [currentImages]);
 
   return (
     <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--sw-red)', position: 'relative' }}>
       {/* Slides */}
-      {IMAGES.map((src, index) => (
+      {currentImages.map((src, index) => (
         <div
           key={src}
           style={{
@@ -76,9 +89,19 @@ export default function DesktopSlideshow() {
           textShadow: '0 10px 30px rgba(0,0,0,0.5)',
           marginBottom: '1rem'
         }}>
-          THE BEST <br/>
-          <span style={{ color: 'var(--sw-yellow)' }}>BREAKFAST</span><br/>
-          IN DEER PARK.
+          {activeMenuTab === 'drinks' ? (
+            <>
+              THE BEST <br/>
+              <span style={{ color: 'var(--sw-yellow)' }}>BEVERAGES</span><br/>
+              IN DEER PARK.
+            </>
+          ) : (
+            <>
+              THE BEST <br/>
+              <span style={{ color: 'var(--sw-yellow)' }}>BREAKFAST</span><br/>
+              IN DEER PARK.
+            </>
+          )}
         </h1>
         <p style={{
           fontSize: '1.5rem',
@@ -88,7 +111,9 @@ export default function DesktopSlideshow() {
           lineHeight: 1.5,
           textShadow: '0 4px 10px rgba(0,0,0,0.3)'
         }}>
-          Experience the original Smash&apos;d Waffle. Beautifully crafted, perfectly crisp, and loaded with intense flavors.
+          {activeMenuTab === 'drinks' 
+            ? "From rich barista-crafted espresso to vibrant Italian sodas and smoothies. Fuel your day."
+            : "Experience the original Smash'd Waffle. Beautifully crafted, perfectly crisp, and loaded with intense flavors."}
         </p>
       </div>
     </div>

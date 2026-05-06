@@ -20,6 +20,7 @@ export type DrinkItem = {
   emoji: string;
   isSoldOut?: boolean;
   prices: { size: string; price: number }[];
+  imageUrl?: string;
 };
 
 export type MenuItem = FoodItem | DrinkItem;
@@ -158,7 +159,8 @@ export const COFFEE_ITEMS: DrinkItem[] = [
       { size: '16oz', price: 3.50 },
       { size: '20oz', price: 4.00 },
       { size: '24oz', price: 4.50 },
-    ]
+    ],
+    imageUrl: '/assets/drinks/americano.png'
   },
   {
     id: 'c2',
@@ -171,7 +173,8 @@ export const COFFEE_ITEMS: DrinkItem[] = [
       { size: '16oz', price: 3.00 },
       { size: '20oz', price: 3.50 },
       { size: '24oz', price: 4.00 },
-    ]
+    ],
+    imageUrl: '/assets/drinks/longpour.png'
   },
   {
     id: 'c3',
@@ -184,7 +187,8 @@ export const COFFEE_ITEMS: DrinkItem[] = [
       { size: '16oz', price: 4.50 },
       { size: '20oz', price: 5.00 },
       { size: '24oz', price: 5.50 },
-    ]
+    ],
+    imageUrl: '/assets/drinks/latte.png'
   },
   {
     id: 'c4',
@@ -197,7 +201,8 @@ export const COFFEE_ITEMS: DrinkItem[] = [
       { size: '16oz', price: 5.00 },
       { size: '20oz', price: 5.50 },
       { size: '24oz', price: 6.00 },
-    ]
+    ],
+    imageUrl: '/assets/drinks/iced_latte.png'
   }
 ];
 
@@ -213,7 +218,8 @@ export const NON_COFFEE_ITEMS: DrinkItem[] = [
       { size: '16oz', price: 5.25 },
       { size: '20oz', price: 6.00 },
       { size: '24oz', price: 6.75 },
-    ]
+    ],
+    imageUrl: '/assets/drinks/italian_soda.png'
   },
   {
     id: 'nc2',
@@ -226,7 +232,8 @@ export const NON_COFFEE_ITEMS: DrinkItem[] = [
       { size: '16oz', price: 6.50 },
       { size: '20oz', price: 7.50 },
       { size: '24oz', price: 8.25 },
-    ]
+    ],
+    imageUrl: '/assets/drinks/redbull_soda.png'
   },
   {
     id: 'nc3',
@@ -239,7 +246,8 @@ export const NON_COFFEE_ITEMS: DrinkItem[] = [
       { size: '16oz', price: 4.50 },
       { size: '20oz', price: 5.00 },
       { size: '24oz', price: 5.50 },
-    ]
+    ],
+    imageUrl: '/assets/drinks/smoothie.png'
   },
   {
     id: 'nc4',
@@ -249,6 +257,7 @@ export const NON_COFFEE_ITEMS: DrinkItem[] = [
     emoji: '🧃',
     prices: [
       { size: '12oz', price: 2.50 },
-    ]
+    ],
+    imageUrl: '/assets/drinks/juice.png'
   }
 ];

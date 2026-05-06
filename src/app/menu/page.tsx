@@ -7,6 +7,7 @@ import { MenuItem, FoodItem, DrinkItem } from './data';
 import { useCartStore } from '../../store/cartStore';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
+import { useUiStore } from '../../store/uiStore';
 
 export default function Menu() {
   const [activeTab, setActiveTab] = useState<'food' | 'drinks'>('food');
@@ -22,9 +23,24 @@ export default function Menu() {
   const [modifierTotal, setModifierTotal] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<{size: string, price: number} | null>(null);
   const [activeModifiers, setActiveModifiers] = useState<string[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
   
   const cartCount = useCartStore((state) => state.getCartCount());
   const addToCart = useCartStore((state) => state.addToCart);
+  
+  const setActiveMenuTab = useUiStore((state) => state.setActiveMenuTab);
+
+  // Sync the local activeTab to the global uiStore so the DesktopSlideshow updates
+  useEffect(() => {
+    setActiveMenuTab(activeTab);
+  }, [activeTab, setActiveMenuTab]);
+  
+  // Reset when leaving the menu
+  useEffect(() => {
+    return () => {
+      setActiveMenuTab('food');
+    };
+  }, [setActiveMenuTab]);
 
   // Fetch Menu from Firestore
   useEffect(() => {
@@ -62,6 +78,7 @@ export default function Menu() {
     };
     
     fetchMenu();
+    setIsMounted(true);
   }, []);
 
   // Reset modifiers when item changes
@@ -108,6 +125,7 @@ export default function Menu() {
       basePrice = selectedSize ? selectedSize.price : (selectedItem as DrinkItem).prices[0].price;
       sizeLabel = selectedSize ? selectedSize.size : (selectedItem as DrinkItem).prices[0].size;
       emoji = (selectedItem as DrinkItem).emoji;
+      imageUrl = (selectedItem as DrinkItem).imageUrl;
     }
 
     const finalPrice = basePrice + modifierTotal;
@@ -347,7 +365,7 @@ export default function Menu() {
         <h1 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>Menu Selection</h1>
         <Link href="/cart" style={{ position: 'relative', padding: '0.5rem' }}>
           <ShoppingCart size={24} />
-          {cartCount > 0 && (
+          {isMounted && cartCount > 0 && (
             <div style={{ 
               position: 'absolute', top: 0, right: 0, 
               background: '#111', color: 'white', 
@@ -479,8 +497,13 @@ export default function Menu() {
                     opacity: drink.isSoldOut ? 0.5 : 1
                   }}
                 >
-                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0 }}>
-                    {drink.emoji}
+                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0, overflow: 'hidden' }}>
+                    {drink.imageUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={drink.imageUrl} alt={drink.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      drink.emoji
+                    )}
                   </div>
                   <div style={{ flex: 1 }}>
                     <h4 style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '0.2rem' }}>{drink.title}</h4>
@@ -515,8 +538,13 @@ export default function Menu() {
                     opacity: drink.isSoldOut ? 0.5 : 1
                   }}
                 >
-                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0 }}>
-                    {drink.emoji}
+                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0, overflow: 'hidden' }}>
+                    {drink.imageUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={drink.imageUrl} alt={drink.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      drink.emoji
+                    )}
                   </div>
                   <div style={{ flex: 1 }}>
                     <h4 style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '0.2rem' }}>{drink.title}</h4>

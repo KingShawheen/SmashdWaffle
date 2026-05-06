@@ -1,15 +1,25 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCartStore } from '../../store/cartStore';
+import { useLocationStore } from '../../store/locationStore';
 import { ChevronLeft, Trash2, Plus, Minus } from 'lucide-react';
 
 export default function Cart() {
   const { items, removeFromCart, updateQuantity, getCartTotal, getCartCount } = useCartStore();
+  const { activeLocation } = useLocationStore();
+  const [isMounted, setIsMounted] = useState(false);
   
   const subtotal = getCartTotal();
-  const tax = subtotal * 0.081;
+  const tax = subtotal * activeLocation.taxRate;
   const total = subtotal + tax;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
 
   return (
     <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', paddingBottom: '100px' }}>
@@ -103,7 +113,7 @@ export default function Cart() {
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', color: 'var(--sw-text-muted)' }}>
-                <span>Tax (8.1%)</span>
+                <span>Tax ({(activeLocation.taxRate * 100).toFixed(1)}% - {activeLocation.state})</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid var(--sw-border)', fontWeight: 800, fontSize: '1.25rem' }}>

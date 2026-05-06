@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCartStore } from '../../store/cartStore';
+import { useLocationStore } from '../../store/locationStore';
 import { ChevronLeft, CheckCircle2 } from 'lucide-react';
 import { PaymentForm, CreditCard } from 'react-square-web-payments-sdk';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 
 export default function Checkout() {
   const { items, getCartTotal, clearCart } = useCartStore();
+  const { activeLocation } = useLocationStore();
+  const [isMounted, setIsMounted] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [pendingOrderCount, setPendingOrderCount] = useState(0);
   const [customerDetails, setCustomerDetails] = useState({
     name: '',
     email: '',
@@ -18,21 +24,58 @@ export default function Checkout() {
   });
 
   const subtotal = getCartTotal();
-  const tax = subtotal * 0.081;
+  const tax = subtotal * activeLocation.taxRate;
   const total = subtotal + tax;
+
+  useEffect(() => {
+    setIsMounted(true);
+    const fetchPendingQueue = async () => {
+      try {
+        const q = query(collection(db, 'orders'), where('status', '==', 'pending'));
+        const snapshot = await getDocs(q);
+        setPendingOrderCount(snapshot.size);
+      } catch (err) {
+        console.error("Failed to fetch pending orders", err);
+      }
+    };
+    fetchPendingQueue();
+  }, []);
+
+  const asapText = pendingOrderCount > 10 ? "ASAP (45-60 min) - High Volume" : 
+                   pendingOrderCount > 5 ? "ASAP (30-45 min)" : "ASAP (10-15 min)";
 
   // Handle Square Tokenization Success
   const handlePaymentSuccess = async (token: unknown) => {
     console.log("Square Payment Token Received: ", token);
-    // In a real app, you would send this token to your backend here to charge the card.
-    // fetch('/api/charge', { method: 'POST', body: JSON.stringify({ token: token.token, amount: total }) })
     
-    // Simulate successful charge
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: token,
+          items: items,
+          customerDetails: customerDetails,
+          locationId: activeLocation.id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Payment processing failed');
+      }
+
+      const data = await response.json();
+      console.log('Order created:', data);
+      
       clearCart();
       setOrderComplete(true);
-    }, 1500);
+    } catch (err) {
+      console.error('Error completing order:', err);
+      alert('There was an issue processing your order. Please try again.');
+    }
   };
+
+  if (!isMounted) return null; // Prevent hydration mismatch
 
   if (orderComplete) {
     return (
@@ -103,7 +146,7 @@ export default function Checkout() {
               <span>${subtotal.toFixed(2)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', color: 'var(--sw-text-muted)' }}>
-              <span>Tax (8.1%)</span>
+              <span>Tax ({(activeLocation.taxRate * 100).toFixed(1)}% - {activeLocation.state})</span>
               <span>${tax.toFixed(2)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 900, fontSize: '1.3rem' }}>
@@ -139,15 +182,26 @@ export default function Checkout() {
               />
             </div>
             <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--sw-text-muted)', marginBottom: '0.5rem' }}>Phone Number (For Smash'd Rewards)</label>
+              <input 
+                type="tel" 
+                value={customerDetails.phone}
+                onChange={(e) => setCustomerDetails({...customerDetails, phone: e.target.value})}
+                placeholder="(555) 123-4567" 
+                style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', border: '1px solid var(--sw-border)', backgroundColor: '#f9fafb', fontSize: '1rem' }} 
+              />
+            </div>
+            <div>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--sw-text-muted)', marginBottom: '0.5rem' }}>Pickup Time</label>
               <select 
                 value={customerDetails.pickupTime}
                 onChange={(e) => setCustomerDetails({...customerDetails, pickupTime: e.target.value})}
                 style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', border: '1px solid var(--sw-border)', backgroundColor: '#f9fafb', fontSize: '1rem' }}
               >
-                <option value="ASAP">ASAP (10-15 min)</option>
-                <option value="15-30 min">In 15-30 minutes</option>
-                <option value="30-45 min">In 30-45 minutes</option>
+                <option value={asapText}>{asapText}</option>
+                {pendingOrderCount <= 5 && <option value="15-30 min">In 15-30 minutes</option>}
+                {pendingOrderCount <= 10 && <option value="30-45 min">In 30-45 minutes</option>}
+                <option value="60 min">In 1 hour</option>
               </select>
             </div>
             <div>
@@ -171,7 +225,7 @@ export default function Checkout() {
           <PaymentForm
             applicationId="sandbox-sq0idb-YOUR_SANDBOX_APP_ID"
             cardTokenizeResponseReceived={handlePaymentSuccess}
-            locationId="YOUR_SANDBOX_LOCATION_ID"
+            locationId={activeLocation.squareLocationId}
           >
             <CreditCard 
               buttonProps={{
