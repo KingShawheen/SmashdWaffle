@@ -503,16 +503,16 @@ export default function Menu() {
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={selectedItem.imageUrl} alt={selectedItem.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <span style={{ fontSize: '5rem' }}>{selectedItem.emojis || selectedItem.emoji || '🧇'}</span>
+                <span style={{ fontSize: '5rem' }}>{(selectedItem as any).emojis || (selectedItem as any).emoji || '🧇'}</span>
               )}
             </div>
             
             {/* Details Content */}
             <div style={{ padding: '2rem' }}>
               <h2 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '0.5rem', lineHeight: 1.1 }}>{selectedItem.title}</h2>
-              {selectedItem.dietary && selectedItem.dietary.length > 0 && (
+              {(selectedItem as any).dietary && (selectedItem as any).dietary.length > 0 && (
                 <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                  {selectedItem.dietary.map((tag: string) => (
+                  {(selectedItem as any).dietary.map((tag: string) => (
                     <span key={tag} style={{ backgroundColor: tag === 'V' ? '#dcfce7' : '#fef3c7', color: tag === 'V' ? '#166534' : '#92400e', fontSize: '0.75rem', fontWeight: 800, padding: '4px 10px', borderRadius: '8px' }}>{tag}</span>
                   ))}
                 </div>
@@ -531,7 +531,7 @@ export default function Menu() {
                 style={{ width: '100%', padding: '1rem', backgroundColor: 'var(--sw-red)', color: 'white', border: 'none', borderRadius: '50px', fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.2)' }}
               >
                 <ShoppingCart size={20} /> 
-                Add to Cart — ${selectedItem.type === 'food' ? selectedItem.basePrice.toFixed(2) : selectedItem.prices[0].price.toFixed(2)}+
+                Add to Cart — ${(selectedItem.type === 'food' ? (selectedItem as any).basePrice : (selectedItem as any).prices?.[0]?.price)?.toFixed(2)}+
               </button>
             </div>
           </div>
