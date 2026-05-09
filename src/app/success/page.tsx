@@ -18,16 +18,24 @@ function SuccessContent() {
         try {
           const res = await fetch(`/api/orders/${orderId}`);
           const data = await res.json();
-          if (data.success && data.order && data.order.state) {
-            setOrderStatus(data.order.state);
+          if (data.success && data.order) {
+            // Fulfillments have granular states (PROPOSED, PREPARED, COMPLETED)
+            const fulfillment = data.order.fulfillments?.[0];
+            if (fulfillment?.state) {
+              setOrderStatus(fulfillment.state);
+            } else if (data.order.state) {
+              setOrderStatus(data.order.state);
+            }
           }
         } catch (err) {
           console.error("Failed to poll order status", err);
         }
-      }, 5000); // Poll every 5 seconds
+      }, 3000); // Poll every 3 seconds for faster feedback
     }
     return () => clearInterval(interval);
   }, [orderId, orderStatus]);
+
+  const isReady = ['PREPARED', 'COMPLETED'].includes(orderStatus);
 
   return (
     <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '1.5rem', paddingTop: 'env(safe-area-inset-top, 3rem)' }}>
@@ -47,7 +55,7 @@ function SuccessContent() {
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', position: 'relative' }}>
           {/* Connecting line */}
-          <div style={{ position: 'absolute', left: '11px', top: '24px', bottom: '24px', width: '2px', backgroundColor: orderStatus === 'COMPLETED' ? 'var(--sw-green)' : 'var(--sw-border)', zIndex: 1, transition: 'background-color 0.5s ease' }}></div>
+          <div style={{ position: 'absolute', left: '11px', top: '24px', bottom: '24px', width: '2px', backgroundColor: isReady ? 'var(--sw-green)' : 'var(--sw-border)', zIndex: 1, transition: 'background-color 0.5s ease' }}></div>
           
           {/* Step 1 */}
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', position: 'relative', zIndex: 2 }}>
@@ -62,23 +70,23 @@ function SuccessContent() {
 
           {/* Step 2 */}
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', position: 'relative', zIndex: 2 }}>
-             <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: orderStatus === 'COMPLETED' ? 'var(--sw-green)' : 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
-               {orderStatus === 'COMPLETED' ? <CheckCircle2 size={14} color="white" /> : <div style={{ width: '8px', height: '8px', backgroundColor: 'black', borderRadius: '50%' }}></div>}
+             <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: isReady ? 'var(--sw-green)' : 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+               {isReady ? <CheckCircle2 size={14} color="white" /> : <div style={{ width: '8px', height: '8px', backgroundColor: 'black', borderRadius: '50%' }}></div>}
              </div>
              <div>
-               <p style={{ fontWeight: 800, margin: '0 0 0.25rem 0', color: 'var(--sw-text)' }}>{orderStatus === 'COMPLETED' ? 'Prepared' : 'In the Kitchen'}</p>
-               <p style={{ fontSize: '0.85rem', color: 'var(--sw-text-muted)', margin: 0 }}>{orderStatus === 'COMPLETED' ? 'The chefs have finished your order.' : 'Our chefs are smashing your waffles right now.'}</p>
+               <p style={{ fontWeight: 800, margin: '0 0 0.25rem 0', color: 'var(--sw-text)' }}>{isReady ? 'Prepared' : 'In the Kitchen'}</p>
+               <p style={{ fontSize: '0.85rem', color: 'var(--sw-text-muted)', margin: 0 }}>{isReady ? 'The chefs have finished your order.' : 'Our chefs are smashing your waffles right now.'}</p>
              </div>
           </div>
 
           {/* Step 3 */}
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', position: 'relative', zIndex: 2 }}>
-             <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: orderStatus === 'COMPLETED' ? 'var(--sw-green)' : 'var(--sw-surface)', border: orderStatus === 'COMPLETED' ? 'none' : '2px solid var(--sw-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
-               {orderStatus === 'COMPLETED' && <CheckCircle2 size={14} color="white" />}
+             <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: isReady ? 'var(--sw-green)' : 'var(--sw-surface)', border: isReady ? 'none' : '2px solid var(--sw-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', transition: 'all 0.3s ease' }}>
+               {isReady && <CheckCircle2 size={14} color="white" />}
              </div>
              <div>
-               <p style={{ fontWeight: 800, margin: '0 0 0.25rem 0', color: orderStatus === 'COMPLETED' ? 'var(--sw-text)' : 'var(--sw-text-muted)' }}>Ready for Pickup</p>
-               <p style={{ fontSize: '0.85rem', color: 'var(--sw-text-muted)', margin: 0 }}>{orderStatus === 'COMPLETED' ? 'Come grab your order at the counter!' : 'We will notify you here when it\'s ready.'}</p>
+               <p style={{ fontWeight: 800, margin: '0 0 0.25rem 0', color: isReady ? 'var(--sw-text)' : 'var(--sw-text-muted)' }}>Ready for Pickup</p>
+               <p style={{ fontSize: '0.85rem', color: isReady ? 'var(--sw-green)' : 'var(--sw-text-muted)', margin: 0, fontWeight: isReady ? 800 : 400 }}>{isReady ? 'Come grab your order at the counter!' : 'We will notify you here when it\'s ready.'}</p>
              </div>
           </div>
         </div>
