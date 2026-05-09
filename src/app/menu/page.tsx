@@ -156,6 +156,14 @@ export default function Menu() {
         const defaultSize = item.prices.length > 1 ? item.prices[1] : item.prices[0];
         setSelectedSize(defaultSize);
         setSelectedItem(item);
+        
+        // Ensure the expanded item scrolls into view so the Add button is visible
+        setTimeout(() => {
+          const el = document.getElementById(`drink-card-${item.id}`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }, 300);
       }
     }
   };
@@ -189,6 +197,7 @@ export default function Menu() {
       const isExpanded = expandedItemId === drink.id;
       return (
         <div 
+          id={`drink-card-${drink.id}`}
           key={drink.id} 
           style={{ 
             display: 'flex', flexDirection: 'column', backgroundColor: 'var(--sw-surface)', 
