@@ -93,7 +93,23 @@ export async function POST(request: Request) {
           autoApplyTaxes: true,
           autoApplyDiscounts: true,
         },
-        customerId: customerId // Links order to Loyalty Program
+        customerId: customerId, // Links order to Loyalty Program
+        fulfillments: [
+          {
+            type: 'PICKUP',
+            state: 'PROPOSED',
+            pickupDetails: {
+              recipient: {
+                displayName: customerDetails.name || 'Guest',
+                emailAddress: customerDetails.email || undefined,
+                phoneNumber: customerDetails.phone || undefined
+              },
+              scheduleType: 'ASAP',
+              pickupAt: new Date(Date.now() + 15 * 60000).toISOString(),
+              note: customerDetails.orderNotes || undefined
+            }
+          }
+        ]
       },
       idempotencyKey: idempotencyKey ? `${idempotencyKey}-order` : crypto.randomUUID()
     });
