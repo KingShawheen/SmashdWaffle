@@ -22,6 +22,7 @@ export default function Menu() {
   const [selectedSize, setSelectedSize] = useState<{size: string, price: number} | null>(null);
   const [activeModifiers, setActiveModifiers] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   
   const cartCount = useCartStore((state) => state.getCartCount());
   const addToCart = useCartStore((state) => state.addToCart);
@@ -121,6 +122,30 @@ export default function Menu() {
     } else {
       setActiveModifiers([...activeModifiers, name]);
       setModifierTotal(prev => prev + price);
+    }
+  };
+
+  const handleQuickAdd = (item: any) => {
+    if (item.isSoldOut) return;
+    
+    if (item.type === 'food') {
+      addToCart({
+        menuItemId: item.id,
+        title: item.title,
+        type: item.type,
+        basePrice: item.basePrice,
+        price: item.basePrice,
+        modifiers: [],
+        quantity: 1,
+        size: undefined,
+        imageUrl: item.imageUrl,
+        emoji: item.emojis,
+        squareVariationId: item.squareVariationId
+      });
+      setToastMessage(`Added ${item.title} to cart`);
+      setTimeout(() => setToastMessage(null), 2000);
+    } else {
+      setSelectedItem(item);
     }
   };
 
@@ -238,7 +263,7 @@ export default function Menu() {
   };
 
   return (
-    <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', paddingBottom: '100px' }}>
+    <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', paddingBottom: '100px', position: 'relative' }}>
       
       {/* Top White Header */}
       <div style={{ 
@@ -321,7 +346,7 @@ export default function Menu() {
             {foodItems.map((item) => (
               <div 
                 key={item.id} 
-                onClick={() => !item.isSoldOut && setSelectedItem(item)}
+                onClick={() => handleQuickAdd(item)}
                 style={{ 
                   backgroundColor: 'var(--sw-surface)', borderRadius: '16px', overflow: 'hidden', 
                   boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', 
@@ -376,7 +401,7 @@ export default function Menu() {
               {coffeeItems.map(drink => (
                 <div 
                   key={drink.id} 
-                  onClick={() => !drink.isSoldOut && setSelectedItem(drink)} 
+                  onClick={() => handleQuickAdd(drink)} 
                   style={{ 
                     display: 'flex', alignItems: 'center', backgroundColor: 'var(--sw-surface)', 
                     padding: '1rem', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', 
@@ -417,7 +442,7 @@ export default function Menu() {
               {nonCoffeeItems.map(drink => (
                 <div 
                   key={drink.id} 
-                  onClick={() => !drink.isSoldOut && setSelectedItem(drink)} 
+                  onClick={() => handleQuickAdd(drink)} 
                   style={{ 
                     display: 'flex', alignItems: 'center', backgroundColor: 'var(--sw-surface)', 
                     padding: '1rem', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', 
@@ -455,8 +480,7 @@ export default function Menu() {
       {/* iOS-Style Bottom Sheet Modal for Item Customization */}
       <div 
         style={{
-          position: 'fixed', top: 0, right: 0, bottom: 0,
-          width: '100%',
+          position: 'absolute', top: 0, right: 0, bottom: 0, left: 0,
           backgroundColor: 'rgba(0,0,0,0.6)', 
           zIndex: 10000, 
           opacity: selectedItem ? 1 : 0, 
@@ -517,6 +541,25 @@ export default function Menu() {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Quick Add Toast Indicator */}
+      <div style={{
+        position: 'fixed',
+        bottom: toastMessage ? '2rem' : '-100px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        backgroundColor: 'var(--sw-green)',
+        color: 'white',
+        padding: '0.75rem 1.5rem',
+        borderRadius: '50px',
+        fontWeight: 800,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        transition: 'bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+        zIndex: 11000,
+        pointerEvents: 'none'
+      }}>
+        {toastMessage}
       </div>
 
     </main>
