@@ -5,18 +5,32 @@ import { useState } from 'react';
 export default function Rewards() {
   const [phone, setPhone] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [points, setPoints] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (phone.length < 10) return;
     
     setIsSubmitting(true);
-    // Simulate API call to Firebase/Authentication/Square
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // E.164 formatting is ideal, but let's send exactly what they typed first 
+      // or unmask it to numbers to help Square CRM matching
+      const numericPhone = phone.replace(/\D/g, '');
+      const response = await fetch(`/api/loyalty?phone=${numericPhone}`);
+      const data = await response.json();
+      
+      if (data.points !== undefined) {
+        setPoints(data.points);
+      }
       setIsAuthenticated(true);
-    }, 1000);
+    } catch (err) {
+      console.error("Failed to fetch loyalty data", err);
+      // Fallback to guest mode
+      setIsAuthenticated(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const formatPhone = (val: string) => {
@@ -133,13 +147,13 @@ export default function Rewards() {
            </div>
         </div>
         <p style={{ textAlign: 'right', fontSize: '0.85rem', fontWeight: 700, color: 'var(--sw-text-muted)', marginTop: '0.5rem' }}>
-          0/500 Waffle
+          {points}/500 Waffle
         </p>
       </div>
 
       {/* Red Points Banner */}
       <div style={{ backgroundColor: 'var(--sw-red)', padding: '1rem', textAlign: 'center' }}>
-        <h2 style={{ color: 'var(--sw-yellow)', fontSize: '2rem', fontWeight: 900, margin: 0, letterSpacing: '0.5px' }}>0 Smash Points</h2>
+        <h2 style={{ color: 'var(--sw-yellow)', fontSize: '2rem', fontWeight: 900, margin: 0, letterSpacing: '0.5px' }}>{points} Smash Points</h2>
       </div>
 
       {/* Available Rewards - Locked */}
@@ -171,9 +185,22 @@ export default function Rewards() {
       {/* Empty Activity */}
       <div style={{ padding: '0 1rem' }}>
         <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>Recent Activity</h3>
-        <div style={{ padding: '1rem', backgroundColor: 'var(--sw-surface)', borderRadius: '12px', border: '1px dashed var(--sw-border)', textAlign: 'center' }}>
-          <p style={{ fontSize: '0.9rem', color: 'var(--sw-text-muted)', fontWeight: 500, margin: 0 }}>Place your first order to start earning points!</p>
-        </div>
+        {points > 0 ? (
+          <div style={{ padding: '1rem', backgroundColor: 'var(--sw-surface)', borderRadius: '12px', border: '1px solid var(--sw-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+               <div style={{ width: '40px', height: '40px', backgroundColor: 'var(--sw-red)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>+</div>
+               <div>
+                 <p style={{ margin: 0, fontWeight: 800 }}>Square Order</p>
+                 <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--sw-text-muted)' }}>In-Store / Online</p>
+               </div>
+             </div>
+             <span style={{ fontWeight: 900, color: 'var(--sw-green)' }}>{points} pts</span>
+          </div>
+        ) : (
+          <div style={{ padding: '1rem', backgroundColor: 'var(--sw-surface)', borderRadius: '12px', border: '1px dashed var(--sw-border)', textAlign: 'center' }}>
+            <p style={{ fontSize: '0.9rem', color: 'var(--sw-text-muted)', fontWeight: 500, margin: 0 }}>Place your first order to start earning points!</p>
+          </div>
+        )}
       </div>
 
     </main>

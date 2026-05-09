@@ -3,17 +3,15 @@
 import { useState, useEffect } from 'react';
 import { ShoppingCart, ChevronLeft, Plus, X, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { MenuItem, FoodItem, DrinkItem } from './data';
+import { MenuItem, FoodItem, DrinkItem, FOOD_ITEMS, COFFEE_ITEMS, NON_COFFEE_ITEMS } from './data';
 import { useCartStore } from '../../store/cartStore';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
 import { useUiStore } from '../../store/uiStore';
 
 export default function Menu() {
   const [activeTab, setActiveTab] = useState<'food' | 'drinks'>('food');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   
-  // Firebase Data States
+  // Square Catalog Data States
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const [coffeeItems, setCoffeeItems] = useState<DrinkItem[]>([]);
   const [nonCoffeeItems, setNonCoffeeItems] = useState<DrinkItem[]>([]);
@@ -42,36 +40,53 @@ export default function Menu() {
     };
   }, [setActiveMenuTab]);
 
-  // Fetch Menu from Firestore
+  // Fetch Menu from Square
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const snapshot = await getDocs(collection(db, 'menu_items'));
-        const fItems: FoodItem[] = [];
-        const cItems: DrinkItem[] = [];
-        const ncItems: DrinkItem[] = [];
+        const res = await fetch('/api/menu');
+        const json = await res.json();
         
-        snapshot.forEach(doc => {
-          const data = doc.data() as MenuItem & { categoryId: string };
-          if (data.categoryId === 'food') {
-            fItems.push(data as FoodItem);
-          } else if (data.categoryId === 'coffee') {
-            cItems.push(data as DrinkItem);
-          } else if (data.categoryId === 'non-coffee') {
-            ncItems.push(data as DrinkItem);
-          }
-        });
+        if (json.success && json.catalog) {
+          const squareItems = json.catalog;
+          
+          const mergeWithSquare = (localItems: any[]) => {
+            return localItems.map(local => {
+              const sqItem = squareItems.find((s: any) => s.itemData?.name === local.title);
+              if (sqItem) {
+                // Found in Square! Merge live prices.
+                if (local.type === 'food') {
+                  const variation = sqItem.itemData?.variations?.[0];
+                  const price = variation ? (variation.itemVariationData.priceMoney.amount / 100) : local.basePrice;
+                  return { ...local, basePrice: price, squareId: sqItem.id, squareVariationId: variation?.id };
+                } else {
+                  const prices = sqItem.itemData?.variations?.map((v: any) => ({
+                    size: v.itemVariationData.name,
+                    price: v.itemVariationData.priceMoney.amount / 100,
+                    squareVariationId: v.id
+                  })) || local.prices;
+                  return { ...local, prices, squareId: sqItem.id };
+                }
+              }
+              return { ...local, isSoldOut: true }; // Not found in Square catalog
+            });
+          };
 
-        // Simple sort by ID to match static data order
-        fItems.sort((a,b) => a.id.localeCompare(b.id));
-        cItems.sort((a,b) => a.id.localeCompare(b.id));
-        ncItems.sort((a,b) => a.id.localeCompare(b.id));
-
-        setFoodItems(fItems);
-        setCoffeeItems(cItems);
-        setNonCoffeeItems(ncItems);
+          setFoodItems(mergeWithSquare(FOOD_ITEMS));
+          setCoffeeItems(mergeWithSquare(COFFEE_ITEMS));
+          setNonCoffeeItems(mergeWithSquare(NON_COFFEE_ITEMS));
+        } else {
+          // Fallback to static if square fails
+          setFoodItems(FOOD_ITEMS);
+          setCoffeeItems(COFFEE_ITEMS);
+          setNonCoffeeItems(NON_COFFEE_ITEMS);
+        }
       } catch (err) {
-        console.error("Error fetching menu:", err);
+        console.error("Error fetching Square menu:", err);
+        // Fallback
+        setFoodItems(FOOD_ITEMS);
+        setCoffeeItems(COFFEE_ITEMS);
+        setNonCoffeeItems(NON_COFFEE_ITEMS);
       } finally {
         setIsLoading(false);
       }
@@ -160,7 +175,8 @@ export default function Menu() {
       quantity: 1,
       size: sizeLabel,
       imageUrl: imageUrl,
-      emoji: emoji
+      emoji: emoji,
+      squareVariationId: (selectedItem as any).squareVariationId
     });
     
     setSelectedItem(null); // Close modal

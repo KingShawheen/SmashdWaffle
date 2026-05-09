@@ -13,6 +13,7 @@ export interface CartItem {
   quantity: number;
   imageUrl?: string;
   emoji?: string;
+  squareVariationId?: string;
 }
 
 interface CartState {

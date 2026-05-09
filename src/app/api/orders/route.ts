@@ -1,116 +1,139 @@
 import { NextResponse } from 'next/server';
-import { db } from '../../../lib/firebase';
-import { collection, addDoc, getDocs, doc, setDoc, query, where, limit } from 'firebase/firestore';
-import { LOCATIONS } from '../../../store/locationStore';
+import { squareClient as client } from '@/lib/square';
+import crypto from 'crypto';
+
+// JSON stringify replacer for BigInt
+const stringifyBigInt = (obj: any) => {
+  return JSON.stringify(obj, (key, value) =>
+    typeof value === 'bigint' ? value.toString() : value
+  );
+};
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { items, customerDetails, token, locationId = 'deer-park' } = body;
+    const { token, items, customerDetails, locationId, idempotencyKey } = body;
 
-    const location = LOCATIONS.find(l => l.id === locationId) || LOCATIONS[0];
+    const sourceId = typeof token === 'string' ? token : token.token;
 
-    if (!items || items.length === 0) {
-      return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
+    if (!sourceId || !items || !locationId) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Server-side validation: In a production app, we would query the menu_items collection 
-    // and recalculate the exact price here to prevent client-side spoofing.
-    // For Phase 1, we will trust the structure but compute the total securely from the items array.
+    // 1. Resolve Square Customer (For Loyalty Integration)
+    let customerId: string | undefined = undefined;
     
-    let subtotal = 0;
-    
-    // Validate each item (simplified validation for now)
-    for (const item of items) {
-      let itemTotal = item.basePrice;
-      if (item.modifiers && item.modifiers.length > 0) {
-        for (const mod of item.modifiers) {
-          itemTotal += mod.price;
+    if (customerDetails.phone || customerDetails.email) {
+      try {
+        const rawPhone = customerDetails.phone ? customerDetails.phone.replace(/\D/g, '') : '';
+        const normalizedPhone = rawPhone.length === 10 ? `+1${rawPhone}` : (rawPhone ? `+${rawPhone}` : undefined);
+
+        // Step 1: Search for existing customer by Phone or Email
+        const searchResponse = await client.customersApi.searchCustomers({
+          query: {
+            filter: {
+              emailAddress: customerDetails.email ? { exact: customerDetails.email } : undefined,
+              phoneNumber: normalizedPhone ? { exact: normalizedPhone } : undefined,
+            }
+          }
+        });
+
+        if (searchResponse.result.customers && searchResponse.result.customers.length > 0) {
+          customerId = searchResponse.result.customers[0].id;
+        } else {
+          // Step 2: Create new customer if not found
+          const createResponse = await client.customersApi.createCustomer({
+            givenName: customerDetails.name?.split(' ')[0],
+            familyName: customerDetails.name?.split(' ').slice(1).join(' '),
+            emailAddress: customerDetails.email || undefined,
+            phoneNumber: normalizedPhone || undefined,
+            idempotencyKey: idempotencyKey ? `${idempotencyKey}-customer` : crypto.randomUUID()
+          });
+          customerId = createResponse.result.customer?.id;
         }
+      } catch (custError) {
+        console.error("Warning: Failed to resolve Square Customer. Order will proceed as guest.", custError);
+        // Continue without customerId to ensure payment succeeds even if CRM fails
       }
-      subtotal += (itemTotal * item.quantity);
     }
 
-    const taxRate = location.taxRate;
-    const tax = subtotal * taxRate;
-    const total = subtotal + tax;
+    // 2. Construct Square Line Items
+    const lineItems = items.map((item: any) => {
+      // Calculate total item price (base + modifiers) per quantity 1
+      const priceInCents = Math.round(item.price * 100);
 
-    console.log(`Processing Square Charge for $${total.toFixed(2)} with token:`, token);
-    // TODO: Actually call Square API here using the token and the securely calculated total.
-    
-    // Write Order to Firestore
-    const orderDoc = await addDoc(collection(db, 'orders'), {
-      customerName: customerDetails.name || 'Guest',
-      customerEmail: customerDetails.email || '',
-      customerPhone: customerDetails.phone || '',
-      pickupTime: customerDetails.pickupTime || 'ASAP',
-      orderNotes: customerDetails.orderNotes || '',
-      locationId: location.id,
-      locationName: location.name,
-      items: items.map((i: any) => ({
-        menuItemId: i.menuItemId,
-        title: i.title,
-        quantity: i.quantity,
-        size: i.size || null,
-        modifiers: i.modifiers || [],
-        price: i.price, // the price per unit
-      })),
-      subtotal: subtotal,
-      tax: tax,
-      total: total,
-      status: 'pending', // 'pending', 'completed', 'cancelled'
-      createdAt: new Date().toISOString(),
-      squareToken: token || null // In real app, store the Square Transaction ID, not the token
+      const lineItem: any = {
+        name: item.title,
+        quantity: item.quantity.toString(),
+        basePriceMoney: {
+          amount: BigInt(priceInCents),
+          currency: 'USD'
+        }
+      };
+
+      if (item.squareVariationId) {
+        lineItem.catalogObjectId = item.squareVariationId;
+      }
+
+      // Add modifiers as notes or custom line items if needed
+      if (item.modifiers && item.modifiers.length > 0) {
+        lineItem.note = item.modifiers.map((m: any) => `+ ${m.name}`).join(', ');
+      }
+
+      return lineItem;
     });
 
-    // Phase 2: Smash'd Loyalty Graph Integration
-    if (customerDetails.phone) {
-      const cleanPhone = customerDetails.phone.replace(/\D/g, '');
-      if (cleanPhone.length >= 10) {
-        try {
-          const customersRef = collection(db, 'customers');
-          const q = query(customersRef, where('phone', '==', cleanPhone), limit(1));
-          const snapshot = await getDocs(q);
-          
-          const earnedPoints = Math.floor(subtotal);
+    // 3. Create the Order in Square
+    // We delegate tax and discount math entirely to Square's native configuration.
+    const orderResponse = await client.ordersApi.createOrder({
+      order: {
+        locationId,
+        lineItems,
+        pricingOptions: {
+          autoApplyTaxes: true,
+          autoApplyDiscounts: true,
+        },
+        customerId: customerId // Links order to Loyalty Program
+      },
+      idempotencyKey: idempotencyKey ? `${idempotencyKey}-order` : crypto.randomUUID()
+    });
 
-          if (snapshot.empty) {
-            // Create new customer profile
-            await addDoc(customersRef, {
-              phone: cleanPhone,
-              name: customerDetails.name || 'Guest',
-              email: customerDetails.email || '',
-              totalSpent: total,
-              points: earnedPoints,
-              orderCount: 1,
-              createdAt: new Date().toISOString(),
-              lastOrderAt: new Date().toISOString()
-            });
-            console.log(`Created new loyalty profile for ${cleanPhone} with ${earnedPoints} points.`);
-          } else {
-            // Update existing customer profile
-            const customerDoc = snapshot.docs[0];
-            const data = customerDoc.data();
-            await setDoc(doc(db, 'customers', customerDoc.id), {
-              ...data,
-              totalSpent: (data.totalSpent || 0) + total,
-              points: (data.points || 0) + earnedPoints,
-              orderCount: (data.orderCount || 0) + 1,
-              lastOrderAt: new Date().toISOString()
-            });
-            console.log(`Updated loyalty profile for ${cleanPhone}. Added ${earnedPoints} points.`);
-          }
-        } catch (err) {
-          console.error("Loyalty Graph Error:", err);
-          // Don't fail the order if loyalty processing fails
-        }
-      }
+    const order = orderResponse.result.order;
+    if (!order || !order.id) {
+      throw new Error("Order creation failed");
     }
 
-    return NextResponse.json({ success: true, orderId: orderDoc.id, total: total });
+    // 3. Process Payment using the Order ID and exact order amount
+    const paymentAmount = order.totalMoney?.amount;
+    
+    if (!paymentAmount) {
+      throw new Error("Order total could not be determined");
+    }
+
+    const paymentResponse = await client.paymentsApi.createPayment({
+      sourceId,
+      idempotencyKey: idempotencyKey ? `${idempotencyKey}-payment` : crypto.randomUUID(),
+      amountMoney: {
+        amount: paymentAmount,
+        currency: 'USD'
+      },
+      orderId: order.id,
+      customerId: customerId, // Links payment to customer CRM
+      buyerEmailAddress: customerDetails.email || undefined,
+      note: `Pickup: ${customerDetails.pickupTime} | Name: ${customerDetails.name} | Phone: ${customerDetails.phone} | Notes: ${customerDetails.orderNotes}`
+    });
+
+    const parsedPayment = JSON.parse(stringifyBigInt(paymentResponse.result));
+    const parsedOrder = JSON.parse(stringifyBigInt(order));
+
+    return NextResponse.json({ success: true, payment: parsedPayment, order: parsedOrder });
 
   } catch (error: any) {
-    console.error('Checkout Error:', error);
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+    console.error("Order API Error:", error);
+    // Extract Square specific errors if present
+    if (error.errors) {
+      console.error(JSON.stringify(error.errors, null, 2));
+    }
+    return NextResponse.json({ error: 'Failed to process order', details: error.message }, { status: 500 });
   }
 }

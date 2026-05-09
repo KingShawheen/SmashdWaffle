@@ -41,7 +41,7 @@ export default function BottomNav() {
         const color = isActive ? activeColor : inactiveColor;
         
         return (
-          <Link key={item.label} href={item.href} style={{
+          <Link key={item.label} href={item.href} aria-label={item.label} style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             position: 'relative', width: '20%', height: '100%',
             color: color

@@ -15,7 +15,7 @@ export const LOCATIONS: Location[] = [
     name: 'Deer Park - FloState', 
     state: 'WA', 
     taxRate: 0.081, 
-    squareLocationId: 'YOUR_SANDBOX_LOCATION_ID' 
+    squareLocationId: process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID || 'YOUR_SANDBOX_LOCATION_ID'
   },
   { 
     id: 'coeur-dalene', 
