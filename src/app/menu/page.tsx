@@ -146,17 +146,7 @@ export default function Menu() {
     const finalPrice = basePrice + modifierTotal;
 
     // Create modifier array with prices
-    const modifierObjects = activeModifiers.map(modName => {
-      // Find the price of this modifier by tracking it or recalculating
-      let price = 0;
-      if (modName === 'Extra Shot') price = 1.00;
-      else if (modName === 'Extra Caramel') price = 0.75;
-      else if (modName === 'Vanilla Syrup') price = 0.50;
-      else if (modName === 'Half n Half') price = 0.50;
-      else if (modName === 'Oat Milk') price = 0.75;
-      else if (modName === 'Almond Milk') price = 0.75;
-      return { name: modName, price };
-    });
+    const modifierObjects: any[] = [];
 
     addToCart({
       menuItemId: selectedItem.id,
@@ -241,75 +231,6 @@ export default function Menu() {
                 </label>
               );
             })}
-          </div>
-
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Espresso Options</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" onChange={() => handleToggleModifier('Extra Shot', 1.00)} checked={activeModifiers.includes('Extra Shot')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Extra Shot of Espresso</span>
-              </div>
-              <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$1.00</span>
-            </label>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" onChange={() => {
-                  if (activeModifiers.includes('Decaf')) {
-                    setActiveModifiers(activeModifiers.filter(m => m !== 'Decaf'));
-                  } else {
-                    setActiveModifiers([...activeModifiers, 'Decaf']);
-                  }
-                }} checked={activeModifiers.includes('Decaf')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Decaf</span>
-              </div>
-              <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>Free</span>
-            </label>
-          </div>
-
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Dairy & Alternatives</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            {[
-              { name: 'Whole Milk', price: 0 }, 
-              { name: 'Half n Half', price: 0.50 }, 
-              { name: 'Oat Milk', price: 0.75 }, 
-              { name: 'Almond Milk', price: 0.75 }
-            ].map((milk, idx) => {
-              const isSelected = activeModifiers.includes(milk.name) || (idx === 0 && !activeModifiers.some(m => ['Whole Milk', 'Half n Half', 'Oat Milk', 'Almond Milk'].includes(m)));
-              return (
-                <label key={milk.name} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                  <input type="radio" name="milk" onChange={() => {
-                    // Remove other milks, add this one
-                    const newMods = activeModifiers.filter(m => !['Whole Milk', 'Half n Half', 'Oat Milk', 'Almond Milk'].includes(m));
-                    const currentMilkPrice = activeModifiers.find(m => m === 'Half n Half') ? 0.50 : 
-                                            activeModifiers.find(m => m === 'Oat Milk') ? 0.75 : 
-                                            activeModifiers.find(m => m === 'Almond Milk') ? 0.75 : 0;
-                    
-                    setActiveModifiers([...newMods, milk.name]);
-                    setModifierTotal(prev => prev - currentMilkPrice + milk.price);
-                  }} checked={isSelected} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                  <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{milk.name} {milk.price > 0 ? `(+$${milk.price.toFixed(2)})` : '(Free)'}</span>
-                </label>
-              );
-            })}
-          </div>
-
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Flavors & Sauces</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" onChange={() => handleToggleModifier('Extra Caramel', 0.75)} checked={activeModifiers.includes('Extra Caramel')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Extra Caramel</span>
-              </div>
-              <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$0.75</span>
-            </label>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" onChange={() => handleToggleModifier('Vanilla Syrup', 0.50)} checked={activeModifiers.includes('Vanilla Syrup')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Vanilla Syrup</span>
-              </div>
-              <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$0.50</span>
-            </label>
           </div>
         </>
       );
