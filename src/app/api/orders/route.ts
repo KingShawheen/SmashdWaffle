@@ -63,16 +63,18 @@ export async function POST(request: Request) {
       const priceInCents = Math.round(item.price * 100);
 
       const lineItem: any = {
-        name: item.title,
-        quantity: item.quantity.toString(),
-        basePriceMoney: {
-          amount: BigInt(priceInCents),
-          currency: 'USD'
-        }
+        quantity: item.quantity.toString()
       };
 
       if (item.squareVariationId) {
         lineItem.catalogObjectId = item.squareVariationId;
+      } else {
+        // Fallback for custom or unmapped items
+        lineItem.name = item.title;
+        lineItem.basePriceMoney = {
+          amount: BigInt(priceInCents),
+          currency: 'USD'
+        };
       }
 
       // Add modifiers as notes or custom line items if needed

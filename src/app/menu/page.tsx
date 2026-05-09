@@ -125,6 +125,17 @@ export default function Menu() {
     }
   };
 
+  const handleOpenItemModal = (item: any) => {
+    setSelectedItem(item);
+    if (item.type !== 'food' && item.prices && item.prices.length > 0) {
+      // Default size selection
+      const defaultSize = item.prices.length > 1 ? item.prices[1] : item.prices[0];
+      setSelectedSize(defaultSize);
+    } else {
+      setSelectedSize(null);
+    }
+  };
+
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
 
   const handleQuickAdd = (item: any) => {
@@ -147,24 +158,8 @@ export default function Menu() {
       setToastMessage(`Added ${item.title} to cart`);
       setTimeout(() => setToastMessage(null), 2000);
     } else {
-      // Toggle inline expansion for drinks
-      if (expandedItemId === item.id) {
-        setExpandedItemId(null);
-      } else {
-        setExpandedItemId(item.id);
-        // Default size selection
-        const defaultSize = item.prices.length > 1 ? item.prices[1] : item.prices[0];
-        setSelectedSize(defaultSize);
-        setSelectedItem(item);
-        
-        // Ensure the expanded item scrolls into view so the Add button is visible
-        setTimeout(() => {
-          const el = document.getElementById(`drink-card-${item.id}`);
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }
-        }, 300);
-      }
+      // For drinks, opening the modal is required to pick a size
+      handleOpenItemModal(item);
     }
   };
 
@@ -183,7 +178,7 @@ export default function Menu() {
       size: sizeLabel,
       imageUrl: drink.imageUrl,
       emoji: drink.emoji,
-      squareVariationId: (drink as any).squareVariationId
+      squareVariationId: selectedSize ? selectedSize.squareVariationId : drink.prices[0].squareVariationId
     });
     
     setToastMessage(`Added ${drink.title} to cart`);
@@ -211,7 +206,7 @@ export default function Menu() {
         >
           {/* Main Card Header */}
           <div 
-            onClick={() => setSelectedItem(drink)}
+            onClick={() => handleOpenItemModal(drink)}
             style={{ display: 'flex', alignItems: 'center', padding: '1rem', cursor: drink.isSoldOut ? 'not-allowed' : 'pointer' }}
           >
             <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: drink.type === 'coffee' ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' : 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0, overflow: 'hidden' }}>
@@ -390,7 +385,7 @@ export default function Menu() {
             {foodItems.map((item) => (
               <div 
                 key={item.id} 
-                onClick={() => setSelectedItem(item)}
+                onClick={() => handleOpenItemModal(item)}
                 style={{ 
                   backgroundColor: 'var(--sw-surface)', borderRadius: '16px', overflow: 'hidden', 
                   boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid var(--sw-border)', 
@@ -524,15 +519,47 @@ export default function Menu() {
                   : 'A delicious Smash\'d Waffle House specialty crafted with love.'}
               </p>
               
+              {selectedItem.type !== 'food' && (
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                  {(selectedItem as any).prices.map((p: any) => {
+                    const isSelected = selectedSize?.size === p.size;
+                    return (
+                      <button 
+                        key={p.size}
+                        onClick={(e) => { e.stopPropagation(); setSelectedSize(p); }} 
+                        style={{ 
+                          flex: 1, padding: '0.6rem 0.4rem', borderRadius: '12px', 
+                          border: isSelected ? '2px solid var(--sw-red)' : '1px solid var(--sw-border)', 
+                          backgroundColor: isSelected ? '#fef2f2' : 'var(--sw-surface)', 
+                          fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer',
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                          transition: 'all 0.2s ease',
+                          color: isSelected ? 'var(--sw-red)' : 'var(--sw-text)'
+                        }}
+                      >
+                        <span>{p.size}</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '0.2rem', color: isSelected ? 'var(--sw-red)' : 'var(--sw-text-muted)' }}>
+                          ${p.price.toFixed(2)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
               <button 
                 onClick={() => {
-                  setSelectedItem(null);
-                  handleQuickAdd(selectedItem);
+                  if (selectedItem.type === 'food') {
+                    setSelectedItem(null);
+                    handleQuickAdd(selectedItem);
+                  } else {
+                    handleInlineAddToCart(selectedItem);
+                  }
                 }}
                 style={{ width: '100%', padding: '1rem', backgroundColor: 'var(--sw-red)', color: 'white', border: 'none', borderRadius: '50px', fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.2)' }}
               >
                 <ShoppingCart size={20} /> 
-                Add to Cart — ${(selectedItem.type === 'food' ? (selectedItem as any).basePrice : (selectedItem as any).prices?.[0]?.price)?.toFixed(2)}+
+                Add to Cart — ${(selectedItem.type === 'food' ? (selectedItem as any).basePrice : (selectedSize ? selectedSize.price : (selectedItem as any).prices?.[0]?.price))?.toFixed(2)}
               </button>
             </div>
           </div>
