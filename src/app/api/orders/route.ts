@@ -84,33 +84,45 @@ export async function POST(request: Request) {
     });
 
     // 3. Create the Order in Square
-    // We delegate tax and discount math entirely to Square's native configuration.
-    const orderResponse = await client.ordersApi.createOrder({
-      order: {
-        locationId,
-        lineItems,
-        pricingOptions: {
-          autoApplyTaxes: true,
-          autoApplyDiscounts: true,
-        },
-        customerId: customerId, // Links order to Loyalty Program
-        fulfillments: [
-          {
-            type: 'PICKUP',
-            state: 'PROPOSED',
-            pickupDetails: {
-              recipient: {
-                displayName: customerDetails.name || 'Guest',
-                emailAddress: customerDetails.email || undefined,
-                phoneNumber: customerDetails.phone || undefined
-              },
-              scheduleType: 'ASAP',
-              pickupAt: new Date(Date.now() + 15 * 60000).toISOString(),
-              note: customerDetails.orderNotes || undefined
-            }
-          }
-        ]
+    // We delegate tax and discount math entirely to Square's native configuration, but enforce a fallback rate if none is configured on the items.
+    const orderPayload: any = {
+      locationId,
+      lineItems,
+      pricingOptions: {
+        autoApplyTaxes: true,
+        autoApplyDiscounts: true,
       },
+      customerId: customerId, // Links order to Loyalty Program
+      fulfillments: [
+        {
+          type: 'PICKUP',
+          state: 'PROPOSED',
+          pickupDetails: {
+            recipient: {
+              displayName: customerDetails.name || 'Guest',
+              emailAddress: customerDetails.email || undefined,
+              phoneNumber: customerDetails.phone || undefined
+            },
+            scheduleType: 'ASAP',
+            pickupAt: new Date(Date.now() + 15 * 60000).toISOString(),
+            note: customerDetails.orderNotes || undefined
+          }
+        }
+      ]
+    };
+
+    if (body.taxRate) {
+      orderPayload.taxes = [
+        {
+          name: 'Sales Tax',
+          percentage: (body.taxRate * 100).toString(),
+          scope: 'ORDER'
+        }
+      ];
+    }
+
+    const orderResponse = await client.ordersApi.createOrder({
+      order: orderPayload,
       idempotencyKey: idempotencyKey ? `${idempotencyKey}-order` : crypto.randomUUID()
     });
 

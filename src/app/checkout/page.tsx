@@ -43,7 +43,7 @@ export default function Checkout() {
         const res = await fetch('/api/orders/calculate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items, locationId: activeLocation.squareLocationId })
+          body: JSON.stringify({ items, locationId: activeLocation.squareLocationId, taxRate: activeLocation.taxRate })
         });
         const order = await res.json();
         if (order.totalMoney) {
@@ -93,7 +93,8 @@ export default function Checkout() {
           items: items,
           customerDetails: customerDetails,
           locationId: activeLocation.squareLocationId,
-          idempotencyKey: checkoutIdempotencyKey.current
+          idempotencyKey: checkoutIdempotencyKey.current,
+          taxRate: activeLocation.taxRate
         })
       });
 

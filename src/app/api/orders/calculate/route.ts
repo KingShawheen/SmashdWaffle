@@ -42,15 +42,27 @@ export async function POST(request: Request) {
     });
 
     // Use CalculateOrder to get the exact Square totals (Bankers' rounding, native taxes)
-    const calculateResponse = await client.ordersApi.calculateOrder({
-      order: {
-        locationId,
-        lineItems,
-        pricingOptions: {
-          autoApplyTaxes: true,
-          autoApplyDiscounts: true,
-        }
+    const orderPayload: any = {
+      locationId,
+      lineItems,
+      pricingOptions: {
+        autoApplyTaxes: true,
+        autoApplyDiscounts: true,
       }
+    };
+
+    if (body.taxRate) {
+      orderPayload.taxes = [
+        {
+          name: 'Sales Tax',
+          percentage: (body.taxRate * 100).toString(),
+          scope: 'ORDER'
+        }
+      ];
+    }
+
+    const calculateResponse = await client.ordersApi.calculateOrder({
+      order: orderPayload
     });
 
     const order = calculateResponse.result.order;
