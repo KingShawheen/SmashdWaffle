@@ -148,15 +148,8 @@ export default function Menu() {
     // Create modifier array with prices
     const modifierObjects = activeModifiers.map(modName => {
       // Find the price of this modifier by tracking it or recalculating
-      // Since we didn't store individual prices in a map, let's look them up based on name or simply pass them dynamically.
-      // A quick approach is to estimate it or refactor handleToggleModifier.
-      // Wait, we can get prices directly here based on known constants.
       let price = 0;
-      if (modName === 'Side Bacon') price = 3.50;
-      else if (modName === 'Side Sausage') price = 3.00;
-      else if (modName === 'Extra Shot') price = 1.00;
-      else if (modName === 'Extra Cheese') price = 1.00;
-      else if (modName === 'Chocolate Sauce') price = 0.75;
+      if (modName === 'Extra Shot') price = 1.00;
       else if (modName === 'Extra Caramel') price = 0.75;
       else if (modName === 'Vanilla Syrup') price = 0.50;
       else if (modName === 'Half n Half') price = 0.50;
@@ -221,49 +214,6 @@ export default function Menu() {
           <p style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem', lineHeight: 1.4 }}>
             {food.description}
           </p>
-
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Popular Sides</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" onChange={() => handleToggleModifier('Side Bacon', 3.50)} checked={activeModifiers.includes('Side Bacon')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Side of Bacon (3 Slices)</span>
-              </div>
-              <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$3.50</span>
-            </label>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" onChange={() => handleToggleModifier('Side Sausage', 3.00)} checked={activeModifiers.includes('Side Sausage')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Side of Sausage</span>
-              </div>
-              <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$3.00</span>
-            </label>
-          </div>
-
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Upgrades & Extras</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" onChange={() => handleToggleModifier('Extra Cheese', 1.00)} checked={activeModifiers.includes('Extra Cheese')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Extra Cheese</span>
-              </div>
-              <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$1.00</span>
-            </label>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" onChange={() => handleToggleModifier('Chocolate Sauce', 0.75)} checked={activeModifiers.includes('Chocolate Sauce')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Chocolate Sauce</span>
-              </div>
-              <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$0.75</span>
-            </label>
-            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" onChange={() => handleToggleModifier('Extra Caramel', 0.75)} checked={activeModifiers.includes('Extra Caramel')} style={{ width: '18px', height: '18px', accentColor: 'var(--sw-red)' }} />
-                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Extra Caramel</span>
-              </div>
-              <span style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem' }}>+$0.75</span>
-            </label>
-          </div>
         </>
       );
     } else {
