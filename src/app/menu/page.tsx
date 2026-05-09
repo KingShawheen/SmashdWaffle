@@ -125,6 +125,8 @@ export default function Menu() {
     }
   };
 
+  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
+
   const handleQuickAdd = (item: any) => {
     if (item.isSoldOut) return;
     
@@ -145,121 +147,135 @@ export default function Menu() {
       setToastMessage(`Added ${item.title} to cart`);
       setTimeout(() => setToastMessage(null), 2000);
     } else {
-      setSelectedItem(item);
+      // Toggle inline expansion for drinks
+      if (expandedItemId === item.id) {
+        setExpandedItemId(null);
+      } else {
+        setExpandedItemId(item.id);
+        // Default size selection
+        const defaultSize = item.prices.length > 1 ? item.prices[1] : item.prices[0];
+        setSelectedSize(defaultSize);
+        setSelectedItem(item);
+      }
     }
   };
 
-  const handleAddToCart = () => {
-    if (!selectedItem) return;
-    
-    let basePrice = 0;
-    let sizeLabel = undefined;
-    let imageUrl;
-    let emoji;
-    
-    if (selectedItem.type === 'food') {
-      basePrice = (selectedItem as FoodItem).basePrice;
-      imageUrl = (selectedItem as FoodItem).imageUrl;
-      emoji = (selectedItem as FoodItem).emojis;
-    } else {
-      basePrice = selectedSize ? selectedSize.price : (selectedItem as DrinkItem).prices[0].price;
-      sizeLabel = selectedSize ? selectedSize.size : (selectedItem as DrinkItem).prices[0].size;
-      emoji = (selectedItem as DrinkItem).emoji;
-      imageUrl = (selectedItem as DrinkItem).imageUrl;
-    }
-
-    const finalPrice = basePrice + modifierTotal;
-
-    // Create modifier array with prices
-    const modifierObjects: any[] = [];
+  const handleInlineAddToCart = (drink: any) => {
+    const sizeLabel = selectedSize ? selectedSize.size : drink.prices[0].size;
+    const finalPrice = selectedSize ? selectedSize.price : drink.prices[0].price;
 
     addToCart({
-      menuItemId: selectedItem.id,
-      title: selectedItem.title,
-      type: selectedItem.type,
-      basePrice: basePrice,
+      menuItemId: drink.id,
+      title: drink.title,
+      type: drink.type,
+      basePrice: finalPrice,
       price: finalPrice,
-      modifiers: modifierObjects,
+      modifiers: [],
       quantity: 1,
       size: sizeLabel,
-      imageUrl: imageUrl,
-      emoji: emoji,
-      squareVariationId: (selectedItem as any).squareVariationId
+      imageUrl: drink.imageUrl,
+      emoji: drink.emoji,
+      squareVariationId: (drink as any).squareVariationId
     });
     
-    setSelectedItem(null); // Close modal
+    setToastMessage(`Added ${drink.title} to cart`);
+    setTimeout(() => setToastMessage(null), 2000);
+    setExpandedItemId(null);
+    setSelectedItem(null);
   };
 
-  const closeSheet = () => setSelectedItem(null);
-
-  const calculateCurrentPrice = () => {
-    if (!selectedItem) return 0;
-    let base = 0;
-    if (selectedItem.type === 'food') base = (selectedItem as FoodItem).basePrice;
-    if (selectedItem.type === 'coffee' || selectedItem.type === 'non-coffee') {
-      base = selectedSize ? selectedSize.price : 0;
-    }
-    return base + modifierTotal;
-  };
-
-  // Helper to render the modifier sheet content
-  const renderSheetContent = () => {
-    if (!selectedItem) return null;
-
-    if (selectedItem.type === 'food') {
-      const food = selectedItem as FoodItem;
+  const renderDrinkList = (items: any[]) => {
+    return items.map(drink => {
+      const isExpanded = expandedItemId === drink.id;
       return (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-            <div>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 900, marginBottom: '0.2rem' }}>{food.title}</h2>
-              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                <div style={{ fontSize: '1.2rem', letterSpacing: '4px' }}>{food.emojis}</div>
-                {food.dietary && food.dietary.map(tag => (
-                  <span key={tag} style={{ 
-                    backgroundColor: tag === 'V' ? '#dcfce7' : '#fef3c7', 
-                    color: tag === 'V' ? '#166534' : '#92400e', 
-                    fontSize: '0.75rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px' 
-                  }}>{tag}</span>
-                ))}
-              </div>
+        <div 
+          key={drink.id} 
+          style={{ 
+            display: 'flex', flexDirection: 'column', backgroundColor: 'var(--sw-surface)', 
+            borderRadius: '16px', boxShadow: isExpanded ? '0 8px 25px rgba(0,0,0,0.06)' : '0 4px 15px rgba(0,0,0,0.03)', 
+            border: isExpanded ? '1px solid var(--sw-navy)' : '1px solid var(--sw-border)',
+            opacity: drink.isSoldOut ? 0.5 : 1,
+            transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+            overflow: 'hidden'
+          }}
+        >
+          {/* Main Card Header (Clickable) */}
+          <div 
+            onClick={() => handleQuickAdd(drink)}
+            style={{ display: 'flex', alignItems: 'center', padding: '1rem', cursor: drink.isSoldOut ? 'not-allowed' : 'pointer' }}
+          >
+            <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: drink.type === 'coffee' ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' : 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0, overflow: 'hidden' }}>
+              {drink.imageUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={drink.imageUrl} alt={drink.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                drink.emoji
+              )}
             </div>
-            <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>${food.basePrice.toFixed(2)}</span>
+            <div style={{ flex: 1 }}>
+              <h4 style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '0.2rem' }}>{drink.title}</h4>
+              <div style={{ color: 'var(--sw-text-muted)', fontSize: '0.75rem', lineHeight: 1.3 }}>{drink.description}</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '1rem' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.95rem' }}>
+                {drink.isSoldOut ? <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>SOLD OUT</span> : `$${drink.prices[0].price.toFixed(2)}+`}
+              </span>
+              <button style={{ 
+                width: '28px', height: '28px', borderRadius: '50%', 
+                backgroundColor: drink.isSoldOut ? '#e5e7eb' : (isExpanded ? 'var(--sw-navy)' : 'var(--sw-yellow)'), 
+                display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', 
+                marginTop: '0.25rem', pointerEvents: 'none',
+                transform: isExpanded ? 'rotate(45deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s ease, background-color 0.3s ease'
+              }}>
+                <Plus size={16} color={drink.isSoldOut ? '#9ca3af' : (isExpanded ? 'white' : 'black')} strokeWidth={3} />
+              </button>
+            </div>
           </div>
-          <p style={{ color: 'var(--sw-text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem', lineHeight: 1.4 }}>
-            {food.description}
-          </p>
-        </>
-      );
-    } else {
-      const drink = selectedItem as DrinkItem;
-      return (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 900, marginBottom: '0.2rem' }}>{drink.title}</h2>
-          </div>
-          
-          <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--sw-border)' }}>Select Size</h3>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-            {drink.prices.map((p) => {
-              const isSelected = selectedSize?.size === p.size;
-              return (
-                <label key={p.size} style={{ 
-                  flex: 1, minWidth: '70px',
-                  border: isSelected ? '2px solid var(--sw-red)' : '1px solid var(--sw-border)', 
-                  backgroundColor: isSelected ? '#fef2f2' : 'var(--sw-surface)',
-                  borderRadius: '8px', padding: '0.5rem', textAlign: 'center', cursor: 'pointer' 
+
+          {/* Inline Expansion Area */}
+          <div style={{
+            maxHeight: isExpanded ? '300px' : '0px',
+            opacity: isExpanded ? 1 : 0,
+            transition: 'max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease',
+            backgroundColor: '#fafafa',
+            borderTop: isExpanded ? '1px solid var(--sw-border)' : 'none'
+          }}>
+            <div style={{ padding: '1rem' }}>
+              <h5 style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--sw-text-muted)' }}>Select Size</h5>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                {drink.prices.map((p: any) => {
+                  const isSelected = selectedSize?.size === p.size;
+                  return (
+                    <label key={p.size} style={{ 
+                      flex: 1, minWidth: '60px',
+                      border: isSelected ? '2px solid var(--sw-red)' : '1px solid var(--sw-border)', 
+                      backgroundColor: isSelected ? '#fef2f2' : 'var(--sw-surface)',
+                      borderRadius: '8px', padding: '0.5rem', textAlign: 'center', cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}>
+                      <input type="radio" name={`size-${drink.id}`} onChange={() => setSelectedSize(p)} checked={isSelected} style={{ display: 'none' }} />
+                      <div style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.25rem' }}>{p.size}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--sw-text-muted)' }}>${p.price.toFixed(2)}</div>
+                    </label>
+                  );
+                })}
+              </div>
+              <button 
+                onClick={(e) => { e.stopPropagation(); handleInlineAddToCart(drink); }}
+                style={{ 
+                  width: '100%', padding: '0.75rem', backgroundColor: 'var(--sw-red)', color: 'white', 
+                  fontSize: '0.95rem', fontWeight: 800, borderRadius: '50px',
+                  display: 'flex', justifyContent: 'center', alignItems: 'center',
+                  border: 'none', cursor: 'pointer'
                 }}>
-                  <input type="radio" name="size" onChange={() => setSelectedSize(p)} checked={isSelected} style={{ display: 'none' }} />
-                  <div style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.25rem' }}>{p.size}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--sw-text-muted)' }}>${p.price.toFixed(2)}</div>
-                </label>
-              );
-            })}
+                Add to Cart — ${selectedSize ? selectedSize.price.toFixed(2) : drink.prices[0].price.toFixed(2)}
+              </button>
+            </div>
           </div>
-        </>
+        </div>
       );
-    }
+    });
   };
 
   return (
@@ -396,152 +412,20 @@ export default function Menu() {
           {/* Coffee Menu Section */}
           <div style={{ marginTop: '0.5rem' }}>
             <h3 style={{ fontWeight: 900, marginBottom: '1rem', fontSize: '1.2rem', paddingLeft: '0.5rem' }}>Hot & Iced Coffee</h3>
-            
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {coffeeItems.map(drink => (
-                <div 
-                  key={drink.id} 
-                  onClick={() => handleQuickAdd(drink)} 
-                  style={{ 
-                    display: 'flex', alignItems: 'center', backgroundColor: 'var(--sw-surface)', 
-                    padding: '1rem', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', 
-                    border: '1px solid var(--sw-border)', cursor: drink.isSoldOut ? 'not-allowed' : 'pointer',
-                    opacity: drink.isSoldOut ? 0.5 : 1
-                  }}
-                >
-                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0, overflow: 'hidden' }}>
-                    {drink.imageUrl ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={drink.imageUrl} alt={drink.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      drink.emoji
-                    )}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '0.2rem' }}>{drink.title}</h4>
-                    <div style={{ color: 'var(--sw-text-muted)', fontSize: '0.75rem', lineHeight: 1.3 }}>{drink.description}</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '1rem' }}>
-                    <span style={{ fontWeight: 800, fontSize: '0.95rem' }}>
-                      {drink.isSoldOut ? <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>SOLD OUT</span> : `$${drink.prices[0].price.toFixed(2)}+`}
-                    </span>
-                    <button style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: drink.isSoldOut ? '#e5e7eb' : 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', marginTop: '0.25rem', pointerEvents: 'none' }}>
-                      <Plus size={16} color={drink.isSoldOut ? '#9ca3af' : 'black'} strokeWidth={3} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+              {renderDrinkList(coffeeItems)}
             </div>
           </div>
           
           {/* Non-Coffee Menu Section */}
           <div style={{ marginTop: '2.5rem' }}>
             <h3 style={{ fontWeight: 900, marginBottom: '1rem', fontSize: '1.2rem', paddingLeft: '0.5rem' }}>Non-Coffee & Juice</h3>
-            
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {nonCoffeeItems.map(drink => (
-                <div 
-                  key={drink.id} 
-                  onClick={() => handleQuickAdd(drink)} 
-                  style={{ 
-                    display: 'flex', alignItems: 'center', backgroundColor: 'var(--sw-surface)', 
-                    padding: '1rem', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', 
-                    border: '1px solid var(--sw-border)', cursor: drink.isSoldOut ? 'not-allowed' : 'pointer',
-                    opacity: drink.isSoldOut ? 0.5 : 1
-                  }}
-                >
-                  <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginRight: '1rem', flexShrink: 0, overflow: 'hidden' }}>
-                    {drink.imageUrl ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={drink.imageUrl} alt={drink.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      drink.emoji
-                    )}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '0.2rem' }}>{drink.title}</h4>
-                    <div style={{ color: 'var(--sw-text-muted)', fontSize: '0.75rem', lineHeight: 1.3 }}>{drink.description}</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '1rem' }}>
-                    <span style={{ fontWeight: 800, fontSize: '0.95rem' }}>
-                      {drink.isSoldOut ? <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>SOLD OUT</span> : `$${drink.prices[0].price.toFixed(2)}+`}
-                    </span>
-                    <button style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: drink.isSoldOut ? '#e5e7eb' : 'var(--sw-yellow)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', marginTop: '0.25rem', pointerEvents: 'none' }}>
-                      <Plus size={16} color={drink.isSoldOut ? '#9ca3af' : 'black'} strokeWidth={3} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+              {renderDrinkList(nonCoffeeItems)}
             </div>
           </div>
         </div>
       )}
-
-      {/* iOS-Style Bottom Sheet Modal for Item Customization */}
-      <div 
-        style={{
-          position: 'absolute', top: 0, right: 0, bottom: 0, left: 0,
-          backgroundColor: 'rgba(0,0,0,0.6)', 
-          zIndex: 10000, 
-          opacity: selectedItem ? 1 : 0, 
-          pointerEvents: selectedItem ? 'auto' : 'none',
-          transition: 'opacity 0.3s ease',
-          display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-          alignItems: 'center'
-        }}
-        onClick={closeSheet}
-      >
-        <div 
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            backgroundColor: 'var(--sw-surface)', 
-            borderTopLeftRadius: '24px', borderTopRightRadius: '24px',
-            padding: '1.5rem', 
-            maxHeight: '90vh', 
-            width: '100%', maxWidth: '480px',
-            overflowY: 'auto',
-            transform: selectedItem ? 'translateY(0)' : 'translateY(100%)',
-            transition: 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-            display: 'flex', flexDirection: 'column', position: 'relative'
-          }}
-        >
-          {/* Header Close Button */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-            <div style={{ width: '40px', height: '5px', backgroundColor: '#d1d5db', borderRadius: '5px' }}></div>
-          </div>
-          
-          <button 
-            onClick={closeSheet}
-            style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', backgroundColor: '#f3f4f6', borderRadius: '50%', padding: '0.4rem', border: 'none', display: 'flex', zIndex: 10 }}
-          >
-            <X size={20} color="#4b5563" />
-          </button>
-
-          {/* Dynamic Content */}
-          <div style={{ flex: 1, paddingBottom: '80px' }}>
-            {renderSheetContent()}
-          </div>
-
-          {/* Sticky Add To Cart Button */}
-          <div style={{ 
-            position: 'absolute', bottom: 0, left: 0, right: 0, 
-            padding: '1rem', backgroundColor: 'var(--sw-surface)', 
-            borderTop: '1px solid var(--sw-border)' 
-          }}>
-            <button 
-              onClick={handleAddToCart}
-              style={{ 
-              width: '100%', padding: '1rem', backgroundColor: 'var(--sw-red)', color: 'white', 
-              fontSize: '1.1rem', fontWeight: 800, borderRadius: '50px',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              border: 'none', cursor: 'pointer'
-            }}>
-              <span>Add to Cart</span>
-              <span>${calculateCurrentPrice().toFixed(2)}</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* Quick Add Toast Indicator */}
       <div style={{
@@ -549,6 +433,24 @@ export default function Menu() {
         bottom: toastMessage ? '2rem' : '-100px',
         left: '50%',
         transform: 'translateX(-50%)',
+        backgroundColor: 'var(--sw-green)',
+        color: 'white',
+        padding: '0.75rem 1.5rem',
+        borderRadius: '50px',
+        fontWeight: 800,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        transition: 'bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+        zIndex: 11000,
+        pointerEvents: 'none'
+      }}>
+        {toastMessage}
+      </div>
+
+      {/* Quick Add Toast Indicator */}
+      <div style={{
+        position: 'fixed',
+        bottom: toastMessage ? '2rem' : '-100px',
+        right: '1.5rem',
         backgroundColor: 'var(--sw-green)',
         color: 'white',
         padding: '0.75rem 1.5rem',
