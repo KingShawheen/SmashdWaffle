@@ -48,10 +48,7 @@ function SuccessContent() {
           Your payment was successful. The kitchen has received your ticket.
         </p>
         
-        {/* TEMPORARY DEBUG VISUAL */}
-        <div style={{ marginTop: '1rem', padding: '0.5rem', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-          DEBUG: Raw Square Status is [{orderStatus}]
-        </div>
+        {/* Removed debug block */}
       </div>
 
       {/* Order Status Tracker */}
