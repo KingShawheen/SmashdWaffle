@@ -77,7 +77,14 @@ export default function Menu() {
               if (localMatch.type === 'food') {
                 const variation = sqItem.itemData?.variations?.[0];
                 const price = variation ? (variation.itemVariationData.priceMoney.amount / 100) : 0;
-                finalItem = { ...localMatch, description, basePrice: price, squareId: sqItem.id, squareVariationId: variation?.id };
+                finalItem = { 
+                  ...localMatch, 
+                  description, 
+                  basePrice: price, 
+                  squareId: sqItem.id, 
+                  squareVariationId: variation?.id,
+                  imageUrl: sqItem.resolvedImageUrl || localMatch.imageUrl 
+                };
                 dynamicFood.push(finalItem);
               } else {
                 const prices = sqItem.itemData?.variations?.map((v: any) => ({
@@ -85,7 +92,13 @@ export default function Menu() {
                   price: v.itemVariationData.priceMoney.amount / 100,
                   squareVariationId: v.id
                 })) || [];
-                finalItem = { ...localMatch, description, prices, squareId: sqItem.id };
+                finalItem = { 
+                  ...localMatch, 
+                  description, 
+                  prices, 
+                  squareId: sqItem.id,
+                  imageUrl: sqItem.resolvedImageUrl || localMatch.imageUrl
+                };
                 if (localMatch.type === 'coffee') dynamicCoffee.push(finalItem);
                 else dynamicNonCoffee.push(finalItem);
               }
