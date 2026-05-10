@@ -1,6 +1,47 @@
 import { NextResponse } from 'next/server';
 import { squareClient as client } from '@/lib/square';
 import crypto from 'crypto';
+import { FOOD_ITEMS, COFFEE_ITEMS, NON_COFFEE_ITEMS } from '@/app/menu/data';
+
+// ==========================================
+// ANTI-BOT SPAM PROTECTION (Rate Limiting)
+// ==========================================
+const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const WINDOW_MS = 60 * 1000; // 1 minute
+  const MAX_REQUESTS = 5; // Max 5 checkout attempts per minute per IP
+
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (!record) {
+    rateLimitMap.set(ip, { count: 1, lastReset: now });
+    return true;
+  }
+
+  if (now - record.lastReset > WINDOW_MS) {
+    rateLimitMap.set(ip, { count: 1, lastReset: now });
+    return true;
+  }
+
+  if (record.count >= MAX_REQUESTS) {
+    return false;
+  }
+
+  record.count += 1;
+  return true;
+}
+
+// Clean up the memory map periodically to prevent memory leaks
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, record] of rateLimitMap.entries()) {
+    if (now - record.lastReset > 60 * 1000) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}, 5 * 60 * 1000); // Clean every 5 mins
 
 // JSON stringify replacer for BigInt
 const stringifyBigInt = (obj: any) => {
@@ -11,13 +52,20 @@ const stringifyBigInt = (obj: any) => {
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+    if (!checkRateLimit(ip)) {
+      console.warn(`[SECURITY] Bot blocked. Too many checkout attempts from IP: ${ip}`);
+      return NextResponse.json({ error: 'Too many requests. Please wait a minute before trying again.' }, { status: 429 });
+    }
+
     const body = await request.json();
-    const { token, items, customerDetails, locationId, idempotencyKey } = body;
+    const { token, items, customerDetails, idempotencyKey } = body;
 
     const sourceId = typeof token === 'string' ? token : token.token;
+    const safeLocationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!;
 
-    if (!sourceId || !items || !locationId) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (!sourceId || !items || !safeLocationId) {
+      return NextResponse.json({ error: 'Missing required fields or server configuration' }, { status: 400 });
     }
 
     // 1. Resolve Square Customer (For Loyalty Integration)
@@ -69,12 +117,8 @@ export async function POST(request: Request) {
       if (item.squareVariationId) {
         lineItem.catalogObjectId = item.squareVariationId;
       } else {
-        // Fallback for custom or unmapped items
-        lineItem.name = item.title;
-        lineItem.basePriceMoney = {
-          amount: BigInt(priceInCents),
-          currency: 'USD'
-        };
+        console.error(`[CRITICAL SECURITY WARNING] Ad-hoc item requested with no Square ID: ${item.title}`);
+        throw new Error(`Invalid item: ${item.title}`);
       }
 
       // Add modifiers as notes or custom line items if needed
@@ -88,7 +132,7 @@ export async function POST(request: Request) {
     // 3. Create the Order in Square
     // We delegate tax and discount math entirely to Square's native configuration, but enforce a fallback rate if none is configured on the items.
     const orderPayload: any = {
-      locationId,
+      locationId: safeLocationId,
       lineItems,
       pricingOptions: {
         autoApplyTaxes: true,
@@ -113,15 +157,6 @@ export async function POST(request: Request) {
       ]
     };
 
-    if (body.taxRate) {
-      orderPayload.taxes = [
-        {
-          name: 'Sales Tax',
-          percentage: (body.taxRate * 100).toString(),
-          scope: 'ORDER'
-        }
-      ];
-    }
 
     const orderResponse = await client.ordersApi.createOrder({
       order: orderPayload,

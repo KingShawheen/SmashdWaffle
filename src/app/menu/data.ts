@@ -4,8 +4,7 @@ export type FoodItem = {
   title: string;
   emojis: string;
   emojiBg: string;
-  description: string;
-  basePrice: number;
+  
   isChefChoice?: boolean;
   isSoldOut?: boolean;
   dietary?: ('V' | 'GF')[];
@@ -16,10 +15,9 @@ export type DrinkItem = {
   id: string;
   type: 'coffee' | 'non-coffee';
   title: string;
-  description: string;
   emoji: string;
   isSoldOut?: boolean;
-  prices: { size: string; price: number }[];
+  
   imageUrl?: string;
 };
 
@@ -32,118 +30,106 @@ export const FOOD_ITEMS: FoodItem[] = [
     title: 'Breakfast SMASH Waffle',
     emojis: '🧇 🥔 🥓 🍳 🧀',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Our most popular item! Tater tots pressed into a waffle, loaded with crispy bacon, egg, and cheese. Served with sour cream or salsa.',
-    basePrice: 15.00,
     isChefChoice: true,
     imageUrl: '/assets/food/savory_bacon.png'
+
   },
   {
-    id: 'f2',
+    id: 'f12',
     type: 'food',
-    title: 'Savory Bacon SMASH',
-    emojis: '🧇 🥓 🧀 🧈',
+    title: 'Plain Waffle',
+    emojis: '🧇 🧈 🍁',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Crispy bacon baked directly into our signature golden waffle batter, topped with melted cheese and a dollop of sour cream.',
-    basePrice: 15.00,
-    imageUrl: '/assets/food/savory_bacon_new.png'
-  },
-  {
-    id: 'f3',
-    type: 'food',
-    title: 'Waffle BLT',
-    emojis: '🧇 🥓 🥬 🍅 🥑',
-    emojiBg: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
-    description: 'A crispy waffle acting as the bread, filled with sizzling bacon, fresh lettuce, sliced tomato, and creamy guacamole.',
-    basePrice: 15.00,
-    imageUrl: '/assets/food/waffle_blt.png'
-  },
-  {
-    id: 'f4',
-    type: 'food',
-    title: 'Apple Pie',
-    emojis: '🧇 🍎 🥧 🍦',
-    emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Warm, spiced apple filling over a fresh waffle, drizzled with vanilla icing and topped with whipped cream.',
-    basePrice: 14.00,
     dietary: ['V'],
-    imageUrl: '/assets/food/apple_cinnamon.png'
+    imageUrl: '/assets/food/plain_waffle.png'
   },
   {
-    id: 'f5',
+    id: 'f13',
     type: 'food',
-    title: 'Blueberry Lemon',
-    emojis: '🧇 🫐 🍋 🍦',
+    title: 'Signature Waffle',
+    emojis: '🧇 🍓 🍫 🧁',
+    emojiBg: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
+    imageUrl: '/assets/food/signature_waffle.png'
+  },
+  {
+    id: 'f14',
+    type: 'food',
+    title: 'Biscuit Waffle & Gravy',
+    emojis: '🧇 🥓 🍳 🥘',
+    emojiBg: 'linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)',
+    imageUrl: '/assets/food/biscuit_gravy_waffle.png'
+  },
+  {
+    id: 'f15',
+    type: 'food',
+    title: 'Extra Sauce',
+    emojis: '🥣 🧈 🍯',
     emojiBg: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)',
-    description: 'Fresh plump blueberries, zesty lemon icing, and a dollop of whipped cream.',
-    basePrice: 12.00,
-    dietary: ['V'],
-    imageUrl: '/assets/food/blueberry_lemon.png'
+    imageUrl: '/assets/food/extra_sauce.png'
   },
   {
-    id: 'f6',
+    id: 'f16',
     type: 'food',
-    title: 'Breezy\'s Berry\'s',
-    emojis: '🧇 🍓 🫐 🍦',
-    emojiBg: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
-    description: 'A mixed berry overload! Strawberries, blueberries, and raspberries topped with whipped cream and berry syrup.',
-    basePrice: 12.00,
-    dietary: ['V'],
-    imageUrl: '/assets/food/breezys_berrys.png'
-  },
-  {
-    id: 'f7',
-    type: 'food',
-    title: 'Banana, Almond Butter & Honey',
-    emojis: '🧇 🍌 🥜 🍯',
+    title: 'Jr Waffle',
+    emojis: '🧇 🧈',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'Freshly sliced bananas, rich almond butter drizzle, and sweet golden honey.',
-    basePrice: 12.00,
-    dietary: ['V'],
-    imageUrl: '/assets/food/pb_banana.png'
+    imageUrl: '/assets/food/jr_waffle.png'
   },
   {
-    id: 'f8',
+    id: 'f17',
     type: 'food',
-    title: 'Churro Waffle',
-    emojis: '🧇 🥮 🍯 🍦',
-    emojiBg: 'linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)',
-    description: 'Coated in cinnamon sugar and drizzled generously with rich caramel sauce and whipped cream.',
-    basePrice: 12.00,
-    dietary: ['V'],
-    imageUrl: '/assets/food/churro_waffle.png'
+    title: 'Garden Waffle',
+    emojis: '🧇 🥗 🍅 🥑',
+    emojiBg: 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)',
+    imageUrl: '/assets/food/garden_waffle.png'
   },
   {
-    id: 'f9',
+    id: 'f18',
     type: 'food',
-    title: 'PB & Jelly',
-    emojis: '🧇 🥜 🍇 🍦',
+    title: 'Omelette Waffle',
+    emojis: '🧇 🍳 🧀 🫑',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    description: 'The classic combo reimagined. Creamy peanut butter drizzle, sweet strawberry jam, and whipped cream.',
-    basePrice: 12.00,
-    dietary: ['V'],
-    imageUrl: '/assets/food/pb_jelly.png'
+    imageUrl: '/assets/food/omelette_waffle.png'
   },
   {
-    id: 'f10',
+    id: 'f19',
     type: 'food',
-    title: 'Nutella Waffle',
-    emojis: '🧇 🍫 🌰 🍦',
+    title: 'Side of Gravy',
+    emojis: '🥣 🥘',
     emojiBg: 'linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)',
-    description: 'Generously smeared and drizzled with thick chocolate hazelnut spread, finished with powdered sugar.',
-    basePrice: 12.00,
-    dietary: ['V'],
-    imageUrl: '/assets/food/nutella_waffle.png'
+    imageUrl: '/assets/food/side_gravy.png'
   },
   {
-    id: 'f11',
+    id: 'f20',
     type: 'food',
-    title: 'Strawberry Chocolate',
-    emojis: '🧇 🍓 🍫 🍦',
+    title: 'Dessert Waffle',
+    emojis: '🧇 🍦 🍫 🍒',
     emojiBg: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
-    description: 'A golden waffle layered with fresh sliced strawberries, rich chocolate drizzle, and whipped cream.',
-    basePrice: 13.00,
-    dietary: ['V'],
-    imageUrl: '/assets/food/strawberry_chocolate.png'
+    imageUrl: '/assets/food/dessert_waffle.png'
+  },
+  {
+    id: 'f21',
+    type: 'food',
+    title: 'Acai Bowl',
+    emojis: '🥣 🫐 🍓 🍌',
+    emojiBg: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)',
+    imageUrl: '/assets/food/acai_bowl.png'
+  },
+  {
+    id: 'f22',
+    type: 'food',
+    title: 'Limited Time Breakfast Special',
+    emojis: '🧇 ✨ 🍓 🍳',
+    emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+    imageUrl: '/assets/food/limited_special.png'
+  },
+  {
+    id: 'f23',
+    type: 'food',
+    title: 'Breakfast Special',
+    emojis: '🧇 🥓 🍳 🧀',
+    emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+    imageUrl: '/assets/food/breakfast_special.png'
   }
 ];
 
@@ -152,57 +138,64 @@ export const COFFEE_ITEMS: DrinkItem[] = [
     id: 'c1',
     type: 'coffee',
     title: 'Americano',
-    description: 'Rich, full-bodied espresso pulled over hot water.',
     emoji: '☕️',
-    prices: [
-      { size: '12oz', price: 3.00 },
-      { size: '16oz', price: 3.50 },
-      { size: '20oz', price: 4.00 },
-      { size: '24oz', price: 4.50 },
-    ],
     imageUrl: '/assets/drinks/americano.png'
   },
   {
     id: 'c2',
     type: 'coffee',
     title: 'Longpour',
-    description: 'Our signature house drip, roasted to perfection.',
     emoji: '🫗',
-    prices: [
-      { size: '12oz', price: 2.50 },
-      { size: '16oz', price: 3.00 },
-      { size: '20oz', price: 3.50 },
-      { size: '24oz', price: 4.00 },
-    ],
     imageUrl: '/assets/drinks/longpour.png'
   },
   {
     id: 'c3',
     type: 'coffee',
-    title: 'Latte / Mocha / Macchiato',
-    description: 'Espresso balanced with expertly steamed milk.',
+    title: 'Latte',
     emoji: '🥛',
-    prices: [
-      { size: '12oz', price: 4.00 },
-      { size: '16oz', price: 4.50 },
-      { size: '20oz', price: 5.00 },
-      { size: '24oz', price: 5.50 },
-    ],
     imageUrl: '/assets/drinks/latte.png'
+  },
+  {
+    id: 'c3_1',
+    type: 'coffee',
+    title: 'Mocha',
+    emoji: '🍫',
+    imageUrl: '/assets/drinks/mocha.png'
+  },
+  {
+    id: 'c3_2',
+    type: 'coffee',
+    title: 'Macchiato',
+    emoji: '☕️',
+    imageUrl: '/assets/drinks/macchiato.png'
   },
   {
     id: 'c4',
     type: 'coffee',
-    title: 'Big Train Latte (Iced)',
-    description: 'Blended or iced specialty latte with intense flavor.',
+    title: 'Big Train',
     emoji: '🧊',
-    prices: [
-      { size: '12oz', price: 4.50 },
-      { size: '16oz', price: 5.00 },
-      { size: '20oz', price: 5.50 },
-      { size: '24oz', price: 6.00 },
-    ],
     imageUrl: '/assets/drinks/iced_latte.png'
+  },
+  {
+    id: 'c5',
+    type: 'coffee',
+    title: 'Espresso Extra Shot',
+    emoji: '☕️',
+    imageUrl: '/assets/drinks/espresso_shot.png'
+  },
+  {
+    id: 'c6',
+    type: 'coffee',
+    title: 'Drip Coffee',
+    emoji: '☕️',
+    imageUrl: '/assets/drinks/drip_coffee.png'
+  },
+  {
+    id: 'c7',
+    type: 'coffee',
+    title: 'Breve',
+    emoji: '🥛',
+    imageUrl: '/assets/drinks/breve.png'
   }
 ];
 
@@ -211,53 +204,70 @@ export const NON_COFFEE_ITEMS: DrinkItem[] = [
     id: 'nc1',
     type: 'non-coffee',
     title: 'Italian Soda',
-    description: 'Sparkling soda water customized with your favorite syrup.',
     emoji: '🥤',
-    prices: [
-      { size: '12oz', price: 4.50 },
-      { size: '16oz', price: 5.25 },
-      { size: '20oz', price: 6.00 },
-      { size: '24oz', price: 6.75 },
-    ],
     imageUrl: '/assets/drinks/italian_soda.png'
   },
   {
     id: 'nc2',
     type: 'non-coffee',
     title: 'Redbull Italian Soda',
-    description: 'High-energy Italian soda infused with Redbull.',
     emoji: '🔋',
-    prices: [
-      { size: '12oz', price: 5.50 },
-      { size: '16oz', price: 6.50 },
-      { size: '20oz', price: 7.50 },
-      { size: '24oz', price: 8.25 },
-    ],
     imageUrl: '/assets/drinks/redbull_soda.png'
   },
   {
     id: 'nc3',
     type: 'non-coffee',
     title: 'Fruit Smoothie',
-    description: 'Blended fresh fruit smoothie. Perfect for a hot day.',
     emoji: '🥭',
-    prices: [
-      { size: '12oz', price: 4.00 },
-      { size: '16oz', price: 4.50 },
-      { size: '20oz', price: 5.00 },
-      { size: '24oz', price: 5.50 },
-    ],
     imageUrl: '/assets/drinks/smoothie.png'
   },
   {
     id: 'nc4',
     type: 'non-coffee',
-    title: 'Juice (Orange, Apple)',
-    description: 'Classic chilled fruit juices.',
+    title: 'Kids 12oz Juice',
     emoji: '🧃',
-    prices: [
-      { size: '12oz', price: 2.50 },
-    ],
     imageUrl: '/assets/drinks/juice.png'
+  },
+  {
+    id: 'nc5',
+    type: 'non-coffee',
+    title: 'Iced Tea',
+    emoji: '🍋',
+    imageUrl: '/assets/drinks/iced_tea.png'
+  },
+  {
+    id: 'nc6',
+    type: 'non-coffee',
+    title: 'Chai Tea',
+    emoji: '🍵',
+    imageUrl: '/assets/drinks/chai_tea.png'
+  },
+  {
+    id: 'nc7',
+    type: 'non-coffee',
+    title: 'Lotus Drink',
+    emoji: '🪷',
+    imageUrl: '/assets/drinks/lotus.png'
+  },
+  {
+    id: 'nc8',
+    type: 'non-coffee',
+    title: 'Hot Chocolate',
+    emoji: '🍫',
+    imageUrl: '/assets/drinks/hot_chocolate.png'
+  },
+  {
+    id: 'nc9',
+    type: 'non-coffee',
+    title: 'Seasonal 32 Oz Bucket',
+    emoji: '🪣',
+    imageUrl: '/assets/drinks/bucket_drink.png'
+  },
+  {
+    id: 'nc10',
+    type: 'non-coffee',
+    title: 'Extra Flavoring',
+    emoji: '🍯',
+    imageUrl: '/assets/drinks/extra_flavoring.png'
   }
 ];

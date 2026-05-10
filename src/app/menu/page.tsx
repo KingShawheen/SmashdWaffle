@@ -9,17 +9,17 @@ import { useUiStore } from '../../store/uiStore';
 
 export default function Menu() {
   const [activeTab, setActiveTab] = useState<'food' | 'drinks'>('food');
-  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<any | null>(null);
   
   // Square Catalog Data States
-  const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
-  const [coffeeItems, setCoffeeItems] = useState<DrinkItem[]>([]);
-  const [nonCoffeeItems, setNonCoffeeItems] = useState<DrinkItem[]>([]);
+  const [foodItems, setFoodItems] = useState<any[]>([]);
+  const [coffeeItems, setCoffeeItems] = useState<any[]>([]);
+  const [nonCoffeeItems, setNonCoffeeItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   // Customization States
   const [modifierTotal, setModifierTotal] = useState<number>(0);
-  const [selectedSize, setSelectedSize] = useState<{size: string, price: number} | null>(null);
+  const [selectedSize, setSelectedSize] = useState<{size: string, price: number, squareVariationId?: string} | null>(null);
   const [activeModifiers, setActiveModifiers] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -49,45 +49,129 @@ export default function Menu() {
         const json = await res.json();
         
         if (json.success && json.catalog) {
-          const squareItems = json.catalog;
+          const squareItems = json.catalog.filter((s: any) => s.type === 'ITEM' && !s.isDeleted);
+          const squareCategories = json.catalog.filter((s: any) => s.type === 'CATEGORY' && !s.isDeleted);
           
-          const mergeWithSquare = (localItems: any[]) => {
-            return localItems.map(local => {
-              const sqItem = squareItems.find((s: any) => s.itemData?.name === local.title);
-              if (sqItem) {
-                // Found in Square! Merge live prices.
-                if (local.type === 'food') {
-                  const variation = sqItem.itemData?.variations?.[0];
-                  const price = variation ? (variation.itemVariationData.priceMoney.amount / 100) : local.basePrice;
-                  return { ...local, basePrice: price, squareId: sqItem.id, squareVariationId: variation?.id };
-                } else {
-                  const prices = sqItem.itemData?.variations?.map((v: any) => ({
-                    size: v.itemVariationData.name,
-                    price: v.itemVariationData.priceMoney.amount / 100,
-                    squareVariationId: v.id
-                  })) || local.prices;
-                  return { ...local, prices, squareId: sqItem.id };
-                }
-              }
-              return { ...local, isSoldOut: true }; // Not found in Square catalog
-            });
-          };
+          const categoryMap = new Map();
+          squareCategories.forEach((cat: any) => {
+            if (cat.categoryData?.name) {
+              categoryMap.set(cat.id, cat.categoryData.name.toLowerCase());
+            }
+          });
 
-          setFoodItems(mergeWithSquare(FOOD_ITEMS));
-          setCoffeeItems(mergeWithSquare(COFFEE_ITEMS));
-          setNonCoffeeItems(mergeWithSquare(NON_COFFEE_ITEMS));
+          const allLocalItems = [...FOOD_ITEMS, ...COFFEE_ITEMS, ...NON_COFFEE_ITEMS];
+          
+          const dynamicFood: any[] = [];
+          const dynamicCoffee: any[] = [];
+          const dynamicNonCoffee: any[] = [];
+
+          squareItems.forEach((sqItem: any) => {
+            const sqName = sqItem.itemData?.name || 'Unnamed Item';
+            const localMatch = allLocalItems.find(local => local.title === sqName);
+            
+            let finalItem: any;
+            
+            if (localMatch) {
+              // Known Item: Use local styles + Square prices and descriptions
+              const description = sqItem.itemData?.description || '';
+              if (localMatch.type === 'food') {
+                const variation = sqItem.itemData?.variations?.[0];
+                const price = variation ? (variation.itemVariationData.priceMoney.amount / 100) : 0;
+                finalItem = { ...localMatch, description, basePrice: price, squareId: sqItem.id, squareVariationId: variation?.id };
+                dynamicFood.push(finalItem);
+              } else {
+                const prices = sqItem.itemData?.variations?.map((v: any) => ({
+                  size: v.itemVariationData.name,
+                  price: v.itemVariationData.priceMoney.amount / 100,
+                  squareVariationId: v.id
+                })) || [];
+                finalItem = { ...localMatch, description, prices, squareId: sqItem.id };
+                if (localMatch.type === 'coffee') dynamicCoffee.push(finalItem);
+                else dynamicNonCoffee.push(finalItem);
+              }
+            } else {
+              // Unknown Square Item: Hybrid Render (New Item Alert)
+              const variation = sqItem.itemData?.variations?.[0];
+              const price = variation ? (variation.itemVariationData.priceMoney.amount / 100) : 0;
+              const catId = sqItem.itemData?.categoryId;
+              const catName = catId ? categoryMap.get(catId) || '' : '';
+              
+              const n = sqName.toLowerCase();
+              const isDrink = catName.includes('drink') || catName.includes('coffee') || catName.includes('beverage') || catName.includes('tea') || 
+                n.includes('drink') || n.includes('coffee') || n.includes('americano') || n.includes('longpour') || 
+                n.includes('latte') || n.includes('mocha') || n.includes('macchiato') || n.includes('espresso') || 
+                n.includes('chai') || n.includes('train') || n.includes('soda') || n.includes('redbull') || 
+                n.includes('lotus') || n.includes('smoothie') || n.includes('breve') || n.includes('chocolate') || 
+                n.includes('juice') || n.includes('flavoring') || n.includes('iced') || n.includes('tea');
+
+              if (isDrink) {
+                const isCoffee = n.includes('coffee') || n.includes('latte') || n.includes('espresso') || n.includes('mocha') || n.includes('macchiato') || n.includes('americano') || n.includes('breve') || n.includes('longpour') || n.includes('train') || catName.includes('coffee');
+                
+                const prices = sqItem.itemData?.variations?.map((v: any) => ({
+                  size: v.itemVariationData.name,
+                  price: v.itemVariationData.priceMoney.amount / 100,
+                  squareVariationId: v.id
+                })) || [];
+
+                finalItem = {
+                  id: sqItem.id,
+                  type: isCoffee ? 'coffee' : 'non-coffee',
+                  title: sqName,
+                  description: sqItem.itemData?.description || 'Newly added to our menu! Photo coming soon.',
+                  prices: prices.length > 0 ? prices : [{ size: 'Regular', price: price, squareVariationId: variation?.id }],
+                  squareId: sqItem.id,
+                  imageUrl: sqItem.resolvedImageUrl || '/assets/new-item-alert.png',
+                  emoji: isCoffee ? '☕' : '🥤',
+                  isNewItem: true
+                };
+
+                if (isCoffee) {
+                  dynamicCoffee.push(finalItem);
+                } else {
+                  dynamicNonCoffee.push(finalItem);
+                }
+              } else {
+                finalItem = {
+                  id: sqItem.id,
+                  type: 'food',
+                  title: sqName,
+                  description: sqItem.itemData?.description || 'Newly added to our menu! Photo coming soon.',
+                  basePrice: price,
+                  squareId: sqItem.id,
+                  squareVariationId: variation?.id,
+                  imageUrl: sqItem.resolvedImageUrl || '/assets/new-item-alert.png',
+                  emojis: '✨',
+                  emojiBg: 'linear-gradient(135deg, #111111 0%, #333333 100%)',
+                  isNewItem: true
+                };
+                dynamicFood.push(finalItem);
+              }
+            }
+          });
+
+          // Sort dynamicFood to put known items first, then new items
+          dynamicFood.sort((a, b) => {
+            if (a.isNewItem && !b.isNewItem) return 1;
+            if (!a.isNewItem && b.isNewItem) return -1;
+            return 0;
+          });
+
+          setFoodItems(dynamicFood);
+          setCoffeeItems(dynamicCoffee);
+          setNonCoffeeItems(dynamicNonCoffee);
         } else {
-          // Fallback to static if square fails
-          setFoodItems(FOOD_ITEMS);
-          setCoffeeItems(COFFEE_ITEMS);
-          setNonCoffeeItems(NON_COFFEE_ITEMS);
+          // Fallback if square fails (Zero-Mock means we can't render without Square)
+          console.error("Square API returned no catalog.");
+          setFoodItems([]);
+          setCoffeeItems([]);
+          setNonCoffeeItems([]);
         }
       } catch (err) {
         console.error("Error fetching Square menu:", err);
         // Fallback
-        setFoodItems(FOOD_ITEMS);
-        setCoffeeItems(COFFEE_ITEMS);
-        setNonCoffeeItems(NON_COFFEE_ITEMS);
+        setFoodItems([]);
+        setCoffeeItems([]);
+        setNonCoffeeItems([]);
       } finally {
         setIsLoading(false);
       }
@@ -104,11 +188,13 @@ export default function Menu() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveModifiers([]);
     if (selectedItem?.type === 'coffee' || selectedItem?.type === 'non-coffee') {
-      const drink = selectedItem as DrinkItem;
+      const drink = selectedItem as any;
       // Default to the second size if available, otherwise first
-      const defaultSize = drink.prices.length > 1 ? drink.prices[1] : drink.prices[0];
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedSize(defaultSize);
+      if (drink.prices && drink.prices.length > 0) {
+        const defaultSize = drink.prices.length > 1 ? drink.prices[1] : drink.prices[0];
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSelectedSize(defaultSize);
+      }
     } else {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedSize(null);
@@ -158,8 +244,14 @@ export default function Menu() {
       setToastMessage(`Added ${item.title} to cart`);
       setTimeout(() => setToastMessage(null), 2000);
     } else {
-      // For drinks, opening the modal is required to pick a size
-      handleOpenItemModal(item);
+      // For drinks, clicking + slides open the inline size selector
+      setExpandedItemId(expandedItemId === item.id ? null : item.id);
+      
+      // Default size selection for the inline slider
+      if (item.prices && item.prices.length > 0) {
+        const defaultSize = item.prices.length > 1 ? item.prices[1] : item.prices[0];
+        setSelectedSize(defaultSize);
+      }
     }
   };
 
@@ -408,7 +500,7 @@ export default function Menu() {
                   <h3 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.2rem', lineHeight: 1.2 }}>{item.title}</h3>
                   <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.25rem' }}>
                     <div style={{ fontSize: '0.9rem', letterSpacing: '2px' }}>{item.emojis}</div>
-                    {item.dietary && item.dietary.map(tag => (
+                    {item.dietary && item.dietary.map((tag: string) => (
                       <span key={tag} style={{ 
                         backgroundColor: tag === 'V' ? '#dcfce7' : '#fef3c7', 
                         color: tag === 'V' ? '#166534' : '#92400e', 
@@ -497,7 +589,15 @@ export default function Menu() {
               </button>
               {selectedItem.imageUrl ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={selectedItem.imageUrl} alt={selectedItem.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={
+                  selectedItem.title === 'Kids 12oz Juice' && selectedSize?.size
+                    ? selectedSize.size.toLowerCase().includes('apple')
+                      ? '/assets/drinks/apple_juice.png'
+                      : selectedSize.size.toLowerCase().includes('cranberry')
+                        ? '/assets/drinks/cranberry_juice.png'
+                        : '/assets/drinks/orange_juice.png'
+                    : selectedItem.imageUrl
+                } alt={selectedItem.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'all 0.3s ease' }} />
               ) : (
                 <span style={{ fontSize: '5rem' }}>{(selectedItem as any).emojis || (selectedItem as any).emoji || '🧇'}</span>
               )}
