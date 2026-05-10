@@ -28,7 +28,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     id: 'f1',
     type: 'food',
     title: 'Breakfast SMASH Waffle',
-    emojis: '🧇 🥔 🥓 🍳 🧀',
+    emojis: '🧇 🥓 🍳 🧀 🥔 🧅',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
     isChefChoice: true,
     imageUrl: '/assets/food/savory_bacon.png'
@@ -79,7 +79,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     id: 'f17',
     type: 'food',
     title: 'Garden Waffle',
-    emojis: '🧇 🥗 🍅 🥑',
+    emojis: '🧇 🥬 🥓 🍳 🧀',
     emojiBg: 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)',
     imageUrl: '/assets/food/garden_waffle.png'
   },
@@ -87,7 +87,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     id: 'f18',
     type: 'food',
     title: 'Omelette Waffle',
-    emojis: '🧇 🍳 🧀 🫑',
+    emojis: '🧇 🍳 🧀 🍄 🫑',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
     imageUrl: '/assets/food/omelette_waffle.png'
   },
@@ -103,7 +103,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     id: 'f20',
     type: 'food',
     title: 'Dessert Waffle',
-    emojis: '🧇 🍦 🍫 🍒',
+    emojis: '🧇 🍬 🍫 ☁️',
     emojiBg: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
     imageUrl: '/assets/food/dessert_waffle.png'
   },
@@ -127,7 +127,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     id: 'f23',
     type: 'food',
     title: 'Breakfast Special',
-    emojis: '🧇 🥓 🍳 🧀',
+    emojis: '🧇 🥓 🍳 🍓 ☕',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
     imageUrl: '/assets/food/breakfast_special.png'
   }

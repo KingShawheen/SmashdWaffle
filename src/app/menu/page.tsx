@@ -45,7 +45,7 @@ export default function Menu() {
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const res = await fetch('/api/menu');
+        const res = await fetch('/api/menu', { cache: 'no-store' });
         const json = await res.json();
         
         if (json.success && json.catalog) {
