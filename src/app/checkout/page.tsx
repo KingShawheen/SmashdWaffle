@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { useCartStore } from '../../store/cartStore';
 import { useLocationStore } from '../../store/locationStore';
 import { ChevronLeft, CheckCircle2 } from 'lucide-react';
-import { PaymentForm, CreditCard } from 'react-square-web-payments-sdk';
-
+import { PaymentForm, CreditCard, ApplePay, GooglePay } from 'react-square-web-payments-sdk';
 export default function Checkout() {
   const { items, getCartTotal, clearCart } = useCartStore();
   const { activeLocation } = useLocationStore();
@@ -252,8 +251,27 @@ export default function Checkout() {
           <PaymentForm
             applicationId={process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!}
             cardTokenizeResponseReceived={handlePaymentSuccess}
+            createPaymentRequest={() => ({
+              countryCode: 'US',
+              currencyCode: 'USD',
+              total: {
+                amount: displayTotal.toFixed(2),
+                label: 'Smashd Waffle House',
+              },
+            })}
             locationId={process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!}
           >
+            <div style={{ marginBottom: '1rem' }}>
+              <ApplePay />
+              <GooglePay />
+            </div>
+            
+            <div style={{ margin: '1.5rem 0', display: 'flex', alignItems: 'center' }}>
+              <div style={{ flex: 1, borderTop: '1px solid var(--sw-border)' }}></div>
+              <div style={{ padding: '0 1rem', fontSize: '0.85rem', color: 'var(--sw-text-muted)', fontWeight: 700 }}>OR PAY WITH CARD</div>
+              <div style={{ flex: 1, borderTop: '1px solid var(--sw-border)' }}></div>
+            </div>
+
             <CreditCard 
               buttonProps={{
                 css: {
@@ -264,7 +282,7 @@ export default function Checkout() {
                   fontSize: '1.1rem',
                   padding: '1rem',
                   width: '100%',
-                  marginTop: '1rem',
+                  marginTop: '0.5rem',
                   '&:hover': {
                     backgroundColor: '#cc0000',
                   }
