@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCartStore } from '../../store/cartStore';
 import { useLocationStore } from '../../store/locationStore';
 import { ChevronLeft, Trash2, Plus, Minus } from 'lucide-react';
+import { isStoreOpen } from '../../lib/storeHours';
 
 export default function Cart() {
   const { items, removeFromCart, updateQuantity, getCartTotal, getCartCount } = useCartStore();
@@ -14,6 +15,10 @@ export default function Cart() {
   const subtotal = getCartTotal();
   const tax = subtotal * activeLocation.taxRate;
   const total = subtotal + tax;
+
+  const storeStatus = isStoreOpen();
+  const meetsMinimum = subtotal >= 5.00;
+  const canCheckout = storeStatus.open && meetsMinimum;
 
   useEffect(() => {
     setIsMounted(true);
@@ -124,10 +129,28 @@ export default function Cart() {
 
             {/* Checkout Button */}
             <div style={{ marginTop: '2rem' }}>
-              <Link href="/checkout" style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '1.2rem', backgroundColor: 'var(--sw-red)', color: 'white', borderRadius: '50px', fontWeight: 800, fontSize: '1.1rem' }}>
-                <span>Secure Checkout</span>
-                <span>${total.toFixed(2)}</span>
-              </Link>
+              {!storeStatus.open && (
+                <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '1rem', fontWeight: 700 }}>
+                  🛑 {storeStatus.message}
+                </div>
+              )}
+              {storeStatus.open && !meetsMinimum && (
+                <div style={{ backgroundColor: '#fff7ed', color: '#c2410c', padding: '1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '1rem', fontWeight: 700 }}>
+                  ⚠️ Add ${(5 - subtotal).toFixed(2)} more to reach the $5.00 minimum.
+                </div>
+              )}
+
+              {canCheckout ? (
+                <Link href="/checkout" style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '1.2rem', backgroundColor: 'var(--sw-red)', color: 'white', borderRadius: '50px', fontWeight: 800, fontSize: '1.1rem', textDecoration: 'none' }}>
+                  <span>Secure Checkout</span>
+                  <span>${total.toFixed(2)}</span>
+                </Link>
+              ) : (
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', padding: '1.2rem', backgroundColor: '#d1d5db', color: '#9ca3af', borderRadius: '50px', fontWeight: 800, fontSize: '1.1rem', cursor: 'not-allowed' }}>
+                  <span>Secure Checkout</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+              )}
               <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--sw-text-muted)', marginTop: '1rem' }}>
                 🔒 Payments secured by Square SDK
               </p>

@@ -6,6 +6,8 @@ import { useCartStore } from '../../store/cartStore';
 import { useLocationStore } from '../../store/locationStore';
 import { ChevronLeft, CheckCircle2 } from 'lucide-react';
 import { PaymentForm, CreditCard, ApplePay, GooglePay } from 'react-square-web-payments-sdk';
+import { isStoreOpen } from '../../lib/storeHours';
+
 export default function Checkout() {
   const { items, getCartTotal, clearCart } = useCartStore();
   const { activeLocation } = useLocationStore();
@@ -22,6 +24,8 @@ export default function Checkout() {
     orderNotes: ''
   });
   const checkoutIdempotencyKey = useRef<string>('');
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const storeStatus = isStoreOpen();
 
   const fallbackSubtotal = getCartTotal();
   const [exactSubtotal, setExactSubtotal] = useState<number | null>(null);
@@ -98,7 +102,8 @@ export default function Checkout() {
       });
 
       if (!response.ok) {
-        throw new Error('Payment processing failed');
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Payment processing failed');
       }
 
       const data = await response.json();
@@ -111,9 +116,9 @@ export default function Checkout() {
       } else {
         window.location.href = `/success`;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error completing order:', err);
-      alert('There was an issue processing your order. Please try again.');
+      setCheckoutError(err.message || 'There was an issue processing your order. Please try again.');
     }
   };
 
@@ -247,8 +252,15 @@ export default function Checkout() {
         <div style={{ padding: '1.5rem', background: 'var(--sw-surface)', borderRadius: '20px', border: '1px solid var(--sw-border)' }}>
           <h3 style={{ margin: '0 0 1rem 0', fontWeight: 800 }}>Payment Method</h3>
           
-          {/* Square Web Payments SDK */}
-          <PaymentForm
+          {checkoutError && (
+            <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '1rem', fontWeight: 700 }}>
+              {checkoutError}
+            </div>
+          )}
+
+          {storeStatus.open && fallbackSubtotal >= 5 ? (
+            /* Square Web Payments SDK */
+            <PaymentForm
             applicationId={process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!}
             cardTokenizeResponseReceived={handlePaymentSuccess}
             createPaymentRequest={() => ({
@@ -290,6 +302,11 @@ export default function Checkout() {
               }}
             />
           </PaymentForm>
+          ) : (
+            <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', fontWeight: 700 }}>
+              {!storeStatus.open ? `🛑 ${storeStatus.message}` : `⚠️ Order must be at least $5.00`}
+            </div>
+          )}
 
           <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--sw-text-muted)', marginTop: '1rem' }}>
             By placing your order, you agree to our Terms of Service and Privacy Policy. Payments are processed securely via Square.

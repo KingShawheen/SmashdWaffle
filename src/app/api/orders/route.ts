@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { squareClient as client } from '@/lib/square';
 import crypto from 'crypto';
 import { FOOD_ITEMS, COFFEE_ITEMS, NON_COFFEE_ITEMS } from '@/app/menu/data';
+import { isStoreOpen } from '@/lib/storeHours';
 
 // ==========================================
 // ANTI-BOT SPAM PROTECTION (Rate Limiting)
@@ -56,6 +57,11 @@ export async function POST(request: Request) {
     if (!checkRateLimit(ip)) {
       console.warn(`[SECURITY] Bot blocked. Too many checkout attempts from IP: ${ip}`);
       return NextResponse.json({ error: 'Too many requests. Please wait a minute before trying again.' }, { status: 429 });
+    }
+
+    const storeStatus = isStoreOpen();
+    if (!storeStatus.open) {
+      return NextResponse.json({ error: storeStatus.message }, { status: 400 });
     }
 
     const body = await request.json();
@@ -173,6 +179,10 @@ export async function POST(request: Request) {
     
     if (!paymentAmount) {
       throw new Error("Order total could not be determined");
+    }
+
+    if (Number(paymentAmount) < 500) {
+      return NextResponse.json({ error: 'Orders must meet the $5.00 minimum.' }, { status: 400 });
     }
 
     const paymentResponse = await client.paymentsApi.createPayment({
