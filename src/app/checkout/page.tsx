@@ -197,13 +197,13 @@ export default function Checkout() {
               <span>Tax (Exact)</span>
               <span>${displayTax.toFixed(2)}</span>
             </div>
-            {displayTip > 0 && (
+            {calculatedTipAmount > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', color: 'var(--sw-text-muted)' }}>
                 <span>Tip</span>
-                <span>${displayTip.toFixed(2)}</span>
+                <span>${calculatedTipAmount.toFixed(2)}</span>
               </div>
             )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 900, fontSize: '1.3rem', marginTop: displayTip === 0 ? '1rem' : 0 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 900, fontSize: '1.3rem', marginTop: calculatedTipAmount === 0 ? '1rem' : 0 }}>
               <span>Total</span>
               <span>${displayTotal.toFixed(2)}</span>
             </div>
