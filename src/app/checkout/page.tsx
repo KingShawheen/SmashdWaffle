@@ -27,9 +27,18 @@ export default function Checkout() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const storeStatus = isStoreOpen();
 
+  const [tipPercentage, setTipPercentage] = useState<number | null>(0.15);
+  const [customTip, setCustomTip] = useState<string>('');
+
   const fallbackSubtotal = getCartTotal();
+  const calculatedTipAmount = tipPercentage !== null 
+    ? Math.round(fallbackSubtotal * tipPercentage * 100) / 100 
+    : (parseFloat(customTip) || 0);
+  const calculatedTipAmountCents = Math.round(calculatedTipAmount * 100);
+
   const [exactSubtotal, setExactSubtotal] = useState<number | null>(null);
   const [exactTax, setExactTax] = useState<number | null>(null);
+  const [exactTip, setExactTip] = useState<number | null>(null);
   const [exactTotal, setExactTotal] = useState<number | null>(null);
 
   // Industry Standard: Let Square handle the math (Bankers' Rounding, native pos taxes)
@@ -46,13 +55,21 @@ export default function Checkout() {
         const res = await fetch('/api/orders/calculate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items, locationId: activeLocation.squareLocationId, taxRate: activeLocation.taxRate })
+          body: JSON.stringify({ 
+            items, 
+            locationId: activeLocation.squareLocationId, 
+            taxRate: activeLocation.taxRate,
+            tipAmount: calculatedTipAmountCents
+          })
         });
         const order = await res.json();
         if (order.totalMoney) {
-          // Calculate subtotal from total - tax (safest way to get item total after discounts)
-          setExactSubtotal(Number(order.totalMoney.amount) / 100 - Number(order.totalTaxMoney?.amount || 0) / 100);
-          setExactTax(Number(order.totalTaxMoney?.amount || 0) / 100);
+          // Calculate subtotal from total - tax - tip (safest way to get item total after discounts)
+          const tipMoney = Number(order.totalServiceChargeMoney?.amount || 0) / 100;
+          const taxMoney = Number(order.totalTaxMoney?.amount || 0) / 100;
+          setExactSubtotal(Number(order.totalMoney.amount) / 100 - taxMoney - tipMoney);
+          setExactTax(taxMoney);
+          setExactTip(tipMoney);
           setExactTotal(Number(order.totalMoney.amount) / 100);
         }
       } catch (err) {
@@ -60,11 +77,12 @@ export default function Checkout() {
       }
     };
     calculateOrder();
-  }, [items, activeLocation.squareLocationId]);
+  }, [items, activeLocation.squareLocationId, calculatedTipAmountCents]);
 
   const displaySubtotal = exactSubtotal !== null ? exactSubtotal : fallbackSubtotal;
   const displayTax = exactTax !== null ? exactTax : (fallbackSubtotal * activeLocation.taxRate);
-  const displayTotal = exactTotal !== null ? exactTotal : (fallbackSubtotal + displayTax);
+  const displayTip = exactTip !== null ? exactTip : calculatedTipAmount;
+  const displayTotal = exactTotal !== null ? exactTotal : (fallbackSubtotal + displayTax + displayTip);
 
   useEffect(() => {
     setIsMounted(true);
@@ -97,7 +115,8 @@ export default function Checkout() {
           customerDetails: customerDetails,
           locationId: activeLocation.squareLocationId,
           idempotencyKey: checkoutIdempotencyKey.current,
-          taxRate: activeLocation.taxRate
+          taxRate: activeLocation.taxRate,
+          tipAmount: calculatedTipAmountCents
         })
       });
 
@@ -176,15 +195,68 @@ export default function Checkout() {
               <span>Subtotal</span>
               <span>${displaySubtotal.toFixed(2)}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', color: 'var(--sw-text-muted)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--sw-text-muted)' }}>
               <span>Tax (Exact)</span>
               <span>${displayTax.toFixed(2)}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 900, fontSize: '1.3rem' }}>
+            {displayTip > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', color: 'var(--sw-text-muted)' }}>
+                <span>Tip</span>
+                <span>${displayTip.toFixed(2)}</span>
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 900, fontSize: '1.3rem', marginTop: displayTip === 0 ? '1rem' : 0 }}>
               <span>Total</span>
               <span>${displayTotal.toFixed(2)}</span>
             </div>
           </div>
+        </div>
+
+        {/* Tipping Section */}
+        <div style={{ padding: '1.5rem', background: 'var(--sw-surface)', borderRadius: '20px', border: '1px solid var(--sw-border)', marginBottom: '1.5rem' }}>
+          <h3 style={{ margin: '0 0 1rem 0', fontWeight: 800 }}>Add a Tip</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--sw-text-muted)', marginBottom: '1rem' }}>Support the kitchen staff!</p>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+            {[0.15, 0.20, 0.25].map(pct => (
+              <button 
+                key={pct}
+                onClick={() => { setTipPercentage(pct); setCustomTip(''); }}
+                style={{
+                  flex: 1, padding: '0.8rem', borderRadius: '12px', fontWeight: 800,
+                  border: tipPercentage === pct ? '2px solid var(--sw-red)' : '1px solid var(--sw-border)',
+                  backgroundColor: tipPercentage === pct ? '#fef2f2' : '#f9fafb',
+                  color: tipPercentage === pct ? 'var(--sw-red)' : 'inherit',
+                  cursor: 'pointer'
+                }}>
+                {pct * 100}%
+              </button>
+            ))}
+            <button
+              onClick={() => { setTipPercentage(null); }}
+              style={{
+                flex: 1, padding: '0.8rem', borderRadius: '12px', fontWeight: 800,
+                border: tipPercentage === null ? '2px solid var(--sw-red)' : '1px solid var(--sw-border)',
+                backgroundColor: tipPercentage === null ? '#fef2f2' : '#f9fafb',
+                color: tipPercentage === null ? 'var(--sw-red)' : 'inherit',
+                cursor: 'pointer'
+              }}>
+              Custom
+            </button>
+          </div>
+          {tipPercentage === null && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+              <span style={{ fontWeight: 800 }}>$</span>
+              <input 
+                type="number" 
+                value={customTip}
+                onChange={(e) => setCustomTip(e.target.value)}
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+                style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', border: '1px solid var(--sw-border)', backgroundColor: '#f9fafb', fontSize: '1rem' }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Pickup Details */}

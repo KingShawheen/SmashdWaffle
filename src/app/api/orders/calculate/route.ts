@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { items } = body;
+    const { items, tipAmount } = body;
     const safeLocationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!;
 
     if (!items || items.length === 0 || !safeLocationId) {
@@ -96,6 +96,19 @@ export async function POST(request: Request) {
         autoApplyDiscounts: true,
       }
     };
+
+    if (tipAmount && tipAmount > 0) {
+      orderPayload.serviceCharges = [
+        {
+          name: "Tip",
+          amountMoney: {
+            amount: tipAmount,
+            currency: 'USD'
+          },
+          calculationPhase: "TOTAL_PHASE"
+        }
+      ];
+    }
 
 
     const calculateResponse = await client.ordersApi.calculateOrder({

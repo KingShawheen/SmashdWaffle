@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { token, items, customerDetails, idempotencyKey } = body;
+    const { token, items, customerDetails, idempotencyKey, tipAmount } = body;
 
     const sourceId = typeof token === 'string' ? token : token.token;
     const safeLocationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!;
@@ -163,6 +163,19 @@ export async function POST(request: Request) {
       ]
     };
 
+    if (tipAmount && tipAmount > 0) {
+      orderPayload.serviceCharges = [
+        {
+          name: "Tip",
+          amountMoney: {
+            amount: tipAmount,
+            currency: 'USD'
+          },
+          calculationPhase: "TOTAL_PHASE"
+        }
+      ];
+    }
+
 
     const orderResponse = await client.ordersApi.createOrder({
       order: orderPayload,
@@ -192,6 +205,10 @@ export async function POST(request: Request) {
         amount: paymentAmount,
         currency: 'USD'
       },
+      tipMoney: tipAmount && tipAmount > 0 ? {
+        amount: tipAmount,
+        currency: 'USD'
+      } : undefined,
       orderId: order.id,
       customerId: customerId, // Links payment to customer CRM
       buyerEmailAddress: customerDetails.email || undefined,
