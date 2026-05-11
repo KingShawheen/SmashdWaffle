@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     }
 
     // 3. Cancel the order so it clears off the Kitchen Display
-    await client.ordersApi.updateOrder(order.locationId!, order.id!, {
+    await client.ordersApi.updateOrder(order.id!, {
       order: {
         locationId: order.locationId!,
         version: order.version,
