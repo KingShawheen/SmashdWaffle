@@ -31,8 +31,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     emojis: '🧇 🥓 🍳 🧀 🥔 🧅',
     emojiBg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
     isChefChoice: true,
-    imageUrl: '/assets/food/savory_bacon.png'
-
+    imageUrl: '/assets/food/breakfast_smash.png'
   },
   {
     id: 'f12',
