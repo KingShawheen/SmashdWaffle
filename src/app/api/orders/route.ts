@@ -177,20 +177,6 @@ export async function POST(request: Request) {
       ]
     };
 
-    if (tipAmount && tipAmount > 0) {
-      orderPayload.serviceCharges = [
-        {
-          name: "Tip",
-          amountMoney: {
-            amount: tipAmount,
-            currency: 'USD'
-          },
-          calculationPhase: "TOTAL_PHASE"
-        }
-      ];
-    }
-
-
     const orderResponse = await client.ordersApi.createOrder({
       order: orderPayload,
       idempotencyKey: idempotencyKey ? `${idempotencyKey}-order` : crypto.randomUUID()
@@ -202,13 +188,15 @@ export async function POST(request: Request) {
     }
 
     // 3. Process Payment using the Order ID and exact order amount
-    const paymentAmount = order.totalMoney?.amount;
+    const orderTotalCents = Number(order.totalMoney?.amount);
     
-    if (!paymentAmount) {
+    if (!orderTotalCents) {
       throw new Error("Order total could not be determined");
     }
 
-    if (Number(paymentAmount) < 500) {
+    const finalPaymentAmountCents = orderTotalCents + (tipAmount || 0);
+
+    if (finalPaymentAmountCents < 500) {
       return NextResponse.json({ error: 'Orders must meet the $5.00 minimum.' }, { status: 400 });
     }
 
@@ -216,7 +204,7 @@ export async function POST(request: Request) {
       sourceId,
       idempotencyKey: idempotencyKey ? `${idempotencyKey}-payment` : crypto.randomUUID(),
       amountMoney: {
-        amount: paymentAmount,
+        amount: finalPaymentAmountCents,
         currency: 'USD'
       },
       tipMoney: tipAmount && tipAmount > 0 ? {

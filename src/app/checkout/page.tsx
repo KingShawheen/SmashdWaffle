@@ -65,12 +65,9 @@ export default function Checkout() {
         });
         const order = await res.json();
         if (order.totalMoney) {
-          // Calculate subtotal from total - tax - tip (safest way to get item total after discounts)
-          const tipMoney = Number(order.totalServiceChargeMoney?.amount || 0) / 100;
           const taxMoney = Number(order.totalTaxMoney?.amount || 0) / 100;
-          setExactSubtotal(Number(order.totalMoney.amount) / 100 - taxMoney - tipMoney);
+          setExactSubtotal(Number(order.totalMoney.amount) / 100 - taxMoney);
           setExactTax(taxMoney);
-          setExactTip(tipMoney);
           setExactTotal(Number(order.totalMoney.amount) / 100);
         }
       } catch (err) {
@@ -78,12 +75,11 @@ export default function Checkout() {
       }
     };
     calculateOrder();
-  }, [items, activeLocation.squareLocationId, calculatedTipAmountCents]);
+  }, [items, activeLocation.squareLocationId]);
 
   const displaySubtotal = exactSubtotal !== null ? exactSubtotal : fallbackSubtotal;
   const displayTax = exactTax !== null ? exactTax : (fallbackSubtotal * activeLocation.taxRate);
-  const displayTip = exactTip !== null ? exactTip : calculatedTipAmount;
-  const displayTotal = exactTotal !== null ? exactTotal : (fallbackSubtotal + displayTax + displayTip);
+  const displayTotal = exactTotal !== null ? (exactTotal + calculatedTipAmount) : (fallbackSubtotal + displayTax + calculatedTipAmount);
 
   useEffect(() => {
     setIsMounted(true);

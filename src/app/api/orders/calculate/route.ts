@@ -97,20 +97,6 @@ export async function POST(request: Request) {
       }
     };
 
-    if (tipAmount && tipAmount > 0) {
-      orderPayload.serviceCharges = [
-        {
-          name: "Tip",
-          amountMoney: {
-            amount: tipAmount,
-            currency: 'USD'
-          },
-          calculationPhase: "TOTAL_PHASE"
-        }
-      ];
-    }
-
-
     const calculateResponse = await client.ordersApi.calculateOrder({
       order: orderPayload
     });
