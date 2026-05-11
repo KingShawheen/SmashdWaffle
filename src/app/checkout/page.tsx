@@ -16,6 +16,7 @@ export default function Checkout() {
   const [squareOrderId, setSquareOrderId] = useState<string | null>(null);
   const [orderStatus, setOrderStatus] = useState<string>('OPEN');
   const [pendingOrderCount, setPendingOrderCount] = useState(0);
+  const [estimatedWaitTime, setEstimatedWaitTime] = useState<number>(15);
   const [customerDetails, setCustomerDetails] = useState({
     name: '',
     email: '',
@@ -90,7 +91,9 @@ export default function Checkout() {
       try {
         const response = await fetch(`/api/orders/pending-count?locationId=${activeLocation.squareLocationId}`);
         const data = await response.json();
-        setPendingOrderCount(data.count || 0);
+        const pendingCount = data.count || 0;
+        setPendingOrderCount(pendingCount);
+        setEstimatedWaitTime(10 + (pendingCount * 3));
       } catch (err) {
         console.error("Failed to fetch pending orders from Square", err);
       }
@@ -98,8 +101,7 @@ export default function Checkout() {
     fetchPendingQueue();
   }, [activeLocation.squareLocationId]);
 
-  const asapText = pendingOrderCount > 10 ? "ASAP (45-60 min) - High Volume" : 
-                   pendingOrderCount > 5 ? "ASAP (30-45 min)" : "ASAP (10-15 min)";
+  const asapText = `ASAP (Est. ${estimatedWaitTime} min)`;
 
   // Handle Square Tokenization Success
   const handlePaymentSuccess = async (token: unknown) => {
@@ -302,9 +304,9 @@ export default function Checkout() {
                 style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', border: '1px solid var(--sw-border)', backgroundColor: '#f9fafb', fontSize: '1rem' }}
               >
                 <option value={asapText}>{asapText}</option>
-                {pendingOrderCount <= 5 && <option value="15-30 min">In 15-30 minutes</option>}
-                {pendingOrderCount <= 10 && <option value="30-45 min">In 30-45 minutes</option>}
-                <option value="60 min">In 1 hour</option>
+                {estimatedWaitTime <= 30 && <option value="45 min">In 45 minutes</option>}
+                {estimatedWaitTime <= 45 && <option value="60 min">In 1 hour</option>}
+                <option value="90 min">In 1.5 hours</option>
               </select>
             </div>
             <div>

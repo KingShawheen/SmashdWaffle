@@ -135,6 +135,20 @@ export async function POST(request: Request) {
       return lineItem;
     });
 
+    // 2.5 Calculate Dynamic Prep Time
+    let estimatedWaitTime = 15; // default fallback
+    try {
+      const activeOrdersRes = await client.ordersApi.searchOrders({
+        locationIds: [safeLocationId],
+        query: { filter: { stateFilter: { states: ['OPEN'] } } },
+        limit: 50
+      });
+      const pendingCount = activeOrdersRes.result.orders ? activeOrdersRes.result.orders.length : 0;
+      estimatedWaitTime = 10 + (pendingCount * 3);
+    } catch (e) {
+      console.warn("Could not fetch active orders for dynamic wait time.", e);
+    }
+
     // 3. Create the Order in Square
     // We delegate tax and discount math entirely to Square's native configuration, but enforce a fallback rate if none is configured on the items.
     const orderPayload: any = {
@@ -156,7 +170,7 @@ export async function POST(request: Request) {
               phoneNumber: customerDetails.phone || undefined
             },
             scheduleType: 'ASAP',
-            pickupAt: new Date(Date.now() + 15 * 60000).toISOString(),
+            pickupAt: new Date(Date.now() + estimatedWaitTime * 60000).toISOString(),
             note: customerDetails.orderNotes || undefined
           }
         }

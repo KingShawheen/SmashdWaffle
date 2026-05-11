@@ -9,6 +9,8 @@ function SuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
   const [orderStatus, setOrderStatus] = useState<string>('OPEN');
+  const [isCanceling, setIsCanceling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   // Poll Square API for Order Status
   useEffect(() => {
@@ -36,7 +38,29 @@ function SuccessContent() {
   }, [orderId, orderStatus]);
 
   const isReady = ['PREPARED', 'COMPLETED'].includes(orderStatus);
+  const isCanceled = orderStatus === 'CANCELED';
+  const canCancel = ['OPEN', 'PROPOSED'].includes(orderStatus) && orderId;
   const [hasNotified, setHasNotified] = useState(false);
+
+  const handleCancelOrder = async () => {
+    if (!confirm('Are you sure you want to cancel this order? This will issue an immediate refund.')) return;
+    setIsCanceling(true);
+    setCancelError(null);
+    try {
+      const res = await fetch('/api/orders/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Cancellation failed');
+      setOrderStatus('CANCELED');
+    } catch (err: any) {
+      setCancelError(err.message);
+    } finally {
+      setIsCanceling(false);
+    }
+  };
 
   // Trigger Notification when Ready
   useEffect(() => {
@@ -89,15 +113,27 @@ function SuccessContent() {
     <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '1.5rem', paddingTop: 'env(safe-area-inset-top, 3rem)' }}>
       <div style={{ textAlign: 'center', marginBottom: '2rem', marginTop: '2rem' }}>
         <div className="sw-animate-fade-in" style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-          <CheckCircle2 color="var(--sw-green, #22c55e)" size={80} />
+          {isCanceled ? (
+            <div style={{ width: 80, height: 80, borderRadius: '50%', backgroundColor: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '3rem' }}>❌</span>
+            </div>
+          ) : (
+            <CheckCircle2 color="var(--sw-green, #22c55e)" size={80} />
+          )}
         </div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem' }}>Order Confirmed!</h1>
+        <h1 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem' }}>
+          {isCanceled ? 'Order Canceled' : 'Order Confirmed!'}
+        </h1>
         <p style={{ color: 'var(--sw-text-muted)', lineHeight: 1.5 }}>
-          Your payment was successful. The kitchen has received your ticket.
+          {isCanceled ? 'Your order has been canceled and a refund has been issued to your original payment method.' : 'Your payment was successful. The kitchen has received your ticket.'}
         </p>
-        
-        {/* Removed debug block */}
       </div>
+
+      {cancelError && (
+        <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '1.5rem', fontWeight: 700 }}>
+          {cancelError}
+        </div>
+      )}
 
       {/* Order Status Tracker */}
       <div style={{ padding: '1.5rem', backgroundColor: 'var(--sw-surface)', borderRadius: '16px', border: '1px solid var(--sw-border)', textAlign: 'left', marginBottom: '2rem' }}>
@@ -141,6 +177,16 @@ function SuccessContent() {
           </div>
         </div>
       </div>
+
+      {canCancel && (
+        <button 
+          onClick={handleCancelOrder}
+          disabled={isCanceling}
+          style={{ width: '100%', padding: '1rem', backgroundColor: 'transparent', color: 'var(--sw-red)', borderRadius: '50px', fontWeight: 800, border: '2px solid var(--sw-red)', cursor: isCanceling ? 'wait' : 'pointer', marginBottom: '1rem' }}
+        >
+          {isCanceling ? 'Canceling...' : 'Oops! Cancel Order & Refund'}
+        </button>
+      )}
 
       <Link href="/">
         <button style={{ width: '100%', padding: '1rem', backgroundColor: 'var(--sw-navy)', color: 'white', borderRadius: '50px', fontWeight: 800, border: 'none', cursor: 'pointer' }}>
