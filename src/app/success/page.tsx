@@ -36,6 +36,54 @@ function SuccessContent() {
   }, [orderId, orderStatus]);
 
   const isReady = ['PREPARED', 'COMPLETED'].includes(orderStatus);
+  const [hasNotified, setHasNotified] = useState(false);
+
+  // Trigger Notification when Ready
+  useEffect(() => {
+    if (isReady && !hasNotified) {
+      setHasNotified(true);
+      
+      // Haptic Feedback (Android / Supported devices)
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([200, 100, 200, 100, 400]);
+      }
+
+      // Audio "Ding" using Web Audio API
+      try {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) {
+          const ctx = new AudioCtx();
+          
+          // High chime
+          const osc1 = ctx.createOscillator();
+          const gain1 = ctx.createGain();
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(880, ctx.currentTime); // A5
+          gain1.gain.setValueAtTime(0.5, ctx.currentTime);
+          gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+          osc1.connect(gain1);
+          gain1.connect(ctx.destination);
+          osc1.start();
+          osc1.stop(ctx.currentTime + 0.6);
+
+          // Second chime slightly delayed
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(1108.73, ctx.currentTime + 0.15); // C#6
+          gain2.gain.setValueAtTime(0, ctx.currentTime);
+          gain2.gain.setValueAtTime(0.5, ctx.currentTime + 0.15);
+          gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+          osc2.connect(gain2);
+          gain2.connect(ctx.destination);
+          osc2.start(ctx.currentTime + 0.15);
+          osc2.stop(ctx.currentTime + 0.8);
+        }
+      } catch (e) {
+        console.error("Audio notification failed", e);
+      }
+    }
+  }, [isReady, hasNotified]);
 
   return (
     <main style={{ backgroundColor: 'var(--sw-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '1.5rem', paddingTop: 'env(safe-area-inset-top, 3rem)' }}>
