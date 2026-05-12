@@ -28,7 +28,7 @@ export default function Checkout() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const storeStatus = isStoreOpen();
 
-  const [tipPercentage, setTipPercentage] = useState<number | null>(0.15);
+  const [tipPercentage, setTipPercentage] = useState<number | null>(0);
   const [customTip, setCustomTip] = useState<string>('');
 
   const fallbackSubtotal = getCartTotal();
@@ -215,6 +215,17 @@ export default function Checkout() {
           <h3 style={{ margin: '0 0 1rem 0', fontWeight: 800 }}>Add a Tip</h3>
           <p style={{ fontSize: '0.85rem', color: 'var(--sw-text-muted)', marginBottom: '1rem' }}>Support the kitchen staff!</p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+            <button 
+              onClick={() => { setTipPercentage(0); setCustomTip(''); }}
+              style={{
+                flex: 1, padding: '0.8rem', borderRadius: '12px', fontWeight: 800,
+                border: tipPercentage === 0 ? '2px solid var(--sw-red)' : '1px solid var(--sw-border)',
+                backgroundColor: tipPercentage === 0 ? '#fef2f2' : '#f9fafb',
+                color: tipPercentage === 0 ? 'var(--sw-red)' : 'inherit',
+                cursor: 'pointer', minWidth: '40px'
+              }}>
+              None
+            </button>
             {[0.15, 0.20, 0.25].map(pct => (
               <button 
                 key={pct}
@@ -224,7 +235,7 @@ export default function Checkout() {
                   border: tipPercentage === pct ? '2px solid var(--sw-red)' : '1px solid var(--sw-border)',
                   backgroundColor: tipPercentage === pct ? '#fef2f2' : '#f9fafb',
                   color: tipPercentage === pct ? 'var(--sw-red)' : 'inherit',
-                  cursor: 'pointer'
+                  cursor: 'pointer', minWidth: '60px'
                 }}>
                 {pct * 100}%
               </button>
@@ -236,7 +247,7 @@ export default function Checkout() {
                 border: tipPercentage === null ? '2px solid var(--sw-red)' : '1px solid var(--sw-border)',
                 backgroundColor: tipPercentage === null ? '#fef2f2' : '#f9fafb',
                 color: tipPercentage === null ? 'var(--sw-red)' : 'inherit',
-                cursor: 'pointer'
+                cursor: 'pointer', minWidth: '60px'
               }}>
               Custom
             </button>
