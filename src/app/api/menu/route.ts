@@ -76,22 +76,33 @@ export async function GET(request: Request) {
       }
     });
 
-    // Attach image URLs to items
-    const itemsWithImages = objects.map(obj => {
-      if (obj.type === 'ITEM' && obj.itemData && obj.itemData.imageIds && obj.itemData.imageIds.length > 0) {
-        const primaryImageId = obj.itemData.imageIds[0];
+    // Attach image URLs and apply 20% markup to all item variations
+    const itemsWithImagesAndMarkup = objects.map(obj => {
+      let updatedObj: any = { ...obj };
+
+      // Apply 20% markup to all variations to offset mobile service speed
+      if (updatedObj.type === 'ITEM' && updatedObj.itemData && updatedObj.itemData.variations) {
+        updatedObj.itemData.variations = updatedObj.itemData.variations.map((variation: any) => {
+          if (variation.itemVariationData && variation.itemVariationData.priceMoney && variation.itemVariationData.priceMoney.amount) {
+            const originalAmount = Number(variation.itemVariationData.priceMoney.amount);
+            // Apply 20% markup and round to the nearest cent
+            variation.itemVariationData.priceMoney.amount = Math.round(originalAmount * 1.20);
+          }
+          return variation;
+        });
+      }
+
+      if (updatedObj.type === 'ITEM' && updatedObj.itemData && updatedObj.itemData.imageIds && updatedObj.itemData.imageIds.length > 0) {
+        const primaryImageId = updatedObj.itemData.imageIds[0];
         if (imageMap.has(primaryImageId)) {
-          return {
-            ...obj,
-            resolvedImageUrl: imageMap.get(primaryImageId)
-          };
+          updatedObj.resolvedImageUrl = imageMap.get(primaryImageId);
         }
       }
-      return obj;
+      return updatedObj;
     });
 
     // Convert BigInts to regular numbers so JSON can serialize them
-    const safeObjects = convertBigIntsToNumbers(itemsWithImages);
+    const safeObjects = convertBigIntsToNumbers(itemsWithImagesAndMarkup);
 
     return NextResponse.json({ success: true, catalog: safeObjects });
   } catch (error: any) {

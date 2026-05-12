@@ -117,7 +117,11 @@ export async function POST(request: Request) {
       const priceInCents = Math.round(item.price * 100);
 
       const lineItem: any = {
-        quantity: item.quantity.toString()
+        quantity: item.quantity.toString(),
+        basePriceMoney: {
+          amount: priceInCents,
+          currency: 'USD'
+        }
       };
 
       if (item.squareVariationId) {
